@@ -4,63 +4,370 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Vartalaap — Real-Time Conversational HUD</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #0b0f19;
-            color: #f9fafb;
-        }
-        .mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
-    <div class="max-w-3xl w-full bg-[#111827] border border-[#1f2937] rounded-xl p-8 shadow-2xl space-y-6">
-        <div class="flex items-center justify-between border-b border-[#1f2937] pb-4">
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-                    <span class="inline-block w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Project Vartalaap
-                </h1>
-                <p class="text-sm text-gray-400 mt-1">Full-Duplex Indic Conversational Turn-Taking Engine</p>
+<body>
+    <div class="app-shell">
+        <!-- Header Navigation Bar -->
+        <header class="header-bar">
+            <div class="brand-section">
+                <div class="brand-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5v14M7 9v6M22 10v4M2 11v2"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-title">
+                        Project Vartalaap
+                        <span class="brand-badge">Indic Turn-Taking HUD</span>
+                    </h1>
+                    <p class="brand-subtitle">Sub-15ms Multimodal Turn Arbitration & Cultural Backchannel Engine</p>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <span id="connectionBadge" class="mono text-xs px-3 py-1 rounded-full bg-emerald-950/70 text-emerald-400 border border-emerald-800">
-                    SERVER ONLINE
-                </span>
-            </div>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-[#0b0f19] border border-[#1f2937] rounded-lg p-4">
-                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Active Mode</span>
-                <p id="modeDisplay" class="text-lg font-bold text-indigo-400 mono mt-1">VARTALAAP v2.0</p>
+            <!-- Hardware & Service Readiness Status Pills -->
+            <div class="hardware-pills">
+                <div class="hw-pill" id="hwGpuPill">
+                    <span class="status-dot green pulse" id="gpuStatusDot"></span>
+                    <span>NVIDIA RTX 5060 (CUDA)</span>
+                </div>
+                <div class="hw-pill">
+                    <span class="status-dot green"></span>
+                    <span>Smart-Turn v3.2</span>
+                </div>
+                <div class="hw-pill">
+                    <span class="status-dot cyan"></span>
+                    <span>Gnani Prisma STT</span>
+                </div>
+                <div class="hw-pill">
+                    <span class="status-dot violet"></span>
+                    <span>Silero VAD</span>
+                </div>
+                <div class="hw-pill">
+                    <span class="status-dot" id="wsConnDot"></span>
+                    <span id="wsConnLabel">SERVER READY</span>
+                </div>
             </div>
-            <div class="bg-[#0b0f19] border border-[#1f2937] rounded-lg p-4">
-                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Dynamic ETS</span>
-                <p id="etsDisplay" class="text-lg font-bold text-amber-400 mono mt-1">250 ms</p>
-            </div>
-            <div class="bg-[#0b0f19] border border-[#1f2937] rounded-lg p-4">
-                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Playback Gain</span>
-                <p id="gainDisplay" class="text-lg font-bold text-emerald-400 mono mt-1">0.0 dB</p>
-            </div>
-        </div>
 
-        <div class="bg-[#0b0f19] border border-[#1f2937] rounded-lg p-5 space-y-3">
-            <div class="flex items-center justify-between text-xs text-gray-400">
-                <span>WEBSOCKET AUDIO PIPELINE</span>
-                <span class="mono text-indigo-400">ws://127.0.0.1:8000/ws/audio</span>
+            <!-- Signature Interactive A/B Mode Toggle -->
+            <div id="mode-toggle" class="mode-toggle-group" role="radiogroup" aria-label="Turn-Taking Mode Selector">
+                <button type="button" class="mode-toggle-btn" id="modeStandardBtn" data-mode="STANDARD">
+                    <span class="status-dot amber"></span>
+                    Standard 500ms Fixed
+                </button>
+                <button type="button" class="mode-toggle-btn active vartalaap-mode" id="modeVartalaapBtn" data-mode="VARTALAAP">
+                    <span class="status-dot cyan pulse"></span>
+                    Vartalaap v2.0 Dynamic
+                </button>
             </div>
-            <p class="text-sm text-gray-300 leading-relaxed">
-                Backend services active: Silero VAD, Smart-Turn on NVIDIA GeForce RTX 5060, Indic Lexical Parser,
-                Two-Stage Soft-Ducking Cultural Gate, and Gnani Prisma STT / Timbre TTS streaming orchestrators.
-            </p>
-        </div>
+        </header>
+
+        <!-- Main Cockpit & Telemetry Grid (2/3 Main, 1/3 Sidebar) -->
+        <main class="cockpit-grid">
+            <!-- Left Column: Main Acoustic Console (2/3) -->
+            <section class="cockpit-column">
+                <!-- Turn State & Dynamic Silence Threshold Card -->
+                <div class="console-card">
+                    <div class="card-header">
+                        <span class="card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Turn Arbitration & Silence State
+                        </span>
+                        <span class="card-header-badge mono" id="arbitrationModeBadge">MODE: DYNAMIC ETS</span>
+                    </div>
+
+                    <div class="state-and-silence-row">
+                        <!-- Turn State Badge -->
+                        <div class="turn-state-badge state-listening" id="turnStateBadge">
+                            <span class="status-dot green pulse" id="turnStateDot"></span>
+                            <div>
+                                <div style="font-size: 0.625rem; color: var(--text-muted); text-transform: uppercase;">Active Turn State</div>
+                                <div class="turn-state-text" id="turnStateText">LISTENING</div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Silence Timeout Progress Bar -->
+                        <div class="silence-progress-container">
+                            <div class="silence-labels-row">
+                                <span>SILENCE TIMEOUT PROGRESS</span>
+                                <div class="silence-time-readout">
+                                    <span id="elapsedSilenceVal" class="active-ms tabular-nums">0</span>
+                                    <span style="color: var(--text-dim);"> / </span>
+                                    <span id="dynamicEtsVal" class="tabular-nums">250</span>
+                                    <span style="color: var(--text-dim); font-size: 0.75rem;"> ms</span>
+                                </div>
+                            </div>
+                            <div class="silence-bar-track">
+                                <div id="silence-bar" class="silence-bar-fill"></div>
+                                <div class="fixed-500ms-marker" id="fixed500msMarker" style="left: 25%;" title="Standard 500ms Cutoff Line"></div>
+                            </div>
+                            <div class="silence-reason-trace" id="silenceReasonTrace">Acoustic quiescent state. Listening for Indic voice activity...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-Time Dual-Waveform High-DPI Canvas Oscilloscope Card -->
+                <div class="console-card">
+                    <div class="card-header">
+                        <span class="card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                            Real-Time Dual Oscilloscope (60 FPS)
+                        </span>
+                        <div class="oscilloscope-legend">
+                            <div class="legend-item">
+                                <span class="legend-line" style="background: var(--accent-green);"></span>
+                                <span>User Voice</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-line" style="background: var(--accent-amber);"></span>
+                                <span>Pause Hold</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-line" style="background: var(--accent-violet);"></span>
+                                <span>Bot Synthesis</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-line" style="background: var(--accent-cyan);"></span>
+                                <span>Backchannel</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="oscilloscope-container">
+                        <canvas id="oscilloscope" class="oscilloscope-canvas"></canvas>
+                        <div class="oscilloscope-reticle">
+                            <div class="reticle-labels">
+                                <span>+1.0 FS (0 dB)</span>
+                                <span>16kHz 16-BIT LINEAR PCM</span>
+                                <span>+1.0 FS</span>
+                            </div>
+                            <div class="reticle-labels">
+                                <span>-18 dB DUCK</span>
+                                <span>TIME DOMAIN TRACE</span>
+                                <span>-18 dB DUCK</span>
+                            </div>
+                            <div class="reticle-labels">
+                                <span>-1.0 FS (-∞ dB)</span>
+                                <span>512 SAMPLES / FRAME</span>
+                                <span>-1.0 FS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dual Transcription & Synthesized Response Deck -->
+                <div class="transcription-deck">
+                    <!-- Live User Speech Transcription Box -->
+                    <div class="console-card">
+                        <div class="card-header">
+                            <span class="card-title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                                </svg>
+                                User Speech Stream (Gnani Prisma)
+                            </span>
+                            <span class="card-header-badge mono">hi-IN</span>
+                        </div>
+                        <div id="transcript-box" class="transcript-stream-box empty-state">
+                            Press "Start Conversation" or click a simulation preset...
+                        </div>
+                    </div>
+
+                    <!-- Bot Playback & Response Card -->
+                    <div class="console-card">
+                        <div class="card-header">
+                            <span class="card-title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                </svg>
+                                Bot Audio Stream (Gnani Timbre)
+                            </span>
+                            <span class="card-header-badge mono" id="botPlaybackStatus">IDLE</span>
+                        </div>
+                        <div id="agent-response-box" class="transcript-stream-box empty-state">
+                            Awaiting conversational turn completion...
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Telemetry & Impact Sidebar (1/3) -->
+            <aside class="cockpit-column">
+                <!-- Fused Multimodal Probability Meters Card -->
+                <div class="console-card probability-meter-card">
+                    <div class="card-header">
+                        <span class="card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            Multimodal Boundary Probabilities
+                        </span>
+                        <span class="card-header-badge mono">RTX 5060</span>
+                    </div>
+
+                    <div class="prob-meter-row">
+                        <div class="prob-label-row">
+                            <span>P(incomplete) — Mid-Thought Hold</span>
+                            <span id="pIncompleteVal" class="mono tabular-nums">0.0%</span>
+                        </div>
+                        <div class="prob-track">
+                            <div id="pIncompleteFill" class="prob-fill-incomplete"></div>
+                        </div>
+                    </div>
+
+                    <div class="prob-meter-row">
+                        <div class="prob-label-row">
+                            <span>P(complete) — Turn Release</span>
+                            <span id="pCompleteVal" class="mono tabular-nums">0.0%</span>
+                        </div>
+                        <div class="prob-track">
+                            <div id="pCompleteFill" class="prob-fill-complete"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Linguistic Category & Matched Markers Card -->
+                <div class="console-card">
+                    <div class="card-header">
+                        <span class="card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+                            </svg>
+                            Indic Linguistic Parsing
+                        </span>
+                        <span class="card-header-badge mono" id="lexicalPenaltyBadge">PENALTY: 0.00</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Detected Category:</span>
+                            <div class="category-badge-display" id="categoryBadge">NEUTRAL</div>
+                        </div>
+
+                        <div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Active Matched Markers:</span>
+                            <div class="markers-tag-list" id="matchedMarkersList">
+                                <span class="marker-tag">none</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Soft-Ducking Attenuation Gauge Card -->
+                <div class="console-card">
+                    <div class="card-header">
+                        <span class="card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                            Two-Stage Soft-Ducking Gate
+                        </span>
+                        <span class="ducking-badge normal" id="duckingStatusBadge">0.0 dB NORMAL</span>
+                    </div>
+
+                    <div class="ducking-meter-container">
+                        <div class="ducking-scale-row">
+                            <span>-100 dB (Mute)</span>
+                            <span>-18 dB (Duck)</span>
+                            <span>0 dB (Unity)</span>
+                        </div>
+                        <div class="ducking-track">
+                            <div id="duckingBarFill" class="ducking-bar-fill"></div>
+                        </div>
+                        <div class="ducking-value-indicator">
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Current Audio Gain:</span>
+                            <span id="duckingGainVal" class="mono tabular-nums">0.0 dB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benchmark & Impact Counters Card -->
+                <div class="console-card">
+                    <div class="card-header">
+                        <span class="card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            Conversational Impact Metrics
+                        </span>
+                        <span class="card-header-badge mono">METRICS</span>
+                    </div>
+
+                    <div class="impact-metrics-grid">
+                        <div class="impact-metric-box">
+                            <span class="impact-metric-number green" id="cutoffsPreventedVal">0</span>
+                            <span class="impact-metric-label">Cut-Offs Prevented</span>
+                        </div>
+                        <div class="impact-metric-box">
+                            <span class="impact-metric-number cyan" id="backchannelsPreservedVal">0</span>
+                            <span class="impact-metric-label">Backchannels Preserved</span>
+                        </div>
+                        <div class="impact-metric-box">
+                            <span class="impact-metric-number violet" id="ttfaMetricVal">--</span>
+                            <span class="impact-metric-label">TTFA Latency</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Cockpit Control Bar & Benchmark Simulation Deck -->
+        <footer class="cockpit-control-bar">
+            <!-- Primary Live Interaction Controls -->
+            <div class="primary-controls-group">
+                <button type="button" class="btn-primary" id="sessionBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="sessionBtnIcon">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    </svg>
+                    <span id="sessionBtnText">Start Conversation</span>
+                </button>
+
+                <button type="button" class="btn-secondary" id="resetBtn" title="Reset Session State">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                    Reset Console
+                </button>
+            </div>
+
+            <!-- One-Click Preset Simulation Buttons for Judges -->
+            <div class="simulation-presets-group">
+                <span class="simulation-label">Judge Simulations:</span>
+                <button type="button" class="btn-simulation" id="simHinglishPauseBtn" title="Simulates user saying 'Mera balance... matlab' with a 700ms pause">
+                    <span>Simulate Hinglish Pause</span>
+                    <span class="sub">"Mera balance... matlab" (700ms pause)</span>
+                </button>
+                <button type="button" class="btn-simulation" id="simHaanjiBtn" title="Simulates user saying 'haanji' cultural backchannel while bot speaks">
+                    <span>Simulate Haanji Backchannel</span>
+                    <span class="sub">Bot Speaking + User "haanji"</span>
+                </button>
+                <button type="button" class="btn-simulation" id="simRukoBtn" title="Simulates user saying 'ruko' imperative barge-in while bot speaks">
+                    <span>Simulate Ruko Interrupt</span>
+                    <span class="sub">Bot Speaking + User "ruko"</span>
+                </button>
+            </div>
+        </footer>
     </div>
+
+    <!-- Application Controller Script -->
+    <script src="/static/app.js" defer></script>
 </body>
 </html>
