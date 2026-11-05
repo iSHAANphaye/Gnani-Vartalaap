@@ -6,6 +6,13 @@ from app.core.backchannel import (
     TwoStageBackchannelGate,
 )
 from app.core.normalizer import CrossScriptNormalizer
+from app.core.semantic import (
+    HybridTurnClassifier,
+    IndicLexicalParser,
+    LexicalParseResult,
+    SemanticTurnEvaluation,
+    TurnCategory,
+)
 from app.core.vad import AcousticDetector, AudioRingBuffer, SileroVAD, VADResult
 
 __all__ = [
@@ -14,7 +21,12 @@ __all__ = [
     "CrossScriptNormalizer",
     "DuckingAction",
     "GateDecision",
+    "HybridTurnClassifier",
+    "IndicLexicalParser",
+    "LexicalParseResult",
+    "SemanticTurnEvaluation",
     "SileroVAD",
+    "TurnCategory",
     "TwoStageBackchannelGate",
     "VADResult",
 ]

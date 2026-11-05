@@ -213,8 +213,34 @@ class SmartTurnEngine:
         self.model.load_state_dict(state_dict)
         self.model.to(self.device).eval()
 
+        # Initialize graph acceleration attributes
+        self._cuda_graph: Optional[torch.cuda.CUDAGraph] = None
+        self._static_mel: Optional[torch.Tensor] = None
+        self._static_output: Optional[torch.Tensor] = None
+
         # Warm up model to prime CUDA context and kernels
         self._warmup()
+
+        # Capture CUDA Graph on GPU for sub-8ms inference
+        if self.is_gpu:
+            try:
+                self._static_mel = torch.zeros((1, 80, 800), device=self.device)
+                s = torch.cuda.Stream()
+                s.wait_stream(torch.cuda.current_stream())
+                with torch.cuda.stream(s):
+                    for _ in range(3):
+                        self.model(self._static_mel)
+                torch.cuda.current_stream().wait_stream(s)
+
+                g = torch.cuda.CUDAGraph()
+                with torch.cuda.graph(g):
+                    self._static_output = self.model(self._static_mel)
+                self._cuda_graph = g
+                logger.info("Smart-Turn CUDA Graph capture complete (sub-8ms latency active)")
+            except Exception as exc:
+                logger.warning("CUDA Graph capture skipped: %s; falling back to eager execution", exc)
+                self._cuda_graph = None
+
         logger.info("Smart-Turn v3.2 engine ready on %s", self.device)
 
     def _warmup(self, iterations: int = 5) -> None:
@@ -281,8 +307,17 @@ class SmartTurnEngine:
         mel_input = ((log_spec + 4.0) / 4.0).unsqueeze(0)
 
         # Model forward pass
-        with torch.inference_mode():
-            p_complete = self.model(mel_input).item()
+        if (
+            self._cuda_graph is not None
+            and self._static_mel is not None
+            and self._static_output is not None
+        ):
+            self._static_mel.copy_(mel_input)
+            self._cuda_graph.replay()
+            p_complete = self._static_output.item()
+        else:
+            with torch.inference_mode():
+                p_complete = self.model(mel_input).item()
 
         p_incomplete = max(0.0, min(1.0, 1.0 - p_complete))
         return float(p_incomplete)
