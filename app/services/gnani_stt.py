@@ -177,8 +177,13 @@ class GnaniSTTClient:
 
     async def _simulate_mock_recognition(self, audio_bytes: bytes) -> None:
         """Simulate realistic Indic code-mixed interim transcripts for local testing."""
-        # Simple energy/byte activity simulation
+        # Check frame size and audio energy: do not simulate speech recognition on silence
         if len(audio_bytes) < 320:
+            return
+
+        import numpy as np
+        samples = np.frombuffer(audio_bytes, dtype=np.int16)
+        if len(samples) > 0 and int(np.max(np.abs(samples))) < 500:
             return
 
         mock_phrases = [

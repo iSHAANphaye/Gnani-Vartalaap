@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Vartalaap — Real-Time Conversational HUD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f9fafb;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="max-w-3xl w-full bg-[#111827] border border-[#1f2937] rounded-xl p-8 shadow-2xl space-y-6">
+        <div class="flex items-center justify-between border-b border-[#1f2937] pb-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+                    <span class="inline-block w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Project Vartalaap
+                </h1>
+                <p class="text-sm text-gray-400 mt-1">Full-Duplex Indic Conversational Turn-Taking Engine</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="connectionBadge" class="mono text-xs px-3 py-1 rounded-full bg-emerald-950/70 text-emerald-400 border border-emerald-800">
+                    SERVER ONLINE
+                </span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-[#0b0f19] border border-[#1f2937] rounded-lg p-4">
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Active Mode</span>
+                <p id="modeDisplay" class="text-lg font-bold text-indigo-400 mono mt-1">VARTALAAP v2.0</p>
+            </div>
+            <div class="bg-[#0b0f19] border border-[#1f2937] rounded-lg p-4">
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Dynamic ETS</span>
+                <p id="etsDisplay" class="text-lg font-bold text-amber-400 mono mt-1">250 ms</p>
+            </div>
+            <div class="bg-[#0b0f19] border border-[#1f2937] rounded-lg p-4">
+                <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Playback Gain</span>
+                <p id="gainDisplay" class="text-lg font-bold text-emerald-400 mono mt-1">0.0 dB</p>
+            </div>
+        </div>
+
+        <div class="bg-[#0b0f19] border border-[#1f2937] rounded-lg p-5 space-y-3">
+            <div class="flex items-center justify-between text-xs text-gray-400">
+                <span>WEBSOCKET AUDIO PIPELINE</span>
+                <span class="mono text-indigo-400">ws://127.0.0.1:8000/ws/audio</span>
+            </div>
+            <p class="text-sm text-gray-300 leading-relaxed">
+                Backend services active: Silero VAD, Smart-Turn on NVIDIA GeForce RTX 5060, Indic Lexical Parser,
+                Two-Stage Soft-Ducking Cultural Gate, and Gnani Prisma STT / Timbre TTS streaming orchestrators.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
