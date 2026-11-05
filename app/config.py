@@ -76,6 +76,10 @@ class Settings(BaseSettings):
         default=SecretStr("your_llm_api_key_here"),
         description="LLM provider API key",
     )
+    llm_base_url: str = Field(
+        default="https://api.vachana.ai/v1",
+        description="LLM provider base API URL",
+    )
 
     # Vartalaap Engine Parameters
     default_silence_threshold_ms: int = Field(

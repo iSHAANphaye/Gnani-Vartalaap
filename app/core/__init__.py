@@ -5,6 +5,11 @@ from app.core.backchannel import (
     GateDecision,
     TwoStageBackchannelGate,
 )
+from app.core.engine import (
+    DynamicTurnEngine,
+    EngineTelemetry,
+    TurnState,
+)
 from app.core.normalizer import CrossScriptNormalizer
 from app.core.semantic import (
     HybridTurnClassifier,
@@ -20,6 +25,8 @@ __all__ = [
     "AudioRingBuffer",
     "CrossScriptNormalizer",
     "DuckingAction",
+    "DynamicTurnEngine",
+    "EngineTelemetry",
     "GateDecision",
     "HybridTurnClassifier",
     "IndicLexicalParser",
@@ -27,6 +34,7 @@ __all__ = [
     "SemanticTurnEvaluation",
     "SileroVAD",
     "TurnCategory",
+    "TurnState",
     "TwoStageBackchannelGate",
     "VADResult",
 ]
