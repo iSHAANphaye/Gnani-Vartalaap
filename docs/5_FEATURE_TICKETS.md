@@ -4,24 +4,42 @@ Master build checklist representing atomic, sequential engineering tickets adher
 
 ---
 
+## 📊 Live Progress Tracker
+
+| Ticket | Milestone Description | Target Subsystem | Status | Verification & Deliverables |
+|---|---|---|:---:|---|
+| **TICKET-01** | Scaffold, UV Virtualenv & PyTorch CUDA | `app/config.py`, `.venv` | ✅ **DONE** | PyTorch 2.11+cu128 on RTX 5060 Laptop GPU (`sm_120`) |
+| **TICKET-02** | Gnani Clients & Smart-Turn v3.2 Loader | `app/services/` | ✅ **DONE** | Prisma STT, Timbre v3.0 TTS, Smart-Turn on GPU (2.5ms) |
+| **TICKET-03** | Silero VAD & 8s Audio Ring Buffer | `app/core/vad.py` | ✅ **DONE** | CPU VAD (0.98ms), 8s preallocated numpy ring buffer |
+| **TICKET-04** | Two-Stage Soft-Ducking & Script Normalizer | `app/core/backchannel.py` | ✅ **DONE** | -18dB ducking at 2ms, Devanagari/Tamil/Telugu/Roman |
+| **TICKET-05** | Indic Postposition Parser & Hybrid Classifier | `app/core/semantic.py` | ✅ **DONE** | Fused acoustic + lexical score in ~6.2ms on GPU |
+| **TICKET-06** | Continuous ETS & Speculative Prefetch | `app/core/engine.py` | ✅ **DONE** | Dynamic ETS (250–2000ms), prefetch at 200ms when P>0.75 |
+| **TICKET-07** | Full-Duplex FastAPI WebSocket Server | `app/main.py` | ✅ **DONE** | `/ws/audio` binary PCM & telemetry streaming |
+| **TICKET-08** | Diagnostic HUD & 10 Design Studio Templates | `app/static/` | ✅ **DONE** | 10 Archetypes + Master Gallery at `/gallery` & `/templates` |
+| **TICKET-09** | Two-Tier Automated Benchmark Suite | `benchmark/` | 🟡 **NEXT** | 500-sample Smart-Turn test split + 30-sample Indic suite |
+| **TICKET-10** | Demo Video Production & Submission Package | `README.md`, video | ⚪ **PENDING** | Split-screen video script, system docs, portal submission |
+
+---
+
 ## Ticket Overview & Dependency Flow
 
 ```mermaid
 flowchart LR
-    T01["TICKET-01\nScaffold & GPU Env"] --> T02["TICKET-02\nGnani Clients & Smart-Turn v3.2"]
-    T02 --> T03["TICKET-03\nSilero VAD & 8s Ring Buffer"]
-    T03 --> T04["TICKET-04\nTwo-Stage Soft-Ducking Gate"]
-    T04 --> T05["TICKET-05\nSmart-Turn & Indic Postposition Evaluator"]
-    T05 --> T06["TICKET-06\nContinuous ETS & Speculative Prefetch"]
-    T06 --> T07["TICKET-07\nFull-Duplex FastAPI WebSocket"]
-    T07 --> T08["TICKET-08\nWeb Telemetry HUD & WebRTC AEC"]
-    T08 --> T09["TICKET-09\nTwo-Tier Benchmark Suite"]
-    T09 --> T10["TICKET-10\nDemo Video & Submission Docs"]
+    T01["TICKET-01\nScaffold & GPU Env\n[DONE]"] --> T02["TICKET-02\nGnani Clients & Smart-Turn\n[DONE]"]
+    T02 --> T03["TICKET-03\nSilero VAD & 8s Ring Buffer\n[DONE]"]
+    T03 --> T04["TICKET-04\nTwo-Stage Soft-Ducking Gate\n[DONE]"]
+    T04 --> T05["TICKET-05\nSmart-Turn & Indic Postposition\n[DONE]"]
+    T05 --> T06["TICKET-06\nContinuous ETS & Prefetch\n[DONE]"]
+    T06 --> T07["TICKET-07\nFastAPI WebSocket Server\n[DONE]"]
+    T07 --> T08["TICKET-08\nWeb Telemetry HUD & 10 Templates\n[DONE]"]
+    T08 --> T09["TICKET-09\nTwo-Tier Benchmark Suite\n[NEXT]"]
+    T09 --> T10["TICKET-10\nDemo Video & Submission Docs\n[PENDING]"]
 ```
 
 ---
 
-### [TICKET-01] Repository Scaffolding, UV Virtualenv & RTX 5060 PyTorch Verification
+### [TICKET-01] Repository Scaffolding, UV Virtualenv & RTX 5060 PyTorch Verification [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** None
 - **Task Description:**
@@ -33,7 +51,8 @@ flowchart LR
 
 ---
 
-### [TICKET-02] Gnani Speech Clients & Smart-Turn v3.2 Model Loader (`app/services/`)
+### [TICKET-02] Gnani Speech Clients & Smart-Turn v3.2 Model Loader (`app/services/`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-01
 - **Task Description:**
@@ -47,7 +66,8 @@ flowchart LR
 
 ---
 
-### [TICKET-03] Silero VAD & 8.0-Second Rolling Audio Ring Buffer (`app/core/vad.py`)
+### [TICKET-03] Silero VAD & 8.0-Second Rolling Audio Ring Buffer (`app/core/vad.py`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-01
 - **Task Description:**
@@ -59,7 +79,8 @@ flowchart LR
 
 ---
 
-### [TICKET-04] Two-Stage Soft-Ducking Cultural Gate & Cross-Script Normalizer (`app/core/backchannel.py`, `app/core/normalizer.py`)
+### [TICKET-04] Two-Stage Soft-Ducking Cultural Gate & Cross-Script Normalizer (`app/core/backchannel.py`, `app/core/normalizer.py`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-01
 - **Task Description:**
@@ -74,7 +95,8 @@ flowchart LR
 
 ---
 
-### [TICKET-05] Indic Postposition Parser & Smart-Turn Feature Extractor (`app/core/semantic.py`)
+### [TICKET-05] Indic Postposition Parser & Smart-Turn Feature Extractor (`app/core/semantic.py`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-02, TICKET-03
 - **Task Description:**
@@ -92,7 +114,8 @@ flowchart LR
 
 ---
 
-### [TICKET-06] Continuous ETS State Machine & Speculative LLM Prefetch (`app/core/engine.py`)
+### [TICKET-06] Continuous ETS State Machine & Speculative LLM Prefetch (`app/core/engine.py`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-04, TICKET-05
 - **Task Description:**
@@ -106,7 +129,8 @@ flowchart LR
 
 ---
 
-### [TICKET-07] Full-Duplex FastAPI WebSocket Server (`app/main.py`)
+### [TICKET-07] Full-Duplex FastAPI WebSocket Server (`app/main.py`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-06
 - **Task Description:**
@@ -121,23 +145,39 @@ flowchart LR
 
 ---
 
-### [TICKET-08] Diagnostic Telemetry HUD with WebRTC AEC (`app/static/`)
+### [TICKET-08] Diagnostic Telemetry HUD, WebRTC AEC & 10 Design Studio Templates (`app/static/`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-07
 - **Task Description:**
-  Build the browser HUD in `app/static/index.html`, `app.js`, `styles.css`:
-  - Initialize `navigator.mediaDevices.getUserMedia()` with strict WebRTC constraints: `{ echoCancellation: true, noiseSuppression: true, autoGainControl: true }` to eliminate acoustic feedback.
-  - Dual canvas visualizer showing microphone input waveform and bot playback ducking envelope (-18dB vs 0dB).
-  - Dynamic ETS progress bar and live telemetry badges (`HOLDING_FOR_THOUGHT`, `BACKCHANNEL_IGNORED`, `BOT_DUCKED`).
-  - Interactive A/B toggle between **Standard 500ms VAD** and **Vartalaap v2.0**.
+  1. Build the browser DAW HUD in `app/static/index.html`, `app.js`, `styles.css`:
+     - Initialize `navigator.mediaDevices.getUserMedia()` with strict WebRTC constraints: `{ echoCancellation: true, noiseSuppression: true, autoGainControl: true }` to eliminate acoustic feedback.
+     - Dual canvas visualizer showing microphone input waveform and bot playback ducking envelope (-18dB vs 0dB).
+     - Dynamic ETS progress bar and live telemetry badges (`HOLDING_FOR_THOUGHT`, `BACKCHANNEL_IGNORED`, `BOT_DUCKED`).
+     - Interactive A/B toggle between **Standard 500ms VAD** and **Vartalaap v2.0**.
+  2. Build 10 Distinct Production-Grade Design Templates (`app/static/templates/`):
+     - `1-braun.html`: Dieter Rams / Teenage Engineering OP-1 aesthetic with tactile switches and analog galvanometer VU needle.
+     - `2-bloomberg.html`: Pure black and phosphor amber terminal layout with ASCII borders and scrolling waterfall spectrogram.
+     - `3-swiss.html`: 1968 Zurich international typographic broadsheet with cream paper and vermilion rules.
+     - `4-linear.html`: Silicon Valley dark precision cockpit with command dock and segmented spectrum bars.
+     - `5-nagra.html`: Vintage Abbey Road tape studio console with dual spinning 15 IPS magnetic reels and analog dial glow.
+     - `6-sonar.html`: Submarine acoustic radar PPI sweep with rotating polar beam and acoustic blips.
+     - `7-cyberpunk.html`: Akihabara street cyberdeck with CRT scanlines and double-beam oscilloscope.
+     - `8-brutalist.html`: Kinetic editorial brutalism with 3px solid black borders, hard drop shadows, and stepped meters.
+     - `9-quantum.html`: Bio-acoustic discovery lab with 3D-styled multi-sine wave ribbon on canvas.
+     - `10-apple.html`: Bento Grid with macOS Sequoia / VisionOS fluid glass and morphing Dynamic Island pill.
+     - `gallery.html`: Master Design Studio Showcase index with filterable cards and 1-click launch buttons.
+     - `shared-engine.js` & `nav.css`: Unified telemetry handler with offline simulation fallback.
 - **Acceptance Criteria:**
   - Zero acoustic echo loops during bot playback.
   - Visualizer clearly demonstrates -18dB soft-ducking and recovery when user says *"haanji"*.
   - A/B toggle visibly demonstrates the difference on live voice tests.
+  - All 10 templates and master showcase load cleanly with HTTP 200 via `/gallery` and `/templates`.
 
 ---
 
-### [TICKET-09] Two-Tier Automated Benchmark Suite (`benchmark/run_benchmark.py`)
+### [TICKET-09] Two-Tier Automated Benchmark Suite (`benchmark/run_benchmark.py`) [READY / NEXT]
+- **Status:** 🟡 **READY TO EXECUTE**
 - **Priority:** Should-Have (P1)
 - **Dependencies:** TICKET-06
 - **Task Description:**
@@ -152,7 +192,8 @@ flowchart LR
 
 ---
 
-### [TICKET-10] Demo Video Production & Submission Documentation (`README.md`)
+### [TICKET-10] Demo Video Production & Submission Documentation (`README.md`) [PENDING]
+- **Status:** ⚪ **PENDING (Awaiting Benchmark Results)**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-08, TICKET-09
 - **Task Description:**

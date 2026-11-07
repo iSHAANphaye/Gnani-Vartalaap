@@ -102,8 +102,20 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR), html=True), name="st
 
 @app.get("/", include_in_schema=False)
 async def root_redirect() -> RedirectResponse:
-    """Redirect root access to static conversation HUD."""
-    return RedirectResponse(url="/static/index.html")
+    """Redirect root access to primary conversation interface (Nagra Theme)."""
+    return RedirectResponse(url="/static/templates/5-nagra.html")
+
+
+@app.get("/templates", include_in_schema=False)
+async def templates_redirect() -> RedirectResponse:
+    """Redirect templates endpoint to the Master Design Studio Gallery."""
+    return RedirectResponse(url="/static/templates/gallery.html")
+
+
+@app.get("/gallery", include_in_schema=False)
+async def gallery_redirect() -> RedirectResponse:
+    """Redirect gallery endpoint to the Master Design Studio Gallery."""
+    return RedirectResponse(url="/static/templates/gallery.html")
 
 
 @app.get("/api/health")

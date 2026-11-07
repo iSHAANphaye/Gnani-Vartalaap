@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Template 05 - Vintage Nagra Reel-to-Reel Tape Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700;800;900&family=Share+Tech+Mono&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="nav.css">
+  <style>
+    :root {
+      --aluminum-light: #E0E3E1;
+      --aluminum-mid: #C6CAC8;
+      --aluminum-dark: #A8ACA9;
+      --walnut: #3A2012;
+      --walnut-dark: #221208;
+      --incandescent: #FFE8A3;
+      --incandescent-glow: rgba(255, 232, 163, 0.45);
+      --oxblood: #990000;
+      --oxblood-bright: #FF1A1A;
+      --iron: #222222;
+      --stamped-ink: #181818;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 30%, #2A2521 0%, #14110F 100%);
+      color: #1A1A1A;
+      font-family: 'Cabinet Grotesk', -apple-system, sans-serif;
+      min-height: 100vh;
+      padding-top: 68px;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Wooden Studio Console Cabinet */
+    .tape-console {
+      background: linear-gradient(180deg, var(--walnut) 0%, var(--walnut-dark) 100%);
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.8),
+        0 2px 4px rgba(255, 255, 255, 0.1) inset;
+      border: 1px solid #1C0F06;
+    }
+
+    /* Brushed Aluminum Faceplate */
+    .faceplate {
+      background: linear-gradient(180deg, var(--aluminum-light) 0%, var(--aluminum-mid) 50%, var(--aluminum-dark) 100%);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.5);
+      border: 2px solid #7D807E;
+      position: relative;
+    }
+
+    /* Corner Machined Screws */
+    .screw {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #FFFFFF 0%, #999 50%, #444 100%);
+      border: 1px solid #333;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+    .screw::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 1px;
+      width: 8px;
+      height: 1px;
+      background: #222;
+      transform: rotate(35deg);
+    }
+    .screw-tl { top: 10px; left: 10px; }
+    .screw-tr { top: 10px; right: 10px; }
+    .screw-bl { bottom: 10px; left: 10px; }
+    .screw-br { bottom: 10px; right: 10px; }
+
+    /* Top Console Brand Strip */
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #8E9290;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .brand-nagra {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #1A1A1A;
+    }
+
+    .brand-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #4A4E4C;
+      letter-spacing: 0.08em;
+    }
+
+    .counter-block {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Mechanical 4-Digit Tape Counter */
+    .tape-counter {
+      background: #111111;
+      border: 2px solid #555;
+      border-radius: 4px;
+      padding: 4px 10px;
+      display: flex;
+      gap: 4px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    }
+
+    .counter-wheel {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      background: #222;
+      padding: 2px 4px;
+      border-radius: 2px;
+      border-top: 1px solid #444;
+      border-bottom: 1px solid #111;
+    }
+
+    /* Red Record Lamp */
+    .rec-lamp {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #333;
+    }
+
+    .rec-bulb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #550000;
+      border: 2px solid #220000;
+      transition: all 0.2s ease;
+    }
+
+    .rec-bulb.active {
+      background: var(--oxblood-bright);
+      box-shadow: 0 0 14px var(--oxblood-bright);
+    }
+
+    /* Main Reel Deck Section */
+    .deck-viewport {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .deck-viewport {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Tape Spools Canvas Container */
+    .tape-deck-canvas-wrap {
+      background: #2B2E2C;
+      border: 4px solid #1A1A1A;
+      border-radius: 10px;
+      height: 260px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.7);
+    }
+
+    #reelsCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Right Column: Incandescent Backlit VU Dial */
+    .analog-meter-box {
+      background: #202322;
+      border: 3px solid #1A1A1A;
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    .meter-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: #A0A5A2;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .nagra-vu-frame {
+      width: 290px;
+      height: 170px;
+      background: radial-gradient(ellipse at 50% 80%, var(--incandescent) 0%, #D8C385 70%, #B8A265 100%);
+      border: 4px solid #151616;
+      border-radius: 8px;
+      box-shadow: 
+        0 0 24px var(--incandescent-glow),
+        inset 0 2px 6px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #nagraVuCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Telemetry Transcript Strip */
+    .tape-transcript-bar {
+      background: #ECEFE8;
+      border: 2px solid #8D928F;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-family: 'Special Elite', cursive, monospace;
+      font-size: 15px;
+      color: var(--stamped-ink);
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Tape Transport Mechanical Controls */
+    .transport-controls {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .transport-btn {
+      appearance: none;
+      background: linear-gradient(180deg, #525654 0%, #2A2C2B 100%);
+      border: 2px solid #151615;
+      border-radius: 6px;
+      padding: 14px 22px;
+      color: #E0E3E1;
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 
+        0 6px 0 #151615,
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.08s ease;
+    }
+
+    .transport-btn:active {
+      transform: translateY(5px);
+      box-shadow: 
+        0 1px 0 #151615,
+        0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .transport-btn.btn-rec {
+      background: linear-gradient(180deg, #B91C1C 0%, #7F1D1D 100%);
+      box-shadow: 
+        0 6px 0 #450A0A,
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    .transport-btn.btn-rec:active {
+      transform: translateY(5px);
+      box-shadow: 0 1px 0 #450A0A;
+    }
+
+    /* Status Readout Plaque */
+    .plaque {
+      margin-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: #4C504E;
+      border-top: 1px solid #9DA19F;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body data-template="5">
+
+  <!-- Top Floating Switcher Nav -->
+  <nav class="template-nav">
+    <div class="template-nav-inner">
+      <a href="gallery.html" class="nav-item nav-gallery">◧ Gallery</a>
+      <span class="nav-divider"></span>
+      <a href="1-braun.html" class="nav-item">1. Braun</a>
+      <a href="2-bloomberg.html" class="nav-item">2. Bloomberg</a>
+      <a href="3-swiss.html" class="nav-item">3. Swiss</a>
+      <a href="4-linear.html" class="nav-item">4. Linear</a>
+      <a href="5-nagra.html" class="nav-item active">5. Nagra</a>
+      <a href="6-sonar.html" class="nav-item">6. Sonar</a>
+      <a href="7-cyberpunk.html" class="nav-item">7. Cyberpunk</a>
+      <a href="8-brutalist.html" class="nav-item">8. Brutalist</a>
+      <a href="9-quantum.html" class="nav-item">9. Quantum</a>
+      <a href="10-apple.html" class="nav-item">10. Apple</a>
+      <span class="nav-divider"></span>
+      <span class="nav-status-dot offline" title="Connecting..."></span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="tape-console">
+      <div class="faceplate">
+        <span class="screw screw-tl"></span>
+        <span class="screw screw-tr"></span>
+        <span class="screw screw-bl"></span>
+        <span class="screw screw-br"></span>
+
+        <!-- Header -->
+        <header class="console-header">
+          <div class="brand-group">
+            <h1 class="brand-nagra">NAGRA IV-S</h1>
+            <span class="brand-sub">STEREO MASTER RECORDER &bull; 15 IPS</span>
+          </div>
+
+          <div class="counter-block">
+            <div class="rec-lamp">
+              <span class="rec-bulb" id="recBulb"></span>
+              <span>RECORD</span>
+            </div>
+
+            <div class="tape-counter">
+              <span class="counter-wheel" id="cnt1">0</span>
+              <span class="counter-wheel" id="cnt2">1</span>
+              <span class="counter-wheel" id="cnt3">4</span>
+              <span class="counter-wheel" id="cnt4">8</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Deck Viewport -->
+        <div class="deck-viewport">
+          <!-- Animated Tape Reels Canvas -->
+          <div class="tape-deck-canvas-wrap">
+            <canvas id="reelsCanvas" width="700" height="260"></canvas>
+          </div>
+
+          <!-- Analog VU Meter -->
+          <div class="analog-meter-box">
+            <div class="meter-label">
+              <span>PEAK LEVEL DAMPED</span>
+              <span id="nagraDbText">-20 dB</span>
+            </div>
+            <div class="nagra-vu-frame">
+              <canvas id="nagraVuCanvas" width="290" height="170"></canvas>
+            </div>
+            <div style="font-family:'Share Tech Mono'; font-size:10px; color:#A0A5A2; margin-top:10px; width:100%; display:flex; justify-content:space-between;">
+              <span>CAL: +4dBu / 0VU</span>
+              <span id="nagraState">STATE: IDLE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stamped Paper Transcript Bar -->
+        <div class="tape-transcript-bar" id="nagraTranscript">
+          [TAPE HEAD ACTIVE] Ready for conversational arbitration...
+        </div>
+
+        <!-- Heavy Mechanical Transport Buttons -->
+        <div class="transport-controls">
+          <button class="transport-btn" onclick="VartalaapEngine.simulateHinglishPause()">
+            <span>&bull; Hinglish Pause</span>
+            <small style="font-size: 10px; opacity: 0.8;">(ETS 1250ms)</small>
+          </button>
+
+          <button class="transport-btn" onclick="VartalaapEngine.simulateHaanjiBackchannel()">
+            <span>&bull; Haanji Duck</span>
+            <small style="font-size: 10px; opacity: 0.8;">(-14 dB)</small>
+          </button>
+
+          <button class="transport-btn btn-rec" onclick="VartalaapEngine.simulateRukoInterrupt()">
+            <span>&#9632; Ruko Hard Cut</span>
+            <small style="font-size: 10px; opacity: 0.8;">(&lt;15ms Flush)</small>
+          </button>
+
+          <button class="transport-btn" id="btnNagraMic" onclick="handleNagraMic()">
+            <span id="nagraMicLabel">&#9654; Live Mic</span>
+            <small style="font-size: 10px; opacity: 0.8;">16kHz PCM</small>
+          </button>
+        </div>
+
+        <!-- Serial Plaque -->
+        <div class="plaque">
+          <span>KUDELSKI SA &bull; CH-1033 CHESEAUX / SWITZERLAND</span>
+          <span>ETS: <span id="nagraEts">600</span>ms | SILENCE: <span id="nagraSilence">0</span>ms | P(C): <span id="nagraPComp">0.00</span></span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="shared-engine.js"></script>
+  <script>
+    // Dual Animated Spinning Reel-to-Reel Tape Spools on Canvas
+    const reelsCanvas = document.getElementById('reelsCanvas');
+    const rCtx = reelsCanvas.getContext('2d');
+    let reelAngle = 0;
+    let reelSpeed = 0;
+    let targetReelSpeed = 0;
+    let tapeCounter = 148;
+
+    function drawTapeDeck() {
+      const w = reelsCanvas.width;
+      const h = reelsCanvas.height;
+      rCtx.clearRect(0, 0, w, h);
+
+      // Deck face
+      rCtx.fillStyle = '#262827';
+      rCtx.fillRect(0, 0, w, h);
+
+      // Tape tension path
+      const leftCenterX = w * 0.28;
+      const rightCenterX = w * 0.72;
+      const reelY = h * 0.48;
+      const reelRadius = 85;
+
+      // Smooth acceleration / deceleration
+      reelSpeed += (targetReelSpeed - reelSpeed) * 0.08;
+      reelAngle += reelSpeed;
+
+      if (reelSpeed > 0.005) {
+        tapeCounter += reelSpeed * 0.4;
+        updateTapeCounterDisplay(Math.floor(tapeCounter));
+      }
+
+      // Draw Tape Ribbon connecting left and right spools
+      rCtx.beginPath();
+      rCtx.moveTo(leftCenterX, reelY + reelRadius - 10);
+      rCtx.lineTo(w * 0.40, h * 0.86); // Guide roller 1
+      rCtx.lineTo(w * 0.50, h * 0.84); // Rec Head
+      rCtx.lineTo(w * 0.60, h * 0.86); // Guide roller 2
+      rCtx.lineTo(rightCenterX, reelY + reelRadius - 10);
+      rCtx.strokeStyle = '#3D2517'; // Dark brown magnetic tape
+      rCtx.lineWidth = 5;
+      rCtx.stroke();
+
+      // Guide Rollers & Playback Head
+      drawRoller(w * 0.40, h * 0.86, 10);
+      drawRoller(w * 0.60, h * 0.86, 10);
+      drawTapeHead(w * 0.50, h * 0.84);
+
+      // Draw Supply Reel (Left)
+      drawReel(leftCenterX, reelY, reelRadius, reelAngle, true);
+
+      // Draw Take-up Reel (Right)
+      drawReel(rightCenterX, reelY, reelRadius, reelAngle * 1.05, false);
+
+      requestAnimationFrame(drawTapeDeck);
+    }
+
+    function drawRoller(x, y, radius) {
+      rCtx.beginPath();
+      rCtx.arc(x, y, radius, 0, Math.PI * 2);
+      rCtx.fillStyle = '#999999';
+      rCtx.fill();
+      rCtx.beginPath();
+      rCtx.arc(x, y, radius * 0.4, 0, Math.PI * 2);
+      rCtx.fillStyle = '#222222';
+      rCtx.fill();
+    }
+
+    function drawTapeHead(x, y) {
+      rCtx.fillStyle = '#C0C0C0';
+      rCtx.fillRect(x - 14, y - 8, 28, 16);
+      rCtx.fillStyle = '#333333';
+      rCtx.fillRect(x - 2, y - 8, 4, 16);
+    }
+
+    function drawReel(cx, cy, r, angle, isSupply) {
+      rCtx.save();
+      rCtx.translate(cx, cy);
+
+      // Outer Tape pack
+      rCtx.beginPath();
+      const tapePackRadius = isSupply ? r * 0.88 : r * 0.65;
+      rCtx.arc(0, 0, tapePackRadius, 0, Math.PI * 2);
+      rCtx.fillStyle = '#2E190E'; // Wound tape mass
+      rCtx.fill();
+
+      // Rotate Metal Flange
+      rCtx.rotate(angle);
+
+      // Outer Aluminum Flange Ring
+      rCtx.beginPath();
+      rCtx.arc(0, 0, r, 0, Math.PI * 2);
+      rCtx.strokeStyle = 'rgba(210, 215, 212, 0.85)';
+      rCtx.lineWidth = 4;
+      rCtx.stroke();
+
+      // 3-Spoke Classic Metal Reel Design
+      for (let s = 0; s < 3; s++) {
+        const spokeRad = (s * Math.PI * 2) / 3;
+        rCtx.save();
+        rCtx.rotate(spokeRad);
+
+        // Triangular Flange Cutout
+        rCtx.beginPath();
+        rCtx.moveTo(14, 0);
+        rCtx.lineTo(r - 8, 16);
+        rCtx.lineTo(r - 8, -16);
+        rCtx.closePath();
+        rCtx.fillStyle = 'rgba(230, 235, 232, 0.85)';
+        rCtx.fill();
+        rCtx.strokeStyle = '#444';
+        rCtx.lineWidth = 1;
+        rCtx.stroke();
+
+        rCtx.restore();
+      }
+
+      // Center Hub & 3-Fin Locking Nut
+      rCtx.beginPath();
+      rCtx.arc(0, 0, 22, 0, Math.PI * 2);
+      rCtx.fillStyle = '#1A1A1A';
+      rCtx.fill();
+      rCtx.beginPath();
+      rCtx.arc(0, 0, 8, 0, Math.PI * 2);
+      rCtx.fillStyle = '#CC0000';
+      rCtx.fill();
+
+      rCtx.restore();
+    }
+    requestAnimationFrame(drawTapeDeck);
+
+    function updateTapeCounterDisplay(val) {
+      const s = val.toString().padStart(4, '0').slice(-4);
+      document.getElementById('cnt1').innerText = s[0];
+      document.getElementById('cnt2').innerText = s[1];
+      document.getElementById('cnt3').innerText = s[2];
+      document.getElementById('cnt4').innerText = s[3];
+    }
+
+    // Incandescent Backlit VU Meter on Canvas
+    const vuCanvas = document.getElementById('nagraVuCanvas');
+    const vCtx = vuCanvas.getContext('2d');
+    let vuAngle = -0.55;
+    let targetVuAngle = -0.65;
+    let vuVelocity = 0;
+
+    function drawNagraVU() {
+      const w = vuCanvas.width;
+      const h = vuCanvas.height;
+      vCtx.clearRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h + 10;
+      const rad = 150;
+
+      // Draw Arced Scale
+      vCtx.save();
+      vCtx.translate(cx, cy);
+
+      vCtx.beginPath();
+      vCtx.arc(0, 0, rad - 12, -Math.PI * 0.70, -Math.PI * 0.30);
+      vCtx.strokeStyle = '#222222';
+      vCtx.lineWidth = 1.5;
+      vCtx.stroke();
+
+      // Red zone (+0dB to +3dB)
+      vCtx.beginPath();
+      vCtx.arc(0, 0, rad - 12, -Math.PI * 0.42, -Math.PI * 0.30);
+      vCtx.strokeStyle = '#990000';
+      vCtx.lineWidth = 3.5;
+      vCtx.stroke();
+
+      // Tick marks
+      const ticks = [
+        { a: -0.60, txt: '-20' },
+        { a: -0.45, txt: '-10' },
+        { a: -0.30, txt: '-5' },
+        { a: -0.15, txt: '-2' },
+        { a: 0.05, txt: '0', red: true },
+        { a: 0.20, txt: '+1', red: true },
+        { a: 0.35, txt: '+2', red: true },
+        { a: 0.50, txt: '+3', red: true }
+      ];
+
+      ticks.forEach(t => {
+        const aRad = -Math.PI / 2 + t.a;
+        const x1 = Math.cos(aRad) * (rad - 16);
+        const y1 = Math.sin(aRad) * (rad - 16);
+        const x2 = Math.cos(aRad) * (rad - 26);
+        const y2 = Math.sin(aRad) * (rad - 26);
+
+        vCtx.beginPath();
+        vCtx.moveTo(x1, y1);
+        vCtx.lineTo(x2, y2);
+        vCtx.strokeStyle = t.red ? '#990000' : '#222';
+        vCtx.lineWidth = t.red ? 2 : 1;
+        vCtx.stroke();
+
+        const tx = Math.cos(aRad) * (rad - 38);
+        const ty = Math.sin(aRad) * (rad - 38);
+        vCtx.font = '8.5px "Share Tech Mono", monospace';
+        vCtx.fillStyle = t.red ? '#990000' : '#333';
+        vCtx.textAlign = 'center';
+        vCtx.textBaseline = 'middle';
+        vCtx.fillText(t.txt, tx, ty);
+      });
+
+      // Spring Needle Physics
+      const spring = 0.16;
+      const damp = 0.74;
+      vuVelocity = (vuVelocity + (targetVuAngle - vuAngle) * spring) * damp;
+      vuAngle += vuVelocity;
+
+      // Needle
+      const nRad = -Math.PI / 2 + vuAngle;
+      const nx = Math.cos(nRad) * (rad - 6);
+      const ny = Math.sin(nRad) * (rad - 6);
+
+      vCtx.beginPath();
+      vCtx.moveTo(0, 0);
+      vCtx.lineTo(nx, ny);
+      vCtx.strokeStyle = '#1A1A1A';
+      vCtx.lineWidth = 1.8;
+      vCtx.stroke();
+
+      // Pivot
+      vCtx.beginPath();
+      vCtx.arc(0, 0, 10, 0, Math.PI * 2);
+      vCtx.fillStyle = '#222';
+      vCtx.fill();
+
+      vCtx.restore();
+
+      requestAnimationFrame(drawNagraVU);
+    }
+    requestAnimationFrame(drawNagraVU);
+
+    // Audio level
+    VartalaapEngine.on('audioLevel', lvl => {
+      targetVuAngle = -0.60 + (lvl * 1.10);
+      const db = Math.round((lvl * 23) - 20);
+      document.getElementById('nagraDbText').innerText = (db > 0 ? '+' : '') + db + ' dB';
+
+      // Spin tape reels when audio is active
+      if (lvl > 0.10) {
+        targetReelSpeed = 0.08 + lvl * 0.12;
+      } else {
+        targetReelSpeed = 0.0;
+      }
+    });
+
+    // Telemetry
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('nagraState').innerText = 'STATE: ' + t.state;
+      document.getElementById('nagraSilence').innerText = Math.round(t.elapsed_silence_ms);
+      document.getElementById('nagraEts').innerText = Math.round(t.dynamic_ets_ms);
+      document.getElementById('nagraPComp').innerText = Number(t.p_complete).toFixed(2);
+
+      const recBulb = document.getElementById('recBulb');
+      if (t.state === 'LISTENING' || t.state === 'BOT_SPEAKING') {
+        recBulb.classList.add('active');
+      } else {
+        recBulb.classList.remove('active');
+      }
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      document.getElementById('nagraTranscript').innerText = `[TAPE HEAD] "${msg.text}"`;
+    });
+
+    async function handleNagraMic() {
+      const active = await VartalaapEngine.toggleMic();
+      document.getElementById('nagraMicLabel').innerHTML = active ? '&#9632; Stop Mic' : '&#9654; Live Mic';
+    }
+  </script>
+</body>
+</html>

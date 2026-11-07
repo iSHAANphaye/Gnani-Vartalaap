@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Template 10 - Bento Grid / Apple Fluid Glass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="nav.css">
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-hover: rgba(255, 255, 255, 0.18);
+      --glass-inner: rgba(0, 0, 0, 0.3);
+      --text-white: #FFFFFF;
+      --text-sub: #94A3B8;
+      --sky: #38BDF8;
+      --violet: #A855F7;
+      --emerald: #10B981;
+      --rose: #F43F5E;
+      --amber: #F59E0B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #090B10;
+      background-image: 
+        radial-gradient(circle at 20% 15%, rgba(56, 189, 248, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 80% 25%, rgba(168, 85, 247, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.12) 0%, transparent 50%);
+      color: var(--text-white);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", sans-serif;
+      min-height: 100vh;
+      padding-top: 72px;
+      padding-bottom: 60px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Morphing Floating Dynamic Island Pill */
+    .island-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0 32px;
+    }
+
+    .dynamic-island {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 9999px;
+      padding: 10px 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.15);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      min-width: 280px;
+      justify-content: center;
+      position: relative;
+    }
+
+    .island-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      transition: all 0.3s;
+    }
+
+    .island-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .island-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    /* Dynamic Island States */
+    .dynamic-island.state-pause {
+      border-color: rgba(245, 158, 11, 0.5);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6), 0 0 25px rgba(245, 158, 11, 0.25);
+      min-width: 360px;
+    }
+    .dynamic-island.state-pause .island-dot {
+      background: var(--amber);
+      box-shadow: 0 0 12px var(--amber);
+    }
+
+    .dynamic-island.state-backchannel {
+      border-color: rgba(168, 85, 247, 0.5);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6), 0 0 25px rgba(168, 85, 247, 0.25);
+      min-width: 380px;
+    }
+    .dynamic-island.state-backchannel .island-dot {
+      background: var(--violet);
+      box-shadow: 0 0 12px var(--violet);
+    }
+
+    .dynamic-island.state-interrupt {
+      border-color: rgba(244, 63, 94, 0.6);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6), 0 0 30px rgba(244, 63, 94, 0.4);
+      min-width: 390px;
+    }
+    .dynamic-island.state-interrupt .island-dot {
+      background: var(--rose);
+      box-shadow: 0 0 14px var(--rose);
+    }
+
+    /* Responsive Bento Grid */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    /* Bento Card Glass Primitives */
+    .bento-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .bento-card:hover {
+      border-color: var(--glass-hover);
+      transform: translateY(-2px);
+    }
+
+    .col-8 { grid-column: span 8; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-12 { grid-column: span 12; }
+
+    @media (max-width: 960px) {
+      .col-8, .col-4, .col-6 {
+        grid-column: span 12;
+      }
+    }
+
+    .bento-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .bento-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--sky);
+    }
+
+    .bento-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* Fluid Waveform Canvas */
+    .canvas-glass-box {
+      height: 160px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+
+    #appleCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Transcript Card */
+    .transcript-bubble {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 16px;
+      line-height: 1.5;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      color: #F8FAFC;
+    }
+
+    /* Big Metric Displays */
+    .metric-value-huge {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin: 8px 0;
+    }
+
+    .metric-bar-track {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .metric-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--sky), var(--violet));
+      width: 45%;
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Apple Fluid Glass Controls */
+    .apple-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .apple-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .btn-apple {
+      appearance: none;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 16px 20px;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: left;
+    }
+
+    .btn-apple:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-apple.primary {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .btn-apple.primary:hover {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.4) 0%, rgba(168, 85, 247, 0.4) 100%);
+    }
+
+    .btn-apple.emergency {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: #FDA4AF;
+    }
+    .btn-apple.emergency:hover {
+      background: rgba(244, 63, 94, 0.25);
+    }
+
+    .btn-apple.mic-live {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: var(--emerald);
+    }
+
+    .apple-sub {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body data-template="10">
+
+  <!-- Top Floating Switcher Nav -->
+  <nav class="template-nav">
+    <div class="template-nav-inner">
+      <a href="gallery.html" class="nav-item nav-gallery">◧ Gallery</a>
+      <span class="nav-divider"></span>
+      <a href="1-braun.html" class="nav-item">1. Braun</a>
+      <a href="2-bloomberg.html" class="nav-item">2. Bloomberg</a>
+      <a href="3-swiss.html" class="nav-item">3. Swiss</a>
+      <a href="4-linear.html" class="nav-item">4. Linear</a>
+      <a href="5-nagra.html" class="nav-item">5. Nagra</a>
+      <a href="6-sonar.html" class="nav-item">6. Sonar</a>
+      <a href="7-cyberpunk.html" class="nav-item">7. Cyberpunk</a>
+      <a href="8-brutalist.html" class="nav-item">8. Brutalist</a>
+      <a href="9-quantum.html" class="nav-item">9. Quantum</a>
+      <a href="10-apple.html" class="nav-item active">10. Apple</a>
+      <span class="nav-divider"></span>
+      <span class="nav-status-dot offline" title="Connecting..."></span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Top Morphing Dynamic Island -->
+    <div class="island-container">
+      <div class="dynamic-island" id="dynamicIsland">
+        <span class="island-dot" id="islandDot"></span>
+        <span class="island-title" id="islandTitle">Spatial Audio Active</span>
+        <span class="island-meta" id="islandMeta">16kHz PCM &bull; Vartalaap</span>
+      </div>
+    </div>
+
+    <!-- Responsive Bento Grid -->
+    <main class="bento-grid">
+      <!-- Bento 1: Spatial Audio Waveform & Status (8 Cols) -->
+      <section class="bento-card col-8">
+        <div class="bento-header">
+          <div>
+            <div class="bento-tag">SPATIAL SPECTRUM</div>
+            <h2 class="bento-title">Acoustic Arbitration Waveform</h2>
+          </div>
+          <span style="font-family:'JetBrains Mono'; font-size:12px; color:var(--text-sub);" id="appleState">STATE: LISTENING</span>
+        </div>
+
+        <div class="canvas-glass-box">
+          <canvas id="appleCanvas" width="750" height="160"></canvas>
+        </div>
+      </section>
+
+      <!-- Bento 2: Dynamic ETS Metric (4 Cols) -->
+      <section class="bento-card col-4">
+        <div class="bento-header">
+          <div class="bento-tag">ADAPTIVE HORIZON</div>
+        </div>
+        <div style="font-size: 13px; color: var(--text-sub);">Dynamic Silence ETS</div>
+        <div class="metric-value-huge" style="color: var(--sky);" id="aEts">600 ms</div>
+        <div style="font-size: 12px; color: var(--text-sub);">Elapsed Silence: <span id="aSilence">0 ms</span></div>
+        <div class="metric-bar-track">
+          <div class="metric-bar-fill" id="etsProgress"></div>
+        </div>
+      </section>
+
+      <!-- Bento 3: Live Discourse Stream (6 Cols) -->
+      <section class="bento-card col-6">
+        <div class="bento-header">
+          <div class="bento-tag">ASR CONVERSATIONAL STREAM</div>
+        </div>
+        <div class="transcript-bubble" id="appleTranscript">
+          Listening for spoken voice input...
+        </div>
+      </section>
+
+      <!-- Bento 4: Completion Probability & Ducking Gain (6 Cols) -->
+      <section class="bento-card col-6">
+        <div class="bento-header">
+          <div class="bento-tag">ARBITRATION COEFFICIENTS</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+          <div>
+            <div style="font-size: 12px; color: var(--text-sub);">P(Completion)</div>
+            <div class="metric-value-huge" style="color: var(--emerald);" id="aPComp">0.00</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: var(--text-sub);">Ducking Gain</div>
+            <div class="metric-value-huge" style="color: var(--violet);" id="aGain">0.0 dB</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Apple Fluid Glass Action Buttons -->
+    <section class="apple-actions">
+      <button class="btn-apple primary" onclick="VartalaapEngine.simulateHinglishPause()">
+        <span>Hinglish Pause</span>
+        <span class="apple-sub">Dynamic ETS Expands</span>
+      </button>
+
+      <button class="btn-apple" onclick="VartalaapEngine.simulateHaanjiBackchannel()">
+        <span>Haanji Backchannel</span>
+        <span class="apple-sub">Soft Duck -14 dB</span>
+      </button>
+
+      <button class="btn-apple emergency" onclick="VartalaapEngine.simulateRukoInterrupt()">
+        <span>Ruko Interrupt</span>
+        <span class="apple-sub">&lt;15ms Hard Barge-In</span>
+      </button>
+
+      <button class="btn-apple" id="btnAppleMic" onclick="handleAppleMic()">
+        <span id="appleMicLabel">Spatial Mic</span>
+        <span class="apple-sub">Live 16kHz Stream</span>
+      </button>
+    </section>
+
+  </div>
+
+  <script src="shared-engine.js"></script>
+  <script>
+    // Smooth Spatial Audio Waveform on Canvas
+    const canvas = document.getElementById('appleCanvas');
+    const ctx = canvas.getContext('2d');
+    let audioLevel = 0.05;
+    let waveTime = 0;
+
+    function renderAppleWave() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const midY = h / 2;
+
+      ctx.clearRect(0, 0, w, h);
+      waveTime += 0.04;
+
+      // Draw 3 layered fluid waves
+      const waves = [
+        { color: 'rgba(56, 189, 248, 0.7)', amp: 55, freq: 0.02, speed: 1.0 },
+        { color: 'rgba(168, 85, 247, 0.55)', amp: 40, freq: 0.03, speed: -1.2 },
+        { color: 'rgba(16, 185, 129, 0.45)', amp: 30, freq: 0.015, speed: 0.8 }
+      ];
+
+      waves.forEach(wv => {
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 4) {
+          const norm = x / w;
+          const env = Math.sin(norm * Math.PI);
+          const y = midY + Math.sin(x * wv.freq + waveTime * wv.speed) * (audioLevel * wv.amp * env);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = wv.color;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      });
+
+      requestAnimationFrame(renderAppleWave);
+    }
+    requestAnimationFrame(renderAppleWave);
+
+    // Dynamic Island State Physics
+    function updateDynamicIsland(state, text) {
+      const island = document.getElementById('dynamicIsland');
+      const title = document.getElementById('islandTitle');
+      const meta = document.getElementById('islandMeta');
+
+      island.className = 'dynamic-island';
+
+      if (state === 'USER_PAUSE') {
+        island.classList.add('state-pause');
+        title.innerText = 'Hinglish Pause Detected';
+        meta.innerText = 'Dynamic ETS Active';
+      } else if (state === 'USER_BACKCHANNEL') {
+        island.classList.add('state-backchannel');
+        title.innerText = 'Haanji Backchannel';
+        meta.innerText = 'Ducking -14 dB (Preserving Turn)';
+      } else if (state === 'HARD_INTERRUPT') {
+        island.classList.add('state-interrupt');
+        title.innerText = 'Ruko Barge-In Intercept';
+        meta.innerText = '<15ms Immediate Flush';
+      } else if (state === 'BOT_SPEAKING') {
+        title.innerText = 'Vartalaap Synthesizing Speech';
+        meta.innerText = 'Streaming Audio';
+      } else {
+        title.innerText = 'Spatial Audio Active';
+        meta.innerText = '16kHz PCM • Vartalaap';
+      }
+    }
+
+    // Audio level
+    VartalaapEngine.on('audioLevel', lvl => {
+      audioLevel = lvl;
+    });
+
+    // Telemetry
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('appleState').innerText = 'STATE: ' + t.state;
+      document.getElementById('aSilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('aEts').innerText = Math.round(t.dynamic_ets_ms) + ' ms';
+      document.getElementById('aPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('aGain').innerText = Number(t.ducking_gain_db).toFixed(1) + ' dB';
+
+      const progress = Math.min(100, (t.elapsed_silence_ms / Math.max(1, t.dynamic_ets_ms)) * 100);
+      document.getElementById('etsProgress').style.width = progress + '%';
+
+      updateDynamicIsland(t.state);
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      document.getElementById('appleTranscript').innerText = msg.text;
+    });
+
+    async function handleAppleMic() {
+      const active = await VartalaapEngine.toggleMic();
+      document.getElementById('appleMicLabel').innerText = active ? 'Stop Mic' : 'Spatial Mic';
+      document.getElementById('btnAppleMic').classList.toggle('mic-live', active);
+    }
+  </script>
+</body>
+</html>

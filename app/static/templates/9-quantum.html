@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Template 09 - Quantum Bio-Acoustic Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="nav.css">
+  <style>
+    :root {
+      --slate-dark: #0A0E1A;
+      --card-glass: rgba(15, 23, 42, 0.7);
+      --border-holo: rgba(20, 241, 149, 0.25);
+      --bio-mint: #14F195;
+      --bio-mint-glow: rgba(20, 241, 149, 0.35);
+      --quantum-purple: #8B5CF6;
+      --quantum-purple-glow: rgba(139, 92, 246, 0.35);
+      --text-glow: #F8FAFC;
+      --text-sub: #94A3B8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--slate-dark);
+      color: var(--text-glow);
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      min-height: 100vh;
+      padding-top: 68px;
+      padding-bottom: 60px;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 90% 90%, rgba(20, 241, 149, 0.12) 0%, transparent 60%);
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Quantum Lab Header */
+    .lab-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      background: var(--card-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-holo);
+      border-radius: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--bio-mint-glow);
+    }
+
+    .lab-title-group {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .lab-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #FFFFFF 0%, var(--bio-mint) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lab-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--quantum-purple);
+      letter-spacing: 0.08em;
+    }
+
+    .lab-pills {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    /* Main Grid */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 920px) {
+      .lab-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Holographic Cards */
+    .holo-card {
+      background: var(--card-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-holo);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--bio-mint);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+
+    /* 3D Wave Ribbon Canvas Frame */
+    .ribbon-frame {
+      height: 230px;
+      background: rgba(10, 14, 26, 0.85);
+      border: 1px solid rgba(20, 241, 149, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #quantumCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Holographic Transcript Chamber */
+    .transcript-chamber {
+      background: rgba(10, 14, 26, 0.6);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      color: #FFFFFF;
+    }
+
+    /* Right Column: Quantum Probability Metrics */
+    .quantum-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .q-metric-cell {
+      background: rgba(10, 14, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .q-metric-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .q-metric-val {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--bio-mint);
+      letter-spacing: -0.02em;
+    }
+
+    .q-metric-val.purple {
+      color: var(--quantum-purple);
+    }
+
+    /* Interactive Holographic Actions */
+    .quantum-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 680px) {
+      .quantum-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .btn-quantum {
+      appearance: none;
+      background: rgba(20, 241, 149, 0.06);
+      border: 1px solid var(--border-holo);
+      border-radius: 12px;
+      padding: 16px;
+      color: #FFFFFF;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: left;
+    }
+
+    .btn-quantum:hover {
+      background: rgba(20, 241, 149, 0.15);
+      border-color: var(--bio-mint);
+      box-shadow: 0 0 20px var(--bio-mint-glow);
+      transform: translateY(-2px);
+    }
+
+    .btn-quantum.purple {
+      background: rgba(139, 92, 246, 0.08);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+    .btn-quantum.purple:hover {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: var(--quantum-purple);
+      box-shadow: 0 0 20px var(--quantum-purple-glow);
+    }
+
+    .btn-quantum.active-mic {
+      background: var(--bio-mint);
+      color: #0A0E1A;
+      font-weight: 700;
+    }
+
+    .sub-hint {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-sub);
+    }
+    .btn-quantum.active-mic .sub-hint {
+      color: #0A0E1A;
+    }
+  </style>
+</head>
+<body data-template="9">
+
+  <!-- Top Floating Switcher Nav -->
+  <nav class="template-nav">
+    <div class="template-nav-inner">
+      <a href="gallery.html" class="nav-item nav-gallery">◧ Gallery</a>
+      <span class="nav-divider"></span>
+      <a href="1-braun.html" class="nav-item">1. Braun</a>
+      <a href="2-bloomberg.html" class="nav-item">2. Bloomberg</a>
+      <a href="3-swiss.html" class="nav-item">3. Swiss</a>
+      <a href="4-linear.html" class="nav-item">4. Linear</a>
+      <a href="5-nagra.html" class="nav-item">5. Nagra</a>
+      <a href="6-sonar.html" class="nav-item">6. Sonar</a>
+      <a href="7-cyberpunk.html" class="nav-item">7. Cyberpunk</a>
+      <a href="8-brutalist.html" class="nav-item">8. Brutalist</a>
+      <a href="9-quantum.html" class="nav-item active">9. Quantum</a>
+      <a href="10-apple.html" class="nav-item">10. Apple</a>
+      <span class="nav-divider"></span>
+      <span class="nav-status-dot offline" title="Connecting..."></span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Lab Header -->
+    <header class="lab-header">
+      <div class="lab-title-group">
+        <h1 class="lab-title">QUANTUM BIO-ACOUSTIC LAB</h1>
+        <span class="lab-tag">&Psi; ACOUSTIC MANIFOLD</span>
+      </div>
+      <div class="lab-pills">
+        <span>SAMPLING: 16.0 kHz</span>
+        <span>&bull;</span>
+        <span id="quantumStatePill" style="color: var(--bio-mint);">LISTENING</span>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="lab-grid">
+      <!-- Left: 3D-styled Wave Ribbon & Transcript -->
+      <section class="holo-card">
+        <div class="card-label">
+          <span>// MULTI-FREQUENCY 3D ACOUSTIC RIBBON</span>
+          <span>COORDINATE SPACE R^3</span>
+        </div>
+
+        <div class="ribbon-frame">
+          <canvas id="quantumCanvas" width="700" height="230"></canvas>
+        </div>
+
+        <div class="transcript-chamber" id="quantumTranscript">
+          &Psi; Acoustic manifold listening for vocal phase collapse...
+        </div>
+      </section>
+
+      <!-- Right: Probability Manifold Gauges -->
+      <aside class="holo-card">
+        <div class="card-label">
+          <span>// PROBABILITY AMPLITUDES</span>
+          <span>SMART-TURN</span>
+        </div>
+
+        <div class="quantum-metrics">
+          <div class="q-metric-cell">
+            <div class="q-metric-title">SILENCE METRIC (ELAPSED)</div>
+            <div class="q-metric-val" id="qSilence">0 ms</div>
+          </div>
+
+          <div class="q-metric-cell">
+            <div class="q-metric-title">DYNAMIC ETS HORIZON</div>
+            <div class="q-metric-val purple" id="qEts">600 ms</div>
+          </div>
+
+          <div class="q-metric-cell">
+            <div class="q-metric-title">COMPLETION AMPLITUDE &bull; |&psi;|^2</div>
+            <div class="q-metric-val" id="qPComp">0.00</div>
+          </div>
+
+          <div class="q-metric-cell">
+            <div class="q-metric-title">CULTURAL ATTENUATION &bull; GAIN</div>
+            <div class="q-metric-val purple" id="qGain">0.0 dB</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Holographic Simulation Action Triggers -->
+    <section class="quantum-actions">
+      <button class="btn-quantum" onclick="VartalaapEngine.simulateHinglishPause()">
+        <span>Hinglish Pause</span>
+        <span class="sub-hint">ETS Horizon &rarr; 1250ms</span>
+      </button>
+
+      <button class="btn-quantum purple" onclick="VartalaapEngine.simulateHaanjiBackchannel()">
+        <span>Haanji Backchannel</span>
+        <span class="sub-hint">Soft Duck &rarr; -14 dB</span>
+      </button>
+
+      <button class="btn-quantum purple" onclick="VartalaapEngine.simulateRukoInterrupt()">
+        <span>Ruko Phase Collapse</span>
+        <span class="sub-hint">&lt;15ms Hard Cutoff</span>
+      </button>
+
+      <button class="btn-quantum" id="btnQuantumMic" onclick="handleQuantumMic()">
+        <span id="quantumMicLabel">Bio-Acoustic Mic</span>
+        <span class="sub-hint">Real-Time Wave Stream</span>
+      </button>
+    </section>
+
+  </div>
+
+  <script src="shared-engine.js"></script>
+  <script>
+    // 3D-styled Multi-Sine Warping Wave Ribbon on Canvas
+    const canvas = document.getElementById('quantumCanvas');
+    const ctx = canvas.getContext('2d');
+    let audioLevel = 0.05;
+    let time = 0;
+
+    function renderQuantumRibbon() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const midY = h / 2;
+
+      ctx.clearRect(0, 0, w, h);
+      time += 0.035;
+
+      // Draw multi-layered glowing sine ribbons
+      const ribbons = [
+        { color: 'rgba(20, 241, 149, 0.75)', freq: 0.015, amp: 70, phase: time },
+        { color: 'rgba(139, 92, 246, 0.65)', freq: 0.022, amp: 55, phase: -time * 1.2 },
+        { color: 'rgba(56, 189, 248, 0.50)', freq: 0.030, amp: 40, phase: time * 0.8 }
+      ];
+
+      ribbons.forEach((rib, idx) => {
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += 4) {
+          const norm = x / w;
+          const envelope = Math.sin(norm * Math.PI); // Windowing envelope
+          const y = midY + Math.sin(x * rib.freq + rib.phase) * (audioLevel * rib.amp * envelope) +
+                           Math.cos(x * 0.04 - rib.phase) * (audioLevel * 15 * envelope);
+
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = rib.color;
+        ctx.lineWidth = 2.5 - idx * 0.5;
+        ctx.shadowColor = rib.color;
+        ctx.shadowBlur = 14;
+        ctx.stroke();
+        ctx.shadowColor = 'transparent';
+      });
+
+      // Particle Nodes floating across wave
+      for (let p = 0; p < 8; p++) {
+        const px = ((p * 90 + time * 40) % w);
+        const norm = px / w;
+        const envelope = Math.sin(norm * Math.PI);
+        const py = midY + Math.sin(px * 0.015 + time) * (audioLevel * 70 * envelope);
+
+        ctx.beginPath();
+        ctx.arc(px, py, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.shadowColor = '#14F195';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowColor = 'transparent';
+      }
+
+      requestAnimationFrame(renderQuantumRibbon);
+    }
+    requestAnimationFrame(renderQuantumRibbon);
+
+    // Audio level
+    VartalaapEngine.on('audioLevel', lvl => {
+      audioLevel = lvl;
+    });
+
+    // Telemetry
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('qSilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('qEts').innerText = Math.round(t.dynamic_ets_ms) + ' ms';
+      document.getElementById('qPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('qGain').innerText = Number(t.ducking_gain_db).toFixed(1) + ' dB';
+      document.getElementById('quantumStatePill').innerText = t.state;
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      document.getElementById('quantumTranscript').innerText = `\u03A8 "${msg.text}"`;
+    });
+
+    async function handleQuantumMic() {
+      const active = await VartalaapEngine.toggleMic();
+      document.getElementById('quantumMicLabel').innerText = active ? 'Deactivate Mic' : 'Bio-Acoustic Mic';
+      document.getElementById('btnQuantumMic').classList.toggle('active-mic', active);
+    }
+  </script>
+</body>
+</html>

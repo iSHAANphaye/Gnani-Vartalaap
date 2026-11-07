@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Template 07 - Akihabara Cyberdeck HUD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="nav.css">
+  <style>
+    :root {
+      --cyber-black: #08080C;
+      --cyber-card: #0F0F17;
+      --neon-cyan: #00F0FF;
+      --neon-crimson: #FF0055;
+      --acid-yellow: #FFE600;
+      --phosphor-green: #39FF14;
+      --cyber-border: rgba(0, 240, 255, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--cyber-black);
+      color: #E2E8F0;
+      font-family: 'Fira Code', monospace;
+      min-height: 100vh;
+      padding-top: 68px;
+      padding-bottom: 50px;
+      position: relative;
+    }
+
+    /* CRT Scanline and Flicker Overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(0deg, rgba(0, 240, 255, 0.03) 0px, rgba(0, 0, 0, 0.3) 2px, transparent 3px);
+      pointer-events: none;
+      z-index: 998;
+    }
+
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Cyber Header */
+    .cyber-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--cyber-border);
+      background: rgba(15, 15, 23, 0.85);
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+      position: relative;
+    }
+
+    /* Corner HUD Brackets */
+    .hud-bracket {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-color: var(--neon-cyan);
+    }
+    .hud-tl { top: -2px; left: -2px; border-top: 2px solid; border-left: 2px solid; }
+    .hud-tr { top: -2px; right: -2px; border-top: 2px solid; border-right: 2px solid; }
+    .hud-bl { bottom: -2px; left: -2px; border-bottom: 2px solid; border-left: 2px solid; }
+    .hud-br { bottom: -2px; right: -2px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    .brand-glitch {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: var(--neon-cyan);
+      text-shadow: 2px 2px var(--neon-crimson), 0 0 10px var(--neon-cyan);
+    }
+
+    .deck-status {
+      display: flex;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--acid-yellow);
+    }
+
+    /* Cyber Grid */
+    .cyber-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .cyber-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CRT Oscilloscope Screen */
+    .crt-screen-box {
+      background: #020205;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 0 24px rgba(0, 240, 255, 0.12);
+      position: relative;
+    }
+
+    .screen-header {
+      display: flex;
+      justify-content: space-between;
+      color: var(--neon-cyan);
+      font-size: 11px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .oscilloscope-canvas-wrap {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+
+    #cyberCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Glitch Decoding State Box */
+    .glitch-state-banner {
+      margin-top: 14px;
+      background: rgba(255, 0, 85, 0.1);
+      border-left: 3px solid var(--neon-crimson);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .glitch-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--neon-crimson);
+      text-shadow: 0 0 8px var(--neon-crimson);
+    }
+
+    /* Neural Transcript Log */
+    .transcript-terminal {
+      background: #040408;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 12px 14px;
+      margin-top: 14px;
+      font-size: 13px;
+      min-height: 60px;
+      line-height: 1.4;
+      color: var(--acid-yellow);
+    }
+
+    /* Right: Cybernetic Gauges */
+    .cyber-meters {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .cyber-meter-card {
+      background: var(--cyber-card);
+      border: 1px solid var(--cyber-border);
+      padding: 14px;
+      position: relative;
+    }
+
+    .gauge-title {
+      font-size: 10px;
+      color: var(--neon-cyan);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .gauge-digital {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+
+    /* Cyber Action Bar */
+    .cyber-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 650px) {
+      .cyber-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .btn-cyber {
+      appearance: none;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid var(--neon-cyan);
+      padding: 14px 16px;
+      color: var(--neon-cyan);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-transform: uppercase;
+      transition: all 0.12s ease;
+      position: relative;
+    }
+
+    .btn-cyber:hover {
+      background: var(--neon-cyan);
+      color: #000000;
+      box-shadow: 0 0 18px var(--neon-cyan);
+      transform: translateY(-2px);
+    }
+
+    .btn-cyber.danger {
+      border-color: var(--neon-crimson);
+      color: var(--neon-crimson);
+      background: rgba(255, 0, 85, 0.1);
+    }
+    .btn-cyber.danger:hover {
+      background: var(--neon-crimson);
+      color: #FFFFFF;
+      box-shadow: 0 0 18px var(--neon-crimson);
+    }
+
+    .btn-cyber.active-mic {
+      background: var(--acid-yellow);
+      color: #000000;
+      border-color: var(--acid-yellow);
+    }
+  </style>
+</head>
+<body data-template="7">
+
+  <!-- Top Floating Switcher Nav -->
+  <nav class="template-nav">
+    <div class="template-nav-inner">
+      <a href="gallery.html" class="nav-item nav-gallery">◧ Gallery</a>
+      <span class="nav-divider"></span>
+      <a href="1-braun.html" class="nav-item">1. Braun</a>
+      <a href="2-bloomberg.html" class="nav-item">2. Bloomberg</a>
+      <a href="3-swiss.html" class="nav-item">3. Swiss</a>
+      <a href="4-linear.html" class="nav-item">4. Linear</a>
+      <a href="5-nagra.html" class="nav-item">5. Nagra</a>
+      <a href="6-sonar.html" class="nav-item">6. Sonar</a>
+      <a href="7-cyberpunk.html" class="nav-item active">7. Cyberpunk</a>
+      <a href="8-brutalist.html" class="nav-item">8. Brutalist</a>
+      <a href="9-quantum.html" class="nav-item">9. Quantum</a>
+      <a href="10-apple.html" class="nav-item">10. Apple</a>
+      <span class="nav-divider"></span>
+      <span class="nav-status-dot offline" title="Connecting..."></span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="cyber-header">
+      <span class="hud-bracket hud-tl"></span>
+      <span class="hud-bracket hud-tr"></span>
+      <span class="hud-bracket hud-bl"></span>
+      <span class="hud-bracket hud-br"></span>
+
+      <div class="brand-glitch">AKIHABARA // DECK-07</div>
+      <div class="deck-status">
+        <span>GPU: RTX-5060</span>
+        <span>LATENCY: &lt;15ms</span>
+        <span id="cyberClock">23:59:00</span>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="cyber-grid">
+      <!-- Left: Phosphor Oscilloscope & Transcript -->
+      <section class="crt-screen-box">
+        <span class="hud-bracket hud-tl"></span>
+        <span class="hud-bracket hud-tr"></span>
+        <span class="hud-bracket hud-bl"></span>
+        <span class="hud-bracket hud-br"></span>
+
+        <div class="screen-header">
+          <span>// PHOSPHOR OSCILLOSCOPE TRAIL</span>
+          <span id="cyberMode">MODE: SMART_TURN</span>
+        </div>
+
+        <div class="oscilloscope-canvas-wrap">
+          <canvas id="cyberCanvas" width="700" height="220"></canvas>
+        </div>
+
+        <!-- Glitch State Banner -->
+        <div class="glitch-state-banner">
+          <span style="font-size: 11px; color: var(--neon-crimson);">STATE_DECODER:</span>
+          <div class="glitch-text" id="glitchStateText">LISTENING</div>
+        </div>
+
+        <!-- Transcript -->
+        <div class="transcript-terminal" id="cyberTranscript">
+          &gt; Neural audio pipeline listening for spoken frames...
+        </div>
+      </section>
+
+      <!-- Right: Cyber Gauges -->
+      <aside class="cyber-meters">
+        <div class="cyber-meter-card">
+          <span class="hud-bracket hud-tl"></span>
+          <span class="hud-bracket hud-tr"></span>
+          <div class="gauge-title">
+            <span>SILENCE DURATION</span>
+            <span>MS</span>
+          </div>
+          <div class="gauge-digital" id="cSilence" style="color: var(--neon-cyan);">0 ms</div>
+        </div>
+
+        <div class="cyber-meter-card">
+          <span class="hud-bracket hud-tl"></span>
+          <span class="hud-bracket hud-tr"></span>
+          <div class="gauge-title">
+            <span>DYNAMIC ETS</span>
+            <span>ADAPTIVE</span>
+          </div>
+          <div class="gauge-digital" id="cEts" style="color: var(--acid-yellow);">600 ms</div>
+        </div>
+
+        <div class="cyber-meter-card">
+          <span class="hud-bracket hud-tl"></span>
+          <span class="hud-bracket hud-tr"></span>
+          <div class="gauge-title">
+            <span>P(COMPLETION)</span>
+            <span>CLASSIFIER</span>
+          </div>
+          <div class="gauge-digital" id="cPComp" style="color: var(--phosphor-green);">0.00</div>
+        </div>
+
+        <div class="cyber-meter-card">
+          <span class="hud-bracket hud-tl"></span>
+          <span class="hud-bracket hud-tr"></span>
+          <div class="gauge-title">
+            <span>CULTURAL DUCK GAIN</span>
+            <span>DECIBELS</span>
+          </div>
+          <div class="gauge-digital" id="cGain" style="color: var(--neon-crimson);">0.0 dB</div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Cyber Action Buttons -->
+    <section class="cyber-actions">
+      <button class="btn-cyber" onclick="triggerCyberSimulation('hinglish')">
+        <span>Hinglish Pause</span>
+        <small style="font-size: 9px; opacity: 0.8;">[ETS 1250ms]</small>
+      </button>
+
+      <button class="btn-cyber" onclick="triggerCyberSimulation('haanji')">
+        <span>Haanji Duck</span>
+        <small style="font-size: 9px; opacity: 0.8;">[-14 dB Gated]</small>
+      </button>
+
+      <button class="btn-cyber danger" onclick="triggerCyberSimulation('ruko')">
+        <span>Ruko Override</span>
+        <small style="font-size: 9px; opacity: 0.8;">[Barge-In Cut]</small>
+      </button>
+
+      <button class="btn-cyber" id="btnCyberMic" onclick="handleCyberMic()">
+        <span id="cyberMicLabel">Cyber Mic</span>
+        <small style="font-size: 9px; opacity: 0.8;">[Live Stream]</small>
+      </button>
+    </section>
+
+  </div>
+
+  <script src="shared-engine.js"></script>
+  <script>
+    // CRT Double-Beam Oscilloscope on Canvas
+    const canvas = document.getElementById('cyberCanvas');
+    const ctx = canvas.getContext('2d');
+    let audioLevel = 0.05;
+    let waveOffset = 0;
+
+    function renderCyberWave() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const midY = h / 2;
+
+      // Dark fade to create phosphor persistence trail
+      ctx.fillStyle = 'rgba(2, 2, 5, 0.28)';
+      ctx.fillRect(0, 0, w, h);
+
+      waveOffset += 0.08;
+
+      // Beam 1: Neon Cyan Oscilloscope
+      ctx.beginPath();
+      for (let x = 0; x < w; x += 3) {
+        const norm = x / w;
+        const env = Math.sin(norm * Math.PI);
+        const y = midY + Math.sin(norm * 14 + waveOffset) * (audioLevel * 75 * env) +
+                         Math.sin(norm * 30 - waveOffset * 2) * (audioLevel * 25 * env);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = '#00F0FF';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#00F0FF';
+      ctx.shadowBlur = 12;
+      ctx.stroke();
+
+      // Beam 2: Neon Crimson Secondary Phase Beam
+      ctx.beginPath();
+      for (let x = 0; x < w; x += 4) {
+        const norm = x / w;
+        const env = Math.sin(norm * Math.PI);
+        const y = midY + Math.cos(norm * 10 - waveOffset * 1.5) * (audioLevel * 50 * env);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = 'rgba(255, 0, 85, 0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.shadowColor = '#FF0055';
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.shadowColor = 'transparent';
+
+      requestAnimationFrame(renderCyberWave);
+    }
+    requestAnimationFrame(renderCyberWave);
+
+    // Glitch Text Deciphering Matrix Animation
+    const glitchChars = '!<>-_\\/[]{}—=+*^?#________ABCDEF0123456789';
+    let glitchInterval = null;
+
+    function glitchDecode(targetText) {
+      clearInterval(glitchInterval);
+      const el = document.getElementById('glitchStateText');
+      let iteration = 0;
+
+      glitchInterval = setInterval(() => {
+        el.innerText = targetText
+          .split('')
+          .map((letter, index) => {
+            if (index < iteration) {
+              return targetText[index];
+            }
+            return glitchChars[Math.floor(Math.random() * glitchChars.length)];
+          })
+          .join('');
+
+        if (iteration >= targetText.length) {
+          clearInterval(glitchInterval);
+        }
+        iteration += 1 / 2;
+      }, 35);
+    }
+
+    // Audio level
+    VartalaapEngine.on('audioLevel', lvl => {
+      audioLevel = lvl;
+    });
+
+    // Telemetry
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('cSilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('cEts').innerText = Math.round(t.dynamic_ets_ms) + ' ms';
+      document.getElementById('cPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('cGain').innerText = Number(t.ducking_gain_db).toFixed(1) + ' dB';
+      glitchDecode(t.state);
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      document.getElementById('cyberTranscript').innerText = `> ${msg.text}`;
+    });
+
+    function triggerCyberSimulation(type) {
+      if (type === 'hinglish') VartalaapEngine.simulateHinglishPause();
+      if (type === 'haanji') VartalaapEngine.simulateHaanjiBackchannel();
+      if (type === 'ruko') VartalaapEngine.simulateRukoInterrupt();
+    }
+
+    async function handleCyberMic() {
+      const active = await VartalaapEngine.toggleMic();
+      document.getElementById('cyberMicLabel').innerText = active ? 'Stop Mic' : 'Cyber Mic';
+      document.getElementById('btnCyberMic').classList.toggle('active-mic', active);
+    }
+
+    // Clock
+    setInterval(() => {
+      document.getElementById('cyberClock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
+    }, 1000);
+  </script>
+</body>
+</html>

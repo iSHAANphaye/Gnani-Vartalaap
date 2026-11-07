@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Template 06 - Acoustic Sonar Interceptor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="nav.css">
+  <style>
+    :root {
+      --void-bg: #020617;
+      --panel-bg: #050E1F;
+      --sonar-cyan: #00F0FF;
+      --sonar-cyan-dim: rgba(0, 240, 255, 0.35);
+      --sonar-cyan-glow: rgba(0, 240, 255, 0.2);
+      --grid-blue: #0E7490;
+      --target-green: #10B981;
+      --alert-crimson: #EF4444;
+      --text-white: #E2E8F0;
+      --text-dim: #64748B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--void-bg);
+      color: var(--text-white);
+      font-family: 'Rajdhani', -apple-system, sans-serif;
+      min-height: 100vh;
+      padding-top: 68px;
+      padding-bottom: 50px;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(14, 116, 144, 0.12) 0%, transparent 75%);
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Naval Header */
+    .sonar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--grid-blue);
+      padding-bottom: 14px;
+      margin-bottom: 22px;
+    }
+
+    .title-block {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .title-main {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--sonar-cyan);
+      text-shadow: 0 0 14px var(--sonar-cyan-glow);
+    }
+
+    .title-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    .top-telemetry {
+      display: flex;
+      gap: 18px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .telemetry-item strong {
+      color: var(--sonar-cyan);
+    }
+
+    /* Main Radar Deck Grid */
+    .sonar-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 960px) {
+      .sonar-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left: Polar PPI Radar Scope Frame */
+    .radar-frame {
+      background: var(--panel-bg);
+      border: 1px solid var(--grid-blue);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.08);
+      position: relative;
+    }
+
+    .radar-scope-wrap {
+      width: 410px;
+      height: 410px;
+      position: relative;
+      border-radius: 50%;
+      border: 2px solid var(--grid-blue);
+      box-shadow: 0 0 20px rgba(14, 116, 144, 0.4), inset 0 0 40px rgba(2, 6, 23, 0.9);
+      overflow: hidden;
+      background: #020712;
+    }
+
+    #sonarCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Right: Acoustic Intercept Stream & Tactical Displays */
+    .tactical-right {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .intercept-box {
+      background: var(--panel-bg);
+      border: 1px solid var(--grid-blue);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .box-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      color: var(--sonar-cyan);
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(14, 116, 144, 0.4);
+      padding-bottom: 6px;
+    }
+
+    .tactical-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .t-cell {
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(14, 116, 144, 0.3);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .t-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+    }
+
+    .t-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--sonar-cyan);
+      letter-spacing: 0.04em;
+    }
+
+    .transcript-tactical {
+      background: rgba(2, 6, 23, 0.8);
+      border: 1px solid rgba(14, 116, 144, 0.4);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 16px;
+      line-height: 1.5;
+      min-height: 64px;
+      color: #FFFFFF;
+    }
+
+    /* Naval Action Buttons */
+    .naval-controls {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .naval-controls {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .btn-naval {
+      appearance: none;
+      background: rgba(14, 116, 144, 0.15);
+      border: 1px solid var(--grid-blue);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: var(--sonar-cyan);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .btn-naval:hover {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: var(--sonar-cyan);
+      box-shadow: 0 0 16px var(--sonar-cyan-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-naval.btn-danger {
+      border-color: rgba(239, 68, 68, 0.6);
+      background: rgba(239, 68, 68, 0.12);
+      color: #F87171;
+    }
+    .btn-naval.btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: var(--alert-crimson);
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-subtext {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+<body data-template="6">
+
+  <!-- Top Floating Switcher Nav -->
+  <nav class="template-nav">
+    <div class="template-nav-inner">
+      <a href="gallery.html" class="nav-item nav-gallery">◧ Gallery</a>
+      <span class="nav-divider"></span>
+      <a href="1-braun.html" class="nav-item">1. Braun</a>
+      <a href="2-bloomberg.html" class="nav-item">2. Bloomberg</a>
+      <a href="3-swiss.html" class="nav-item">3. Swiss</a>
+      <a href="4-linear.html" class="nav-item">4. Linear</a>
+      <a href="5-nagra.html" class="nav-item">5. Nagra</a>
+      <a href="6-sonar.html" class="nav-item active">6. Sonar</a>
+      <a href="7-cyberpunk.html" class="nav-item">7. Cyberpunk</a>
+      <a href="8-brutalist.html" class="nav-item">8. Brutalist</a>
+      <a href="9-quantum.html" class="nav-item">9. Quantum</a>
+      <a href="10-apple.html" class="nav-item">10. Apple</a>
+      <span class="nav-divider"></span>
+      <span class="nav-status-dot offline" title="Connecting..."></span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="sonar-header">
+      <div class="title-block">
+        <h1 class="title-main">SONAR-IX // ACOUSTIC INTERCEPTOR</h1>
+        <span class="title-sub">CONVERSATIONAL PPI RADAR</span>
+      </div>
+      <div class="top-telemetry">
+        <div class="telemetry-item">HYDROPHONE: <strong>ACTIVE</strong></div>
+        <div class="telemetry-item">FREQUENCY: <strong>16.0 kHz</strong></div>
+        <div class="telemetry-item">DEPTH: <strong>320m</strong></div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="sonar-grid">
+      <!-- Polar Radar PPI Scope Canvas -->
+      <div class="radar-frame">
+        <div class="radar-scope-wrap">
+          <canvas id="sonarCanvas" width="410" height="410"></canvas>
+        </div>
+        <div style="font-family:'Share Tech Mono'; font-size:11px; color:var(--text-dim); margin-top:10px; width:100%; display:flex; justify-content:space-between;">
+          <span>SWEEP: 360&deg; POLAR</span>
+          <span id="sonarBearing">BEARING: 042&deg;</span>
+          <span id="sonarBlipCount">TARGETS: 1 ACTIVE</span>
+        </div>
+      </div>
+
+      <!-- Tactical Intercept Readouts -->
+      <div class="tactical-right">
+        <div class="intercept-box">
+          <div class="box-title">
+            <span>// TACTICAL TURN METRICS</span>
+            <span id="tacticalState" style="color: var(--target-green);">STATE: LISTENING</span>
+          </div>
+
+          <div class="tactical-metrics-grid">
+            <div class="t-cell">
+              <div class="t-label">SILENCE</div>
+              <div class="t-val" id="tSilence">0 ms</div>
+            </div>
+            <div class="t-cell">
+              <div class="t-label">DYNAMIC ETS</div>
+              <div class="t-val" id="tEts">600 ms</div>
+            </div>
+            <div class="t-cell">
+              <div class="t-label">P(COMPLETE)</div>
+              <div class="t-val" id="tPComp">0.00</div>
+            </div>
+            <div class="t-cell">
+              <div class="t-label">GAIN DUCK</div>
+              <div class="t-val" id="tGain">0.0 dB</div>
+            </div>
+          </div>
+
+          <div class="box-title" style="margin-top: 6px;">
+            <span>// DEMODULATED SPEECH STREAM</span>
+            <span id="tCategory">CATEGORY: NEUTRAL</span>
+          </div>
+          <div class="transcript-tactical" id="sonarTranscript">
+            Awaiting acoustic turn intercept...
+          </div>
+        </div>
+
+        <!-- Tactical Simulation Triggers -->
+        <div class="naval-controls">
+          <button class="btn-naval" onclick="VartalaapEngine.simulateHinglishPause()">
+            <span>Hinglish Pause</span>
+            <span class="btn-subtext">ETS Expands 1200ms</span>
+          </button>
+
+          <button class="btn-naval" onclick="VartalaapEngine.simulateHaanjiBackchannel()">
+            <span>Haanji Backchannel</span>
+            <span class="btn-subtext">Soft Duck -14 dB</span>
+          </button>
+
+          <button class="btn-naval btn-danger" onclick="VartalaapEngine.simulateRukoInterrupt()">
+            <span>Ruko Hard Cut</span>
+            <span class="btn-subtext">Sub-15ms Flush</span>
+          </button>
+
+          <button class="btn-naval" id="btnSonarMic" onclick="handleSonarMic()">
+            <span id="sonarMicLabel">Hydrophone Mic</span>
+            <span class="btn-subtext">Live 16kHz Stream</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="shared-engine.js"></script>
+  <script>
+    // Circular Polar Radar PPI Scope on Canvas
+    const canvas = document.getElementById('sonarCanvas');
+    const ctx = canvas.getContext('2d');
+    let sweepAngle = 0;
+    let audioLevel = 0.05;
+    const blips = [];
+    const rippleRings = [];
+
+    function renderSonar() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = w / 2 - 12;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Deep void background
+      ctx.fillStyle = '#020712';
+      ctx.fillRect(0, 0, w, h);
+
+      // Concentric Range Rings
+      const rings = 4;
+      ctx.lineWidth = 1;
+      for (let r = 1; r <= rings; r++) {
+        const ringRad = (radius / rings) * r;
+        ctx.beginPath();
+        ctx.arc(cx, cy, ringRad, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(14, 116, 144, 0.35)';
+        ctx.stroke();
+
+        // Distance label
+        ctx.font = '9px "Share Tech Mono", monospace';
+        ctx.fillStyle = 'rgba(14, 116, 144, 0.7)';
+        ctx.fillText((r * 500) + 'Hz', cx + 4, cy - ringRad + 12);
+      }
+
+      // Crosshairs
+      ctx.beginPath();
+      ctx.moveTo(cx - radius, cy);
+      ctx.lineTo(cx + radius, cy);
+      ctx.moveTo(cx, cy - radius);
+      ctx.lineTo(cx, cy + radius);
+      ctx.strokeStyle = 'rgba(14, 116, 144, 0.25)';
+      ctx.stroke();
+
+      // Ripple rings from audio pulses
+      for (let i = rippleRings.length - 1; i >= 0; i--) {
+        const rip = rippleRings[i];
+        rip.rad += 2.5;
+        rip.alpha -= 0.015;
+        if (rip.alpha <= 0) {
+          rippleRings.splice(i, 1);
+        } else {
+          ctx.beginPath();
+          ctx.arc(cx, cy, rip.rad, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${rip.alpha})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      }
+
+      // Sweep Beam (Rotating Conic Gradient)
+      sweepAngle += 0.035;
+      if (sweepAngle > Math.PI * 2) sweepAngle -= Math.PI * 2;
+      document.getElementById('sonarBearing').innerText = 'BEARING: ' + Math.round((sweepAngle / (Math.PI * 2)) * 360).toString().padStart(3, '0') + '°';
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(sweepAngle);
+
+      // Trailing Phosphor Glow Sector
+      const beamGrad = ctx.createConicGradient(0, 0, 0);
+      beamGrad.addColorStop(0, 'rgba(0, 240, 255, 0.55)');
+      beamGrad.addColorStop(0.12, 'rgba(0, 240, 255, 0.02)');
+      beamGrad.addColorStop(1, 'transparent');
+
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, radius, 0, Math.PI * 0.4);
+      ctx.fillStyle = beamGrad;
+      ctx.fill();
+
+      // Sharp Leading Edge Beam Line
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(radius, 0);
+      ctx.strokeStyle = '#00F0FF';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#00F0FF';
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.shadowColor = 'transparent';
+
+      ctx.restore();
+
+      // Render Active Target Blips
+      for (let b of blips) {
+        b.age += 0.01;
+        const bAlpha = Math.max(0, 1 - b.age);
+        if (bAlpha > 0) {
+          const bx = cx + Math.cos(b.angle) * b.dist;
+          const by = cy + Math.sin(b.angle) * b.dist;
+
+          ctx.beginPath();
+          ctx.arc(bx, by, 4 + (b.intensity * 3), 0, Math.PI * 2);
+          ctx.fillStyle = b.danger ? `rgba(239, 68, 68, ${bAlpha})` : `rgba(16, 185, 129, ${bAlpha})`;
+          ctx.shadowColor = b.danger ? '#EF4444' : '#10B981';
+          ctx.shadowBlur = 10;
+          ctx.fill();
+          ctx.shadowColor = 'transparent';
+        }
+      }
+
+      requestAnimationFrame(renderSonar);
+    }
+    requestAnimationFrame(renderSonar);
+
+    // Audio level
+    VartalaapEngine.on('audioLevel', lvl => {
+      audioLevel = lvl;
+      if (lvl > 0.40) {
+        // Emit ripple ring
+        if (rippleRings.length < 5) {
+          rippleRings.push({ rad: 10, alpha: 0.6 });
+        }
+      }
+    });
+
+    // Telemetry
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('tacticalState').innerText = 'STATE: ' + t.state;
+      document.getElementById('tSilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('tEts').innerText = Math.round(t.dynamic_ets_ms) + ' ms';
+      document.getElementById('tPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('tGain').innerText = Number(t.ducking_gain_db).toFixed(1) + ' dB';
+      document.getElementById('tCategory').innerText = 'CATEGORY: ' + t.category;
+
+      if (t.state === 'TURN_GRANTED' || t.state === 'HARD_INTERRUPT') {
+        // Drop sonar target blip
+        blips.push({
+          angle: sweepAngle,
+          dist: 60 + Math.random() * 120,
+          intensity: 1.0,
+          danger: t.state === 'HARD_INTERRUPT',
+          age: 0
+        });
+        if (blips.length > 8) blips.shift();
+      }
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      document.getElementById('sonarTranscript').innerText = `[DEMOD] "${msg.text}"`;
+    });
+
+    async function handleSonarMic() {
+      const active = await VartalaapEngine.toggleMic();
+      document.getElementById('sonarMicLabel').innerText = active ? 'Stop Hydrophone' : 'Hydrophone Mic';
+    }
+  </script>
+</body>
+</html>

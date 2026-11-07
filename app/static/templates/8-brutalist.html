@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Template 08 - Kinetic Editorial Brutalism</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="nav.css">
+  <style>
+    :root {
+      --paper: #F7F5F0;
+      --ink: #000000;
+      --volt: #D4FF00;
+      --pink: #FF007F;
+      --cyan: #00E5FF;
+      --white: #FFFFFF;
+      --shadow: 4px 4px 0 #000000;
+      --shadow-lg: 6px 6px 0 #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      padding-top: 68px;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Brutalist Header */
+    .brutal-header {
+      background: var(--volt);
+      border: 3px solid var(--ink);
+      box-shadow: var(--shadow-lg);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brutal-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 32px;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .sticker-tags {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sticker {
+      background: var(--white);
+      border: 2px solid var(--ink);
+      box-shadow: 2px 2px 0 var(--ink);
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .sticker.pink { background: var(--pink); color: var(--white); }
+    .sticker.cyan { background: var(--cyan); }
+
+    /* Main Grid */
+    .brutal-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .brutal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Brutal Cards */
+    .brutal-card {
+      background: var(--white);
+      border: 3px solid var(--ink);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .card-title-bar {
+      border-bottom: 3px solid var(--ink);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    /* Chunky Stepped Equalizer Canvas */
+    .chunky-canvas-box {
+      border: 3px solid var(--ink);
+      height: 200px;
+      background: #FFFFFF;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    #brutalCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Oversized Numbered Metrics Grid */
+    .metrics-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .metric-row {
+      background: var(--white);
+      border: 3px solid var(--ink);
+      box-shadow: var(--shadow);
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .metric-label-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .m-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: #666;
+    }
+
+    .m-name {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .m-big-val {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    /* Transcript Box */
+    .brutal-transcript-box {
+      background: var(--cyan);
+      border: 3px solid var(--ink);
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Action Push Buttons with 3px/3px Depress */
+    .brutal-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .brutal-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .btn-brutal {
+      appearance: none;
+      background: var(--white);
+      border: 3px solid var(--ink);
+      box-shadow: var(--shadow);
+      padding: 16px 14px;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 13px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+      transition: all 0.05s ease;
+    }
+
+    .btn-brutal:hover {
+      background: #FAFAFA;
+    }
+
+    .btn-brutal:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    .btn-brutal.primary {
+      background: var(--volt);
+    }
+    .btn-brutal.primary:hover {
+      background: #C4EE00;
+    }
+
+    .btn-brutal.danger {
+      background: var(--pink);
+      color: var(--white);
+    }
+    .btn-brutal.danger:hover {
+      background: #E60072;
+    }
+
+    .btn-brutal.mic-active {
+      background: var(--cyan);
+    }
+
+    .btn-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body data-template="8">
+
+  <!-- Top Floating Switcher Nav -->
+  <nav class="template-nav">
+    <div class="template-nav-inner">
+      <a href="gallery.html" class="nav-item nav-gallery">◧ Gallery</a>
+      <span class="nav-divider"></span>
+      <a href="1-braun.html" class="nav-item">1. Braun</a>
+      <a href="2-bloomberg.html" class="nav-item">2. Bloomberg</a>
+      <a href="3-swiss.html" class="nav-item">3. Swiss</a>
+      <a href="4-linear.html" class="nav-item">4. Linear</a>
+      <a href="5-nagra.html" class="nav-item">5. Nagra</a>
+      <a href="6-sonar.html" class="nav-item">6. Sonar</a>
+      <a href="7-cyberpunk.html" class="nav-item">7. Cyberpunk</a>
+      <a href="8-brutalist.html" class="nav-item active">8. Brutalist</a>
+      <a href="9-quantum.html" class="nav-item">9. Quantum</a>
+      <a href="10-apple.html" class="nav-item">10. Apple</a>
+      <span class="nav-divider"></span>
+      <span class="nav-status-dot offline" title="Connecting..."></span>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Brutal Header -->
+    <header class="brutal-header">
+      <h1 class="brutal-title">08 // NEO-BRUTALIST VARTALAAP</h1>
+      <div class="sticker-tags">
+        <span class="sticker pink">SUB-15MS FLUSH</span>
+        <span class="sticker cyan">DYNAMIC ETS</span>
+        <span class="sticker">RTX-5060</span>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="brutal-grid">
+      <!-- Left: Chunky Equalizer & Transcript -->
+      <section class="brutal-card">
+        <div class="card-title-bar">
+          <span>// CHUNKY EQUALIZER & AUDIO ENVELOPE</span>
+          <span id="brutalStateTag" style="background:var(--volt); padding:2px 8px; border:2px solid #000;">LISTENING</span>
+        </div>
+
+        <div class="chunky-canvas-box">
+          <canvas id="brutalCanvas" width="700" height="200"></canvas>
+        </div>
+
+        <div class="brutal-transcript-box" id="brutalTranscript">
+          &gt; AWAITING LIVE SPOKEN AUDIO INPUT...
+        </div>
+      </section>
+
+      <!-- Right: Giant Numbered Metrics -->
+      <aside class="metrics-col">
+        <div class="metric-row">
+          <div class="metric-label-group">
+            <span class="m-num">01 // PAUSE</span>
+            <span class="m-name">SILENCE</span>
+          </div>
+          <div class="m-big-val" id="bSilence">0ms</div>
+        </div>
+
+        <div class="metric-row" style="background: var(--volt);">
+          <div class="metric-label-group">
+            <span class="m-num">02 // ADAPT</span>
+            <span class="m-name">DYNAMIC ETS</span>
+          </div>
+          <div class="m-big-val" id="bEts">600ms</div>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-label-group">
+            <span class="m-num">03 // PROB</span>
+            <span class="m-name">P(COMPLETE)</span>
+          </div>
+          <div class="m-big-val" id="bPComp">0.00</div>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-label-group">
+            <span class="m-num">04 // ATTN</span>
+            <span class="m-name">DUCK GAIN</span>
+          </div>
+          <div class="m-big-val" id="bGain">0.0dB</div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Brutal Depress Action Buttons -->
+    <section class="brutal-actions">
+      <button class="btn-brutal primary" onclick="VartalaapEngine.simulateHinglishPause()">
+        <span>01 // HINGLISH PAUSE</span>
+        <span class="btn-sub">[ETS Expands 1250ms]</span>
+      </button>
+
+      <button class="btn-brutal" onclick="VartalaapEngine.simulateHaanjiBackchannel()">
+        <span>02 // HAANJI DUCK</span>
+        <span class="btn-sub">[-14 dB Soft Gating]</span>
+      </button>
+
+      <button class="btn-brutal danger" onclick="VartalaapEngine.simulateRukoInterrupt()">
+        <span>03 // RUKO INTERRUPT</span>
+        <span class="btn-sub">[Hard Barge-In Flush]</span>
+      </button>
+
+      <button class="btn-brutal" id="btnBrutalMic" onclick="handleBrutalMic()">
+        <span id="brutalMicLabel">04 // TOGGLE MIC</span>
+        <span class="btn-sub">[16kHz PCM Stream]</span>
+      </button>
+    </section>
+
+  </div>
+
+  <script src="shared-engine.js"></script>
+  <script>
+    // Chunky Stepped Block Equalizer on Canvas
+    const canvas = document.getElementById('brutalCanvas');
+    const ctx = canvas.getContext('2d');
+    const numBars = 32;
+    const barBlocks = 12; // vertical blocks per bar
+    let audioLvl = 0.05;
+
+    function renderBrutalEqualizer() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // White paper canvas
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, w, h);
+
+      const colW = (w - 32) / numBars;
+      const blockH = (h - 24) / barBlocks;
+
+      for (let c = 0; c < numBars; c++) {
+        const normDist = Math.abs(c - numBars / 2) / (numBars / 2);
+        const curve = Math.exp(-normDist * normDist * 3);
+        const noise = (Math.sin(Date.now() * 0.012 + c) + 1) * 0.2;
+        const activeBlocks = Math.min(barBlocks, Math.floor((audioLvl * curve * 1.5 + noise * audioLvl) * barBlocks) + 1);
+
+        for (let b = 0; b < activeBlocks; b++) {
+          const bx = 16 + c * colW + 2;
+          const by = h - 12 - (b + 1) * blockH + 2;
+          const bw = colW - 4;
+          const bh = blockH - 4;
+
+          // Volt yellow for top peak block, solid black for others
+          if (b >= barBlocks - 2) {
+            ctx.fillStyle = '#FF007F'; // Top warning
+          } else if (b === activeBlocks - 1) {
+            ctx.fillStyle = '#D4FF00'; // Peak
+          } else {
+            ctx.fillStyle = '#000000';
+          }
+
+          ctx.fillRect(bx, by, bw, bh);
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(bx, by, bw, bh);
+        }
+      }
+
+      requestAnimationFrame(renderBrutalEqualizer);
+    }
+    requestAnimationFrame(renderBrutalEqualizer);
+
+    // Audio level
+    VartalaapEngine.on('audioLevel', lvl => {
+      audioLvl = lvl;
+    });
+
+    // Telemetry
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('brutalStateTag').innerText = t.state;
+      document.getElementById('bSilence').innerText = Math.round(t.elapsed_silence_ms) + 'ms';
+      document.getElementById('bEts').innerText = Math.round(t.dynamic_ets_ms) + 'ms';
+      document.getElementById('bPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('bGain').innerText = Number(t.ducking_gain_db).toFixed(1) + 'dB';
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      document.getElementById('brutalTranscript').innerText = `> ${msg.text}`;
+    });
+
+    async function handleBrutalMic() {
+      const active = await VartalaapEngine.toggleMic();
+      document.getElementById('brutalMicLabel').innerText = active ? '04 // STOP MIC' : '04 // TOGGLE MIC';
+      document.getElementById('btnBrutalMic').classList.toggle('mic-active', active);
+    }
+  </script>
+</body>
+</html>

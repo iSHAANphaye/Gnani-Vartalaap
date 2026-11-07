@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Template 03 - Swiss Typographic Broadsheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,800;1,400;1,700&family=Instrument+Serif:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="nav.css">
+  <style>
+    :root {
+      --paper: #FAF8F5;
+      --ink: #111111;
+      --vermilion: #FF2E00;
+      --vermilion-soft: rgba(255, 46, 0, 0.08);
+      --rule: #111111;
+      --rule-light: rgba(17, 17, 17, 0.14);
+      --caption: #555555;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      min-height: 100vh;
+      padding-top: 68px;
+      padding-bottom: 60px;
+      line-height: 1.5;
+    }
+
+    .broadsheet-wrapper {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* Broadsheet Masthead */
+    .masthead {
+      border-bottom: 3px solid var(--rule);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+
+    .masthead-meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--caption);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--rule-light);
+      margin-bottom: 16px;
+    }
+
+    .masthead-title {
+      font-size: 58px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .masthead-title .vermilion {
+      color: var(--vermilion);
+    }
+
+    .masthead-tagline {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 24px;
+      color: var(--caption);
+      line-height: 1.2;
+    }
+
+    /* Column Grid */
+    .broadsheet-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr 340px;
+      gap: 28px;
+    }
+
+    @media (max-width: 1024px) {
+      .broadsheet-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .column {
+      position: relative;
+    }
+
+    .col-title {
+      font-size: 11px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-bottom: 2px solid var(--rule);
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Minimalist Hairline Waveform Canvas */
+    .waveform-frame {
+      border: 1px solid var(--rule);
+      height: 220px;
+      background: #FFFFFF;
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    #swissCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .waveform-caption {
+      font-family: 'Space Mono', monospace;
+      font-size: 10.5px;
+      color: var(--caption);
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--rule-light);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* Lead Story & Transcript */
+    .lead-story {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .lead-story p {
+      margin-bottom: 14px;
+      text-align: justify;
+    }
+
+    .dropcap::first-letter {
+      float: left;
+      font-size: 52px;
+      line-height: 0.8;
+      font-weight: 800;
+      padding-right: 10px;
+      color: var(--vermilion);
+    }
+
+    .swiss-quote {
+      border-left: 3px solid var(--vermilion);
+      padding-left: 16px;
+      margin: 18px 0;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 21px;
+      color: var(--ink);
+    }
+
+    /* Proofreader & Marginalia Column */
+    .metric-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      border: 1px solid var(--rule);
+      padding: 12px 14px;
+      background: #FFFFFF;
+    }
+
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--caption);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .metric-num {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .metric-num.vermilion {
+      color: var(--vermilion);
+    }
+
+    /* Proofreader Action Buttons */
+    .swiss-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .swiss-btn {
+      appearance: none;
+      background: #FFFFFF;
+      border: 2px solid var(--rule);
+      color: var(--ink);
+      padding: 12px 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+
+    .swiss-btn:hover {
+      background: var(--ink);
+      color: #FFFFFF;
+    }
+
+    .swiss-btn:hover .btn-symbol {
+      color: var(--vermilion);
+    }
+
+    .swiss-btn.btn-active {
+      background: var(--vermilion);
+      color: #FFFFFF;
+      border-color: var(--vermilion);
+    }
+
+    .btn-symbol {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--vermilion);
+    }
+
+    /* Proofreader Marks Footer */
+    .footer-marks {
+      margin-top: 36px;
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--caption);
+    }
+  </style>
+</head>
+<body data-template="3">
+
+  <!-- Top Floating Switcher Nav -->
+  <nav class="template-nav">
+    <div class="template-nav-inner">
+      <a href="gallery.html" class="nav-item nav-gallery">◧ Gallery</a>
+      <span class="nav-divider"></span>
+      <a href="1-braun.html" class="nav-item">1. Braun</a>
+      <a href="2-bloomberg.html" class="nav-item">2. Bloomberg</a>
+      <a href="3-swiss.html" class="nav-item active">3. Swiss</a>
+      <a href="4-linear.html" class="nav-item">4. Linear</a>
+      <a href="5-nagra.html" class="nav-item">5. Nagra</a>
+      <a href="6-sonar.html" class="nav-item">6. Sonar</a>
+      <a href="7-cyberpunk.html" class="nav-item">7. Cyberpunk</a>
+      <a href="8-brutalist.html" class="nav-item">8. Brutalist</a>
+      <a href="9-quantum.html" class="nav-item">9. Quantum</a>
+      <a href="10-apple.html" class="nav-item">10. Apple</a>
+      <span class="nav-divider"></span>
+      <span class="nav-status-dot offline" title="Connecting..."></span>
+    </div>
+  </nav>
+
+  <div class="broadsheet-wrapper">
+    <!-- Broadsheet Masthead -->
+    <header class="masthead">
+      <div class="masthead-meta">
+        <span>ZURICH 1968 INTERNATIONAL TYPOGRAPHY</span>
+        <span>FOLIO NO. 03 &bull; EDITION VARTALAAP</span>
+        <span id="swissClock">19:44:12 CET</span>
+      </div>
+
+      <h1 class="masthead-title">
+        DIE AKUSTIK DER <span class="vermilion">SPRACHE</span>.
+      </h1>
+      <p class="masthead-tagline">
+        An investigation into human cadence, Indic mid-utterance silence tolerances, and instantaneous arbitration.
+      </p>
+    </header>
+
+    <!-- 3-Column Editorial Grid -->
+    <main class="broadsheet-grid">
+      <!-- Col 1: Marginalia & Telemetry -->
+      <aside class="column">
+        <div class="col-title">
+          <span>&sect; 01 &bull; TELEMETRIE</span>
+          <span>[TAB. 01]</span>
+        </div>
+
+        <div class="metric-list">
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>STATUS DER STIMME</span>
+              <span>STATE</span>
+            </div>
+            <div class="metric-num vermilion" id="swissState">LISTENING</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>VERWEILDAUER (SILENCE)</span>
+              <span>MS</span>
+            </div>
+            <div class="metric-num" id="swissSilence">0 ms</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>DYNAMISCHE GRENZE (ETS)</span>
+              <span>EXPANSION</span>
+            </div>
+            <div class="metric-num vermilion" id="swissEts">600 ms</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>VOLLENDUNG &bull; P(C)</span>
+              <span>PROBABILITY</span>
+            </div>
+            <div class="metric-num" id="swissPComp">0.00</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-header">
+              <span>DÄMPFUNG &bull; GAIN</span>
+              <span>DECIBELS</span>
+            </div>
+            <div class="metric-num" id="swissGain">0.0 dB</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Col 2: Centerpiece Oscillogram & Discourse Stream -->
+      <section class="column">
+        <div class="col-title">
+          <span>&para; 02 &bull; VEKTOR-OSZILLOGRAMM</span>
+          <span>FIG. 3.4</span>
+        </div>
+
+        <div class="waveform-frame">
+          <canvas id="swissCanvas" width="600" height="220"></canvas>
+        </div>
+
+        <div class="waveform-caption">
+          <span>SIGNAL: 16.0 kHz MONO</span>
+          <span>SCHWELLE: VERMILION ZERO-CROSSING</span>
+          <span>PHASE: COHERENT</span>
+        </div>
+
+        <article class="lead-story">
+          <p class="dropcap">
+            In conversational Hindi and Hinglish interaction, the cadence of thought deviates from Anglo-Saxon turn structures. Conjunctions such as <em>"toh"</em>, <em>"lekin"</em>, and hesitation markers invite pregnant pauses up to 800 milliseconds without forfeiting the conversational floor.
+          </p>
+
+          <div class="swiss-quote" id="swissTranscript">
+            &ldquo;Listening for live acoustic speech or simulation trigger...&rdquo;
+          </div>
+
+          <p style="font-size: 13.5px; color: var(--caption); font-family: 'Space Mono', monospace;">
+            &para; REASON LOG: <span id="swissReason" style="color: var(--vermilion);">ACOUSTIC_DETECTION_IDLE</span>
+          </p>
+        </article>
+      </section>
+
+      <!-- Col 3: Proofreader Controls & Interventions -->
+      <section class="column">
+        <div class="col-title">
+          <span>&sect; 03 &bull; INTERVENTIONEN</span>
+          <span>SIMULATION</span>
+        </div>
+
+        <p style="font-size: 13px; color: var(--caption); margin-bottom: 16px;">
+          Execute rigorous typographic simulations of Indic turn arbitration through the buttons below:
+        </p>
+
+        <div class="swiss-controls">
+          <button class="swiss-btn" onclick="VartalaapEngine.simulateHinglishPause()">
+            <div>
+              <strong>1. Hinglish Pause</strong>
+              <div style="font-size: 10px; opacity: 0.7; font-weight: 400;">ETS expands to 1250ms</div>
+            </div>
+            <span class="btn-symbol">&rarr;</span>
+          </button>
+
+          <button class="swiss-btn" onclick="VartalaapEngine.simulateHaanjiBackchannel()">
+            <div>
+              <strong>2. Haanji Backchannel</strong>
+              <div style="font-size: 10px; opacity: 0.7; font-weight: 400;">Soft ducking to -14.0 dB</div>
+            </div>
+            <span class="btn-symbol">&bull;</span>
+          </button>
+
+          <button class="swiss-btn" onclick="VartalaapEngine.simulateRukoInterrupt()">
+            <div>
+              <strong>3. Ruko Interrupt</strong>
+              <div style="font-size: 10px; opacity: 0.7; font-weight: 400;">Sub-15ms Hard Flush</div>
+            </div>
+            <span class="btn-symbol">&times;</span>
+          </button>
+
+          <button class="swiss-btn" id="swissMicBtn" onclick="handleSwissMic()">
+            <div>
+              <strong id="swissMicLabel">4. Mikrofon Einschalten</strong>
+              <div style="font-size: 10px; opacity: 0.7; font-weight: 400;">Live 16kHz PCM Stream</div>
+            </div>
+            <span class="btn-symbol">&#9679;</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 28px; border-top: 1px solid var(--rule-light); padding-top: 14px; font-size: 12px; color: var(--caption);">
+          <strong>DOKUMENTATION // PROOFREADER MARKS:</strong>
+          <p style="margin-top: 6px; font-family: 'Space Mono', monospace; font-size: 11px;">
+            &sect; = Bounded context<br>
+            &para; = Discourse turn boundary<br>
+            &times; = Immediate hard barge-in
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Margin Marks -->
+    <footer class="footer-marks">
+      <span>Z&Uuml;RICH INTERNATIONALE TYPOGRAFIE &bull; JOSEF M&Uuml;LLER-BROCKMANN ARCHIVE</span>
+      <span>PROJECT VARTALAAP &bull; SYSTEM STATUS: PASSING</span>
+    </footer>
+  </div>
+
+  <script src="shared-engine.js"></script>
+  <script>
+    // Minimalist Hairline Oscillogram Canvas
+    const canvas = document.getElementById('swissCanvas');
+    const ctx = canvas.getContext('2d');
+    let audioLvl = 0.05;
+    let phase = 0;
+
+    function drawSwissWave() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const midY = h / 2;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Paper background
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, w, h);
+
+      // Vermilion Center Silence Threshold Rule
+      ctx.beginPath();
+      ctx.moveTo(0, midY);
+      ctx.lineTo(w, midY);
+      ctx.strokeStyle = '#FF2E00';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Hairline Grid Rules
+      ctx.strokeStyle = 'rgba(17, 17, 17, 0.06)';
+      ctx.lineWidth = 1;
+      for (let x = 40; x < w; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+
+      // Crisp Hairline Ink Waveform
+      ctx.beginPath();
+      phase += 0.04;
+      const points = 120;
+      const step = w / points;
+
+      ctx.moveTo(0, midY);
+      for (let i = 0; i <= points; i++) {
+        const x = i * step;
+        const norm = i / points;
+        const envelope = Math.sin(norm * Math.PI); // Windowing envelope
+        const y = midY + Math.sin(norm * 18 + phase) * (audioLvl * 85 * envelope) + 
+                         Math.cos(norm * 32 - phase * 1.5) * (audioLvl * 30 * envelope);
+        ctx.lineTo(x, y);
+      }
+
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      requestAnimationFrame(drawSwissWave);
+    }
+    requestAnimationFrame(drawSwissWave);
+
+    // Event listeners
+    VartalaapEngine.on('audioLevel', lvl => {
+      audioLvl = lvl;
+    });
+
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('swissState').innerText = t.state;
+      document.getElementById('swissSilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('swissEts').innerText = Math.round(t.dynamic_ets_ms) + ' ms';
+      document.getElementById('swissPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('swissGain').innerText = Number(t.ducking_gain_db).toFixed(1) + ' dB';
+      document.getElementById('swissReason').innerText = t.reason || t.state;
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      document.getElementById('swissTranscript').innerText = `\u201C${msg.text}\u201D`;
+    });
+
+    async function handleSwissMic() {
+      const active = await VartalaapEngine.toggleMic();
+      document.getElementById('swissMicLabel').innerText = active ? 'Mikrofon Ausschalten' : 'Mikrofon Einschalten';
+      document.getElementById('swissMicBtn').classList.toggle('btn-active', active);
+    }
+
+    // CET Clock
+    setInterval(() => {
+      document.getElementById('swissClock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }) + ' CET';
+    }, 1000);
+  </script>
+</body>
+</html>
