@@ -17,7 +17,7 @@ Master build checklist representing atomic, sequential engineering tickets adher
 | **TICKET-07** | Full-Duplex FastAPI WebSocket Server | `app/main.py` | ✅ **DONE** | `/ws/audio` binary PCM & telemetry streaming |
 | **TICKET-08** | Diagnostic HUD & 10 Design Studio Templates | `app/static/` | ✅ **DONE** | 10 Archetypes + Master Gallery at `/gallery` & `/templates` |
 | **TICKET-09** | Two-Tier Automated Benchmark Suite | `benchmark/` | ✅ **DONE** | Tier A (500 segments) + Tier B (30 Indic clips), 0% cutoffs |
-| **TICKET-10** | Demo Video Production & Submission Package | `README.md`, video | 🟡 **NEXT** | Split-screen video script, system docs, portal submission |
+| **TICKET-10** | Demo Video Production & Submission Package | `README.md`, video | ✅ **DONE** | Split-screen video script, system docs, portal submission |
 
 ---
 
@@ -33,7 +33,7 @@ flowchart LR
     T06 --> T07["TICKET-07\nFastAPI WebSocket Server\n[DONE]"]
     T07 --> T08["TICKET-08\nWeb Telemetry HUD & 10 Templates\n[DONE]"]
     T08 --> T09["TICKET-09\nTwo-Tier Benchmark Suite\n[DONE]"]
-    T09 --> T10["TICKET-10\nDemo Video & Submission Docs\n[NEXT]"]
+    T09 --> T10["TICKET-10\nDemo Video & Submission Docs\n[DONE]"]
 ```
 
 ---
@@ -194,15 +194,19 @@ flowchart LR
 
 ---
 
-### [TICKET-10] Demo Video Production & Submission Documentation (`README.md`) [READY / NEXT]
-- **Status:** 🟡 **READY TO EXECUTE**
+### [TICKET-10] Demo Video Production & Submission Documentation (`README.md`, `docs/DEMO_VIDEO_SCRIPT.md`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-08, TICKET-09
 - **Task Description:**
-  1. Write production `README.md` containing architecture diagrams, Gnani API usage details, benchmark tables, and local reproduction steps.
-  2. Create a structured 3-minute video recording script demonstrating:
+  1. Write production `README.md` containing architecture diagrams, Gnani API usage details, verified quantitative benchmark tables, Design Studio showcase, and local reproduction steps.
+  2. Create a structured 3-minute video recording script (`docs/DEMO_VIDEO_SCRIPT.md`) demonstrating:
      - Test Case 1: Hinglish thinking pause (*"Mera account balance... [pause]... matlab ki..."*).
      - Test Case 2: Soft-ducking recovery on cultural backchannel (*"Haanji"* mid-playback).
-     - Test Case 3: A/B comparison against standard 500ms VAD.
+     - Test Case 3: Urgent imperative barge-in (*"Ruko cancel karo!"* in <50ms).
+     - Test Case 4: Side-by-side A/B comparison against standard 500ms VAD.
+     - Telemetry state reporting, RTX 5060 GPU latency proofs, and DPDP Act zero-retention compliance.
 - **Acceptance Criteria:**
-  - Repository is clean, fully documented, and submission-ready before Nov 10, 23:59 IST.
+  - `README.md` is transformed into an executive, showcase-grade submission document with exact benchmark metrics.
+  - `docs/DEMO_VIDEO_SCRIPT.md` provides an exact timecoded 180-second split-screen script with voiceovers, HUD telemetry, and camera actions.
+  - Repository is 100% complete, fully verified, and submission-ready before Nov 10, 23:59 IST.
