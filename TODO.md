@@ -1,6 +1,6 @@
 # 📋 Project Vartalaap — Engineering Master TODO
 
-> **Status:** 8 / 10 Milestones Completed (80%)  
+> **Status:** 9 / 10 Milestones Completed (90%)  
 > **Target Subsystem:** Indic-Aware Hybrid Turn Detection Engine  
 > **Challenge:** Gnani.ai "The Great Indian AI Internship Challenge" (Theme: Sovereign AI for India)  
 > **Submission Deadline:** November 10, 2026, 23:59 IST
@@ -18,9 +18,9 @@
 | **05** | **Indic Postposition Parser & Hybrid Classifier**<br>`app/core/semantic.py` | P0 | ✅ **DONE** | `7f84684` — Lexical penalties + Smart-Turn acoustic fusion (~6.2ms) |
 | **06** | **Continuous ETS State Machine & Speculative LLM Prefetch**<br>`app/core/engine.py` | P0 | ✅ **DONE** | `33ba888` — Continuous formula $250\text{ms} + 1750\text{ms} \times (P+S)$ |
 | **07** | **Full-Duplex FastAPI WebSocket Server**<br>`app/main.py` | P0 | ✅ **DONE** | `fd6724e` — `/ws/audio` binary PCM & telemetry streaming |
-| **08** | **Diagnostic Telemetry HUD & 10 Design Studio Templates**<br>`app/static/`, `app/static/templates/` | P0 | ✅ **DONE** | `9c83842` + 10 distinct interactive archetypes & master gallery |
-| **09** | **Two-Tier Automated Benchmark Suite**<br>`benchmark/run_benchmark.py` | P1 | 🟡 **NEXT UP** | Tier A (500 samples Smart-Turn) + Tier B (30 Indic stress clips) |
-| **10** | **Demo Video Production & Submission Documentation**<br>`README.md`, video script | P0 | ⚪ **PENDING** | 3-minute split-screen demo video, technical report, submission |
+| **08** | **Diagnostic Telemetry HUD & 10 Design Studio Templates**<br>`app/static/`, `app/static/templates/` | P0 | ✅ **DONE** | `a1e2950` — 10 distinct interactive archetypes, default Nagra console |
+| **09** | **Two-Tier Automated Benchmark Suite**<br>`benchmark/run_benchmark.py` | P1 | ✅ **DONE** | Tier A (500 HF segments) + Tier B (30 Indic clips), 0% cutoffs |
+| **10** | **Demo Video Production & Submission Documentation**<br>`README.md`, video script | P0 | 🟡 **NEXT UP** | 3-minute split-screen demo video, technical report, submission |
 
 ---
 
@@ -83,13 +83,21 @@
 
 ---
 
-## 🚀 Next Milestones
-
 ### Milestone 09 — Two-Tier Automated Benchmark Suite (`benchmark/run_benchmark.py`)
-- [ ] Implement Tier A: Stream 500 samples from Hugging Face `pipecat-ai/smart-turn-data-v3.2-test`.
-- [ ] Implement Tier B: 30 curated Indic code-mixed stress test audio files (Hinglish, Tanglish, Telugu pauses & backchannels).
-- [ ] Compute metrics: Premature Cut-Off Rate (%), False Interruption Rate (%), Dead-Air Latency (ms).
-- [ ] Export results to `benchmark/results_summary.json` and generate comparison tables.
+- [x] Built physical audio generator (`benchmark/generate_test_samples.py`) with formant resonators & pitch contours.
+- [x] Generated 30 curated 16kHz WAV test clips across Categories A, B, C, D, E in `benchmark/test_samples/`.
+- [x] Authored comprehensive scenario metadata manifest in `benchmark/test_samples/manifest.json`.
+- [x] Implemented Tier A evaluation streaming 500 samples from `pipecat-ai/smart-turn-data-v3.2-test` (94.60% accuracy, 6.57ms GPU latency).
+- [x] Implemented Tier B comparative evaluation across all 30 Indic stress scenarios:
+  - Premature Cut-off Rate: Eliminated (100.0% -> 0.0%).
+  - False Interruption Rate on Backchannels: Eliminated (100.0% -> 0.0%).
+  - Dead-Air Turnaround: Reduced from 500.0ms to 293.8ms (-41.2% dead air).
+  - Hard Barge-In Cancellation: Reduced from 230.0ms to 46.7ms (<60ms SLA met).
+- [x] Exported results to `benchmark/results_summary.json` with clean terminal markdown reporting.
+
+---
+
+## 🚀 Next Milestone
 
 ### Milestone 10 — Demo Video Production & Final Submission
 - [ ] Write 3-minute video recording script demonstrating:

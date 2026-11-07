@@ -16,8 +16,8 @@ Master build checklist representing atomic, sequential engineering tickets adher
 | **TICKET-06** | Continuous ETS & Speculative Prefetch | `app/core/engine.py` | ✅ **DONE** | Dynamic ETS (250–2000ms), prefetch at 200ms when P>0.75 |
 | **TICKET-07** | Full-Duplex FastAPI WebSocket Server | `app/main.py` | ✅ **DONE** | `/ws/audio` binary PCM & telemetry streaming |
 | **TICKET-08** | Diagnostic HUD & 10 Design Studio Templates | `app/static/` | ✅ **DONE** | 10 Archetypes + Master Gallery at `/gallery` & `/templates` |
-| **TICKET-09** | Two-Tier Automated Benchmark Suite | `benchmark/` | 🟡 **NEXT** | 500-sample Smart-Turn test split + 30-sample Indic suite |
-| **TICKET-10** | Demo Video Production & Submission Package | `README.md`, video | ⚪ **PENDING** | Split-screen video script, system docs, portal submission |
+| **TICKET-09** | Two-Tier Automated Benchmark Suite | `benchmark/` | ✅ **DONE** | Tier A (500 segments) + Tier B (30 Indic clips), 0% cutoffs |
+| **TICKET-10** | Demo Video Production & Submission Package | `README.md`, video | 🟡 **NEXT** | Split-screen video script, system docs, portal submission |
 
 ---
 
@@ -32,8 +32,8 @@ flowchart LR
     T05 --> T06["TICKET-06\nContinuous ETS & Prefetch\n[DONE]"]
     T06 --> T07["TICKET-07\nFastAPI WebSocket Server\n[DONE]"]
     T07 --> T08["TICKET-08\nWeb Telemetry HUD & 10 Templates\n[DONE]"]
-    T08 --> T09["TICKET-09\nTwo-Tier Benchmark Suite\n[NEXT]"]
-    T09 --> T10["TICKET-10\nDemo Video & Submission Docs\n[PENDING]"]
+    T08 --> T09["TICKET-09\nTwo-Tier Benchmark Suite\n[DONE]"]
+    T09 --> T10["TICKET-10\nDemo Video & Submission Docs\n[NEXT]"]
 ```
 
 ---
@@ -176,8 +176,8 @@ flowchart LR
 
 ---
 
-### [TICKET-09] Two-Tier Automated Benchmark Suite (`benchmark/run_benchmark.py`) [READY / NEXT]
-- **Status:** 🟡 **READY TO EXECUTE**
+### [TICKET-09] Two-Tier Automated Benchmark Suite (`benchmark/run_benchmark.py`) [COMPLETED]
+- **Status:** ✅ **DONE**
 - **Priority:** Should-Have (P1)
 - **Dependencies:** TICKET-06
 - **Task Description:**
@@ -188,12 +188,14 @@ flowchart LR
 - **Acceptance Criteria:**
   - Runs cleanly via `python benchmark/run_benchmark.py`.
   - Exports `benchmark/results_summary.json` and prints a formatted markdown table.
-  - Proves Premature Cut-off drops from >60% to <5%.
+  - Proves Premature Cut-off drops from >60% to <5% (Achieved: 0.0%).
+  - False Interruption drops to 0% (Achieved: 0.0%).
+  - Dead-Air Turnaround <350ms (Achieved: 293.8ms).
 
 ---
 
-### [TICKET-10] Demo Video Production & Submission Documentation (`README.md`) [PENDING]
-- **Status:** ⚪ **PENDING (Awaiting Benchmark Results)**
+### [TICKET-10] Demo Video Production & Submission Documentation (`README.md`) [READY / NEXT]
+- **Status:** 🟡 **READY TO EXECUTE**
 - **Priority:** Must-Have (P0)
 - **Dependencies:** TICKET-08, TICKET-09
 - **Task Description:**

@@ -80,8 +80,8 @@ POSTPOSITION_MARKERS: FrozenSet[str] = frozenset({
     # Hindi (Devanagari)
     "के", "का", "की", "में", "से", "को", "पर", "पे", "लिए", "के लिए", "केलिए", "वास्ते",
     # Tamil (Romanized & Native)
-    "ku", "la", "oda", "ukku", "la irundhu", "lirundhu", "il", "aal", "odu", "idam",
-    "க்கு", "ல", "உக்கு", "ஓட", "லிருந்து", "இல்", "ஆல்", "கு", "இடம்",
+    "ku", "la", "oda", "ukku", "la irundhu", "lirundhu", "il", "aal", "odu", "idam", "pathi", "paththi",
+    "க்கு", "ல", "உக்கு", "ஓட", "லிருந்து", "இல்", "ஆல்", "கு", "இடம்", "பற்றி",
     # Telugu (Romanized & Native)
     "ki", "ku", "lo", "tho", "kosam", "koraku", "nunchi", "valla", "lo nunchi",
     "కి", "కు", "లో", "తో", "కోసం", "కొరకు", "నుంచి", "వల్ల",
@@ -99,8 +99,8 @@ HANGING_CONJUNCTION_MARKERS: FrozenSet[str] = frozenset({
     # English
     "and", "but", "so", "because", "or", "and then",
     # Tamil (Romanized & Native)
-    "aana", "analum", "aanaal", "illana", "illenral", "illati", "matrum",
-    "ஆனா", "ஆனால்", "இல்லனா", "மற்றும்",
+    "aana", "analum", "aanaal", "illana", "illenral", "illati", "matrum", "illa", "aadhunaala", "adhanaala", "adhunaala",
+    "ஆனா", "ஆனால்", "இல்லனா", "மற்றும்", "ஆதுனால",
     # Telugu (Romanized & Native)
     "kaani", "mariyu", "leka", "endukante", "kaakapothe",
     "కానీ", "మరియు", "లేక", "ఎందుకంటే",

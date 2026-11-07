@@ -338,33 +338,40 @@ class DynamicTurnEngine:
             self._cancel_prefetch()
 
             if is_speech:
-                # Stage 1: Soft-duck bot playback (-18 dB) immediately upon voice onset
-                if not self.gate.is_ducked:
-                    self.gate.on_speech_started(bot_is_speaking=True)
-
-                # Stage 2: Evaluate interim transcript tokens and speech duration
-                decision: GateDecision = self.gate.evaluate_utterance(
-                    transcript=transcript,
-                    speech_duration_ms=speech_duration_ms,
-                    bot_is_speaking=True,
-                )
-
-                if decision.action == DuckingAction.RESTORE:
-                    # Cultural backchannel confirmed; restore playback to 0 dB, bot continues
-                    self._state = TurnState.BACKCHANNEL_IGNORED
-                    self._ducking_gain_db = 0.0
-                    reason = f"BACKCHANNEL_IGNORED ({decision.reason}): volume restored to 0 dB, bot continues"
-                elif decision.action == DuckingAction.HARD_FLUSH:
-                    # Imperative command or prolonged barge-in; stop bot playback immediately
+                if self.mode == "STANDARD":
+                    # Standard Fixed VAD: Binary barge-in immediately interrupts bot playback
                     self._state = TurnState.LISTENING
                     self._bot_is_speaking = False
                     self._ducking_gain_db = -100.0
-                    reason = f"HARD_FLUSH ({decision.reason}): bot playback aborted, turn transferred"
+                    reason = "STANDARD_VAD_BARGE_IN: binary voice activity interruption"
                 else:
-                    # Voice detected, awaiting token confirmation; remain soft-ducked at -18 dB
-                    self._state = TurnState.BOT_DUCKED
-                    self._ducking_gain_db = decision.gain_db
-                    reason = f"BOT_DUCKED ({decision.reason}): playback attenuated to {decision.gain_db:.1f} dB"
+                    # Stage 1: Soft-duck bot playback (-18 dB) immediately upon voice onset
+                    if not self.gate.is_ducked:
+                        self.gate.on_speech_started(bot_is_speaking=True)
+
+                    # Stage 2: Evaluate interim transcript tokens and speech duration
+                    decision: GateDecision = self.gate.evaluate_utterance(
+                        transcript=transcript,
+                        speech_duration_ms=speech_duration_ms,
+                        bot_is_speaking=True,
+                    )
+
+                    if decision.action == DuckingAction.RESTORE:
+                        # Cultural backchannel confirmed; restore playback to 0 dB, bot continues
+                        self._state = TurnState.BACKCHANNEL_IGNORED
+                        self._ducking_gain_db = 0.0
+                        reason = f"BACKCHANNEL_IGNORED ({decision.reason}): volume restored to 0 dB, bot continues"
+                    elif decision.action == DuckingAction.HARD_FLUSH:
+                        # Imperative command or prolonged barge-in; stop bot playback immediately
+                        self._state = TurnState.LISTENING
+                        self._bot_is_speaking = False
+                        self._ducking_gain_db = -100.0
+                        reason = f"HARD_FLUSH ({decision.reason}): bot playback aborted, turn transferred"
+                    else:
+                        # Voice detected, awaiting token confirmation; remain soft-ducked at -18 dB
+                        self._state = TurnState.BOT_DUCKED
+                        self._ducking_gain_db = decision.gain_db
+                        reason = f"BOT_DUCKED ({decision.reason}): playback attenuated to {decision.gain_db:.1f} dB"
             else:
                 self._state = TurnState.BOT_SPEAKING
                 self._ducking_gain_db = 0.0
