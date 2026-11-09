@@ -81,9 +81,16 @@ with gr.Blocks(title="Vartalaap (वार्तालाप) — Sovereign Indi
         with gr.TabItem("⚙️ System Architecture & Sovereign AI"):
             gr.Markdown(ARCHITECTURE_MD)
 
-# Mount Gradio interface onto our FastAPI application
-app = gr.mount_gradio_app(fastapi_app, demo, path="/")
+# Mount Gradio interface onto our FastAPI application with SSR disabled to prevent Node port collision
+app = gr.mount_gradio_app(fastapi_app, demo, path="/", ssr_mode=False)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 7860))
+    port_env = os.environ.get("PORT", "7860")
+    try:
+        port = int(port_env)
+    except ValueError:
+        port = 7860
+    # Enforce standard Hugging Face ingress port 7860
+    if port == 7861:
+        port = 7860
     uvicorn.run(app, host="0.0.0.0", port=port)

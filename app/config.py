@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     )
 
     # Server Network Configuration
-    host: str = Field(default="127.0.0.1", description="FastAPI bind host")
-    port: int = Field(default=8000, description="FastAPI bind port")
+    host: str = Field(default="0.0.0.0", description="FastAPI bind host")
+    port: int = Field(default=7860, description="FastAPI bind port")
     debug: bool = Field(default=True, description="Debug mode flag")
 
     # Gnani AI Credentials & Base URLs

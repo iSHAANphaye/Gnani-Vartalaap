@@ -7,6 +7,7 @@ aiohttp>=3.9.0
 numpy>=1.26.0
 silero-vad>=5.1
 soundfile>=0.12.1
+onnx>=1.16.0
 onnxruntime>=1.19.0
 transformers>=4.40.0
 huggingface-hub<0.28.0
