@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import threading
 from dataclasses import dataclass
-from typing import Iterable, Union
+from typing import Iterable, Optional, Union
 
 import numpy as np
 import silero_vad
@@ -26,6 +26,7 @@ class VADResult:
     confidence: float
     silence_duration_ms: float
     speech_duration_ms: float
+    rms: float = 0.0
 
 
 class AudioRingBuffer:
@@ -222,7 +223,8 @@ class SileroVAD:
 
     def __init__(
         self,
-        threshold: float = 0.5,
+        threshold: float = 0.55,
+        min_rms: float = 0.012,
         sample_rate: int = 16000,
     ) -> None:
         if not (0.0 <= threshold <= 1.0):
@@ -231,6 +233,7 @@ class SileroVAD:
             raise ValueError(f"Silero VAD supports sample rates [8000, 16000], got {sample_rate}")
 
         self._threshold = threshold
+        self._min_rms = float(min_rms)
         self._sample_rate = sample_rate
         self._chunk_samples = 512 if sample_rate == 16000 else 256
         self._chunk_bytes = self._chunk_samples * 2
@@ -242,6 +245,7 @@ class SileroVAD:
 
         self._silence_duration_ms: float = 0.0
         self._speech_duration_ms: float = 0.0
+        self._is_active_speech: bool = False
         self._lock = threading.Lock()
 
         # Warm up ONNX session
@@ -260,6 +264,11 @@ class SileroVAD:
         return self._threshold
 
     @property
+    def min_rms(self) -> float:
+        """Minimum RMS acoustic energy floor for speech classification."""
+        return self._min_rms
+
+    @property
     def sample_rate(self) -> int:
         """Audio sampling rate in Hertz."""
         return self._sample_rate
@@ -276,14 +285,25 @@ class SileroVAD:
         with self._lock:
             return self._speech_duration_ms
 
-    def process_chunk(self, chunk_bytes: bytes) -> VADResult:
+    def process_chunk(
+        self,
+        chunk_bytes: bytes,
+        threshold_override: Optional[float] = None,
+        min_rms_override: Optional[float] = None,
+    ) -> VADResult:
         """Process a single 16-bit PCM mono audio chunk and update speech/silence tracking.
+
+        Employs dual-stage acoustic validation:
+        1. RMS energy floor filtering to reject quiet microphone air hiss and breathing.
+        2. Silero VAD neural classification with hysteresis (speech onset vs speech continuation).
 
         Args:
             chunk_bytes: 16-bit PCM bytes (512 samples / 1024 bytes at 16kHz).
+            threshold_override: Optional dynamic neural confidence threshold.
+            min_rms_override: Optional dynamic RMS energy floor threshold.
 
         Returns:
-            VADResult with speech flag, raw confidence, and accumulated durations.
+            VADResult with speech flag, raw confidence, accumulated durations, and frame RMS.
         """
         if len(chunk_bytes) != self._chunk_bytes:
             raise ValueError(
@@ -295,12 +315,26 @@ class SileroVAD:
         audio_np = (
             np.frombuffer(chunk_bytes, dtype=np.int16).astype(np.float32) / 32768.0
         )
+        rms = float(np.sqrt(np.mean(audio_np ** 2)))
         audio_tensor = torch.from_numpy(audio_np)
+
+        target_threshold = threshold_override if threshold_override is not None else self._threshold
+        target_min_rms = min_rms_override if min_rms_override is not None else self._min_rms
 
         with self._lock:
             raw_out = self._model(audio_tensor, self._sample_rate)
             confidence = float(raw_out.item())
-            is_speech = confidence >= self._threshold
+
+            # Dual-gate decision: speech onset requires meeting threshold and minimum RMS
+            if self._is_active_speech:
+                # Continuation hysteresis: hold speech if confidence remains above relaxed floor and RMS is present
+                exit_threshold = max(0.35, target_threshold - 0.20)
+                is_speech = (confidence >= exit_threshold) and (rms >= (target_min_rms * 0.7))
+            else:
+                # Onset gate: strict confidence threshold AND energy floor
+                is_speech = (confidence >= target_threshold) and (rms >= target_min_rms)
+
+            self._is_active_speech = is_speech
 
             if is_speech:
                 self._speech_duration_ms += self._chunk_duration_ms
@@ -314,6 +348,7 @@ class SileroVAD:
                 confidence=confidence,
                 silence_duration_ms=self._silence_duration_ms,
                 speech_duration_ms=self._speech_duration_ms,
+                rms=rms,
             )
 
     def reset(self) -> None:
@@ -322,6 +357,7 @@ class SileroVAD:
             self._model.reset_states()
             self._silence_duration_ms = 0.0
             self._speech_duration_ms = 0.0
+            self._is_active_speech = False
 
 
 class AcousticDetector:
@@ -332,7 +368,8 @@ class AcousticDetector:
 
     def __init__(
         self,
-        threshold: float = 0.5,
+        threshold: float = 0.55,
+        min_rms: float = 0.012,
         ring_buffer_duration_sec: float = 8.0,
         sample_rate: int = 16000,
     ) -> None:
@@ -342,6 +379,7 @@ class AcousticDetector:
         )
         self.vad = SileroVAD(
             threshold=threshold,
+            min_rms=min_rms,
             sample_rate=sample_rate,
         )
 
@@ -355,9 +393,23 @@ class AcousticDetector:
         """Elapsed speech duration in milliseconds."""
         return self.vad.speech_duration_ms
 
-    def process_chunk(self, chunk_bytes: bytes) -> VADResult:
-        """Ingest chunk into rolling ring buffer and evaluate acoustic speech activity."""
+    def process_chunk(
+        self,
+        chunk_bytes: bytes,
+        bot_is_speaking: bool = False,
+    ) -> VADResult:
+        """Ingest chunk into rolling ring buffer and evaluate acoustic speech activity.
+
+        When bot_is_speaking=True, applies tighter RMS noise floor (0.022) and VAD threshold (0.75)
+        to prevent bot audio speaker bleed or user breathing from falsely interrupting bot speech.
+        """
         self.ring_buffer.append(chunk_bytes)
+        if bot_is_speaking:
+            return self.vad.process_chunk(
+                chunk_bytes,
+                threshold_override=0.75,
+                min_rms_override=0.022,
+            )
         return self.vad.process_chunk(chunk_bytes)
 
     def get_recent_audio(self, duration_sec: float = 8.0) -> np.ndarray:

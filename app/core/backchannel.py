@@ -333,8 +333,11 @@ class TwoStageBackchannelGate:
             self._last_decision = decision
             return decision
 
-        # Case C: Extended Speech / Prolonged Barge-In (>= 500ms duration)
-        if speech_duration_ms >= self._prolonged_threshold_ms:
+        has_text = bool(transcript and transcript.strip())
+
+        # Case C: Extended Speech / Prolonged Barge-In
+        # If words have been recognized: prolonged speech >= 500ms triggers HARD_FLUSH
+        if has_text and speech_duration_ms >= self._prolonged_threshold_ms:
             self._is_ducked = False
             self._current_action = DuckingAction.HARD_FLUSH
             self._current_gain_db = self._hard_flush_db
@@ -348,7 +351,23 @@ class TwoStageBackchannelGate:
             self._last_decision = decision
             return decision
 
-        # Pending speech (< 500ms, non-backchannel, non-imperative: remains ducked)
+        # If transcript is empty (no lexical confirmation), do not abort playback on short sounds
+        # like breathing or coughing. Only trigger after >= 1200ms of sustained acoustic sound.
+        if not has_text and speech_duration_ms >= 1200.0:
+            self._is_ducked = False
+            self._current_action = DuckingAction.HARD_FLUSH
+            self._current_gain_db = self._hard_flush_db
+            decision = GateDecision(
+                action=DuckingAction.HARD_FLUSH,
+                gain_db=self._hard_flush_db,
+                reason="PROLONGED_BARGE_IN",
+                is_backchannel=False,
+                is_barge_in=True,
+            )
+            self._last_decision = decision
+            return decision
+
+        # Pending speech (< 500ms with text, or < 1200ms without text): remains soft-ducked at -18 dB
         self._is_ducked = True
         self._current_action = DuckingAction.DUCK
         self._current_gain_db = self._soft_duck_db

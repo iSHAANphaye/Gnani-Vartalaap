@@ -208,9 +208,18 @@ class DynamicTurnEngine:
     def set_bot_speaking(self, speaking: bool) -> None:
         """Update bot audio playback status."""
         self._bot_is_speaking = bool(speaking)
-        if not self._bot_is_speaking and self._state in (TurnState.BOT_SPEAKING, TurnState.BOT_DUCKED):
-            self._ducking_gain_db = 0.0
-            self._state = TurnState.LISTENING
+        if not self._bot_is_speaking:
+            if self._state in (TurnState.BOT_SPEAKING, TurnState.BOT_DUCKED, TurnState.BACKCHANNEL_IGNORED):
+                self._ducking_gain_db = 0.0
+                self._state = TurnState.LISTENING
+            self.detector.reset()
+            self.gate.reset()
+
+    def clear_transcript(self) -> None:
+        """Clear cached transcript and speculative prefetch state to prevent repetition."""
+        self._last_transcript = ""
+        self._user_has_spoken = False
+        self._cancel_prefetch()
 
     def reset(self) -> None:
         """Reset internal turn-taking state machine and all subcomponents."""
@@ -310,7 +319,10 @@ class DynamicTurnEngine:
 
         # 1. Acoustic VAD Ingestion
         if chunk_bytes is not None:
-            vad_res: VADResult = self.detector.process_chunk(chunk_bytes)
+            vad_res: VADResult = self.detector.process_chunk(
+                chunk_bytes,
+                bot_is_speaking=self._bot_is_speaking,
+            )
             is_speech = vad_res.is_speech
             elapsed_silence_ms = vad_res.silence_duration_ms
             speech_duration_ms = vad_res.speech_duration_ms
@@ -368,6 +380,9 @@ class DynamicTurnEngine:
                         self._state = TurnState.LISTENING
                         self._bot_is_speaking = False
                         self._ducking_gain_db = -100.0
+                        self._user_has_spoken = False
+                        self._last_transcript = ""
+                        self.detector.reset()
                         reason = f"HARD_FLUSH ({decision.reason}): bot playback aborted, turn transferred"
                     else:
                         # Voice detected, awaiting token confirmation; remain soft-ducked at -18 dB
@@ -375,6 +390,8 @@ class DynamicTurnEngine:
                         self._ducking_gain_db = decision.gain_db
                         reason = f"BOT_DUCKED ({decision.reason}): playback attenuated to {decision.gain_db:.1f} dB"
             else:
+                if self.gate.is_ducked:
+                    self.gate.reset()
                 self._state = TurnState.BOT_SPEAKING
                 self._ducking_gain_db = 0.0
                 reason = "BOT_PLAYBACK_ACTIVE"
@@ -474,11 +491,15 @@ class DynamicTurnEngine:
                                     logger.warning("Timed out awaiting prefetch task: %s", exc)
 
                         if not self._prefetched_reply:
-                            self._prefetched_reply = await self.llm.generate_reply(transcript)
+                            if transcript and transcript.strip():
+                                self._prefetched_reply = await self.llm.generate_reply(transcript)
+                            else:
+                                self._prefetched_reply = None
 
                         response_text = self._prefetched_reply
                         self._prefetch_task = None
                         self._prefetch_cancel_token = None
+                        self._last_transcript = ""
 
                     # State Transition Condition 2: Silence >= 200ms and P(complete) > 0.75 -> Speculative Prefetch
                     elif (

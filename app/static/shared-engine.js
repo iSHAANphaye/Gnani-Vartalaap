@@ -342,7 +342,8 @@
             sampleRate: 16000,
             channelCount: 1,
             echoCancellation: true,
-            noiseSuppression: true
+            noiseSuppression: true,
+            autoGainControl: false
           }
         });
 
@@ -378,6 +379,11 @@
           const rms = Math.sqrt(sum / input.length);
           this.audioLevel = Math.min(1.0, rms * 4.0);
           this.emit('audioLevel', this.audioLevel);
+
+          // Client-side noise floor gate: zero out frames below 0.008 (-42 dBFS) to suppress breath/room air
+          if (rms < 0.008) {
+            pcm16.fill(0);
+          }
 
           if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(pcm16.buffer);

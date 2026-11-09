@@ -303,6 +303,11 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                                 pass
                             tts_task = None
 
+                        # Clear transcript state on hard flush to avoid replaying interrupted response
+                        session_state["transcript"] = ""
+                        session_state["injected_transcript"] = ""
+                        engine.clear_transcript()
+
                         if prev_action != DuckingAction.HARD_FLUSH:
                             await safe_ws.send_json(
                                 {
@@ -339,6 +344,15 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                             session_state["prev_ducking_action"] = DuckingAction.RESTORE
 
                     elif current_action == DuckingAction.NONE:
+                        if prev_action == DuckingAction.DUCK:
+                            await safe_ws.send_json(
+                                {
+                                    "type": "CONTROL",
+                                    "action": "RESTORE",
+                                    "gain_db": 0.0,
+                                    "reason": "SPEECH_ENDED_RESTORE",
+                                }
+                            )
                         session_state["prev_ducking_action"] = DuckingAction.NONE
 
                     # Send structured real-time telemetry packet to client HUD
@@ -361,9 +375,18 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                         if engine.is_bot_speaking or (tts_task is not None and not tts_task.done()):
                             logger.debug("Session %s: Turn granted but bot already speaking; skipping", session_id)
                         else:
+                            prompt_to_answer = current_transcript.strip()
+                            if not prompt_to_answer and telemetry.response_text:
+                                prompt_to_answer = telemetry.response_text.strip()
+
+                            if not prompt_to_answer:
+                                logger.debug("Session %s: Turn granted with empty transcript; ignoring", session_id)
+                                engine.clear_transcript()
+                                continue
+
                             response_text = telemetry.response_text
                             if not response_text:
-                                response_text = await llm.generate_reply(current_transcript)
+                                response_text = await llm.generate_reply(prompt_to_answer)
                             if not response_text:
                                 response_text = "Ji boliye, main sun raha hoon."
 
@@ -371,6 +394,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                             # Reset session transcripts for next turn
                             session_state["transcript"] = ""
                             session_state["injected_transcript"] = ""
+                            engine.clear_transcript()
 
                             tts_task = asyncio.create_task(_stream_tts_response(response_text))
 
