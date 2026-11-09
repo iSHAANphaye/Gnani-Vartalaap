@@ -104,11 +104,23 @@ class GnaniTTSClient:
         for i in range(0, len(pcm_data), chunk_size):
             yield pcm_data[i : i + chunk_size]
 
+    @staticmethod
+    def _wrap_pcm_as_wav(pcm_bytes: bytes, sample_rate: int = 16000) -> bytes:
+        """Wrap raw 16-bit mono linear PCM bytes with a standard 44-byte RIFF WAV header."""
+        buffer = io.BytesIO()
+        with wave.open(buffer, "wb") as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(sample_rate)
+            wf.writeframes(pcm_bytes)
+        return buffer.getvalue()
+
     def _request_timbre_tts(self, text: str, voice: str, language: str) -> bytes:
         """Execute REST call to Gnani Timbre v3.0 endpoint."""
         api_key = self.settings.gnani_api_key.get_secret_value()
         headers = {
             "X-API-Key-ID": api_key,
+            "token": api_key,
             "Content-Type": "application/json",
         }
         payload = {
@@ -129,18 +141,30 @@ class GnaniTTSClient:
         response.raise_for_status()
 
         content_type = response.headers.get("content-type", "")
-        if "audio" in content_type or response.content.startswith(b"RIFF"):
-            return response.content
+        # If response is raw binary PCM or WAV audio
+        if "audio" in content_type or "octet-stream" in content_type or response.content.startswith(b"RIFF"):
+            audio_bytes = response.content
+            if not audio_bytes.startswith(b"RIFF"):
+                audio_bytes = self._wrap_pcm_as_wav(audio_bytes, sample_rate=16000)
+            return audio_bytes
 
         # Handle JSON wrapper containing base64 audio if returned
-        data = response.json()
-        import base64
+        try:
+            data = response.json()
+            import base64
+            raw_b64 = data.get("audio_content") or data.get("audio") or ""
+            if raw_b64:
+                decoded = base64.b64decode(raw_b64)
+                if not decoded.startswith(b"RIFF"):
+                    decoded = self._wrap_pcm_as_wav(decoded, sample_rate=16000)
+                return decoded
+        except Exception:
+            pass
 
-        raw_b64 = data.get("audio_content") or data.get("audio") or ""
-        if raw_b64:
-            return base64.b64decode(raw_b64)
+        if len(response.content) > 100:
+            return self._wrap_pcm_as_wav(response.content, sample_rate=16000)
 
-        raise ValueError(f"Unexpected response payload format from Gnani TTS: {data.keys()}")
+        raise ValueError(f"Unexpected response payload format from Gnani TTS: {response.text[:100]}")
 
     def _generate_mock_wav(self, text: str) -> bytes:
         """Generate a valid 16kHz 16-bit mono RIFF WAV for offline testing."""

@@ -79,22 +79,37 @@ class GnaniSTTClient:
 
         api_key = self.settings.gnani_api_key.get_secret_value()
         headers = {
+            "token": api_key,
             "X-API-Key-ID": api_key,
-            "X-Language-Code": self.language,
-            "X-Sampling-Rate": str(self.sample_rate),
+            "language_code": self.language,
+            "sample_rate": str(self.sample_rate),
+            "audio_format": "pcm",
         }
 
         try:
             logger.info("Opening WebSocket connection to %s", self.settings.gnani_stt_ws_url)
-            self._ws = await asyncio.wait_for(
-                websockets.connect(
-                    self.settings.gnani_stt_ws_url,
-                    extra_headers=headers,
-                    ping_interval=20,
-                    ping_timeout=10,
-                ),
-                timeout=5.0,
-            )
+            connect_kwargs = {
+                "ping_interval": 20,
+                "ping_timeout": 10,
+            }
+            try:
+                self._ws = await asyncio.wait_for(
+                    websockets.connect(
+                        self.settings.gnani_stt_ws_url,
+                        additional_headers=headers,
+                        **connect_kwargs,
+                    ),
+                    timeout=5.0,
+                )
+            except TypeError:
+                self._ws = await asyncio.wait_for(
+                    websockets.connect(
+                        self.settings.gnani_stt_ws_url,
+                        extra_headers=headers,
+                        **connect_kwargs,
+                    ),
+                    timeout=5.0,
+                )
             self.is_connected = True
             self._receive_task = asyncio.create_task(self._receive_loop())
             self._send_task = asyncio.create_task(self._send_loop())
@@ -155,6 +170,8 @@ class GnaniSTTClient:
                     try:
                         data = json.loads(message)
                         text = data.get("transcript") or data.get("text") or ""
+                        if not text and isinstance(data.get("output"), dict):
+                            text = data["output"].get("literal", "")
                         is_final = data.get("is_final") or data.get("final", False)
                         confidence = float(data.get("confidence", 0.95))
                         if text:

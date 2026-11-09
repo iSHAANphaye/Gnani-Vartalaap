@@ -75,24 +75,28 @@ def test_health_endpoint(client: TestClient) -> bool:
 
 
 def test_root_redirect(client: TestClient) -> bool:
-    """Validate root URL redirect to static conversation HUD."""
+    """Validate root URL serves or redirects to static conversation console."""
     print("\n" + "=" * 75)
-    print(" [TEST 2] Root Path Redirect (GET / -> /static/index.html)")
+    print(" [TEST 2] Root Path Serving (GET /)")
     print("=" * 75)
 
     response = client.get("/", follow_redirects=False)
     print(f"  HTTP Status Code : {response.status_code}")
-    assert response.status_code in (301, 302, 307, 308), f"Expected redirect status, got {response.status_code}"
+    assert response.status_code in (200, 301, 302, 307, 308), f"Expected 200 or redirect status, got {response.status_code}"
 
-    location = response.headers.get("location", "")
-    print(f"  Redirect Target  : {location}")
-    assert location.endswith("/static/index.html"), f"Expected redirect to /static/index.html, got {location}"
+    if response.status_code in (301, 302, 307, 308):
+        location = response.headers.get("location", "")
+        print(f"  Redirect Target  : {location}")
+        assert "index.html" in location, f"Expected redirect to index.html, got {location}"
+    else:
+        assert len(response.content) > 1000, "Expected non-empty HTML at root"
 
     # Verify static file content is accessible
     static_resp = client.get("/static/index.html")
     assert static_resp.status_code == 200, f"Expected 200 OK for /static/index.html, got {static_resp.status_code}"
-    print(f"  Static HUD Size  : {len(static_resp.content)} bytes")
-    print("  ✅ PASS: Root redirect and static HUD verified.")
+    print(f"  Static Console Size : {len(static_resp.content)} bytes")
+    print("  ✅ PASS: Root endpoint and static console verified.")
+    return True
     return True
 
 

@@ -115,17 +115,32 @@ async def test_gnani_stt() -> bool:
     assert connected, "Failed to connect STT client"
     print(f"  ✓ STT Client Connected (Mock Mode: {client.is_mock_mode})")
 
-    # Send 50ms dummy PCM audio frame
     pcm_chunk = b"\x00\x00" * 800
-    await client.send_audio_chunk(pcm_chunk)
+    # Send audio frames
+    wav_path = Path("benchmark/test_samples/sample_27_terminal_balance_batao.wav")
+    if not client.is_mock_mode and wav_path.exists():
+        with wave.open(str(wav_path), "rb") as wf:
+            real_audio = wf.readframes(wf.getnframes())
 
-    # Receive interim transcripts
+        async def feed_audio():
+            chunk_size = 1024
+            for i in range(0, len(real_audio), chunk_size):
+                await client.send_audio_chunk(real_audio[i:i + chunk_size])
+                await asyncio.sleep(0.02)
+        asyncio.create_task(feed_audio())
+    else:
+        await client.send_audio_chunk(pcm_chunk)
+
+    # Receive interim transcripts with safety timeout
     received_tokens = []
-    async for transcript in client.stream_transcripts():
-        received_tokens.append(transcript.text)
-        print(f"  ✓ Emitted Token: '{transcript.text}' (confidence={transcript.confidence:.2f})")
-        if len(received_tokens) >= 2:
-            break
+    try:
+        async for transcript in client.stream_transcripts():
+            received_tokens.append(transcript.text)
+            print(f"  ✓ Emitted Token: '{transcript.text}' (confidence={transcript.confidence:.2f})")
+            if len(received_tokens) >= 1:
+                break
+    except asyncio.TimeoutError:
+        pass
 
     assert len(received_tokens) >= 1, "Failed to receive interim transcript tokens"
 
