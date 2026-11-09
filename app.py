@@ -97,13 +97,13 @@ with gr.Blocks(title="Vartalaap (वार्तालाप) — Sovereign Indi
                     <span style="font-size: 14px; color: #aaa;">
                         Hardware Simulation: Kudelski Nagra IV-S 15 IPS Studio Tape Deck • Web Audio API & Full-Duplex WebSockets
                     </span>
-                    <a href="/static/index.html" target="_blank" 
+                    <a href="/console/index.html" target="_blank" 
                        style="padding: 6px 14px; background: #C43B2B; color: #fff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold;">
                         Open Direct Fullscreen Console ↗
                     </a>
                 </div>
                 <div style="width: 100%; height: 900px; background: #14110F; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-                    <iframe src="/static/index.html" 
+                    <iframe src="/console/index.html" 
                             style="width: 100%; height: 100%; border: none; display: block;" 
                             allow="microphone; autoplay"
                             title="Vartalaap Vintage Nagra Console">
@@ -130,9 +130,13 @@ with gr.Blocks(title="Vartalaap (वार्तालाप) — Sovereign Indi
         with gr.TabItem("⚙️ System Architecture & Sovereign AI"):
             gr.Markdown(ARCHITECTURE_MD)
 
-# Mount FastAPI routes (including /ws/audio and /api/health) directly onto Gradio's internal FastAPI app
-demo.app.include_router(fastapi_app.router)
-demo.app.mount("/static", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
+# Mount static files at /console to avoid collision with Gradio internal /static route
+demo.app.mount("/console", StaticFiles(directory=str(STATIC_DIR), html=True), name="console")
+
+# Copy FastAPI routes (/ws/audio, /api/health) onto demo.app
+for route in fastapi_app.routes:
+    if hasattr(route, 'path') and route.path not in [r.path for r in demo.app.routes if hasattr(r, 'path')]:
+        demo.app.routes.append(route)
 
 # Enable queue required by ZeroGPU dynamic execution
 demo.queue()
