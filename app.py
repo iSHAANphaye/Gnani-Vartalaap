@@ -63,8 +63,8 @@ def run_zero_gpu_turn_inference(text_input: str = "Indic Multilingual Turn Bench
     """Run accelerated acoustic turn inference on ZeroGPU (NVIDIA A10G)."""
     t0 = time.perf_counter()
     try:
-        from app.services.smart_turn import get_smart_turn_engine
-        engine = get_smart_turn_engine()
+        from app.services.smart_turn import SmartTurnEngine
+        engine = SmartTurnEngine(force_cpu=False)
         dummy_audio = np.zeros(16000, dtype=np.float32)
         prob = engine.predict_turn_probability(dummy_audio, sample_rate=16000)
         status = "ONLINE"

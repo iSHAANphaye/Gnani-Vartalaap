@@ -182,6 +182,19 @@ class SmartTurnEngine:
 
         # Detect GPU availability
         has_cuda = torch.cuda.is_available() and not force_cpu
+        if has_cuda:
+            try:
+                # Under Hugging Face ZeroGPU, torch.cuda is only operational inside @spaces.GPU functions.
+                # Probe tensor allocation to ensure CUDA is genuinely permitted in the current context.
+                probe = torch.zeros(1, device="cuda:0")
+                del probe
+            except Exception as probe_err:
+                logger.info(
+                    "CUDA allocation unavailable in current execution context (%s). Operating on CPU.",
+                    probe_err,
+                )
+                has_cuda = False
+
         self.device = torch.device("cuda:0" if has_cuda else "cpu")
         self.is_gpu = has_cuda
 
@@ -321,6 +334,14 @@ class SmartTurnEngine:
 
         p_incomplete = max(0.0, min(1.0, 1.0 - p_complete))
         return float(p_incomplete)
+
+    def predict_turn_probability(
+        self,
+        audio_pcm: Union[np.ndarray, torch.Tensor],
+        sample_rate: int = 16000,
+    ) -> float:
+        """Return turn completion probability (1.0 - p_incomplete)."""
+        return 1.0 - self.predict_incomplete(audio_pcm, sample_rate=sample_rate)
 
 
 _engine_singleton: Optional[SmartTurnEngine] = None
