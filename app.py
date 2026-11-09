@@ -6,6 +6,17 @@ Console seamlessly into a 100% Free Hugging Face Gradio Space (16 GB RAM + 2 vCP
 
 from __future__ import annotations
 
+# CRITICAL ZERO-GPU REQUIREMENT: import spaces MUST come BEFORE torch or any other libraries
+try:
+    import spaces
+except ImportError:
+    class _MockSpaces:
+        def GPU(self, fn=None, duration=60):
+            if fn is None:
+                return lambda f: f
+            return fn
+    spaces = _MockSpaces()
+
 import os
 import time
 from pathlib import Path
@@ -45,58 +56,29 @@ ARCHITECTURE_MD = """
    - Automatically expands silence tolerance from 500ms up to 2000ms during mid-sentence thinking pauses, and contracts to ~270ms upon terminal closure.
 """
 
-# ZeroGPU Function Registration
-try:
-    import spaces
-    HAVE_SPACES = True
-except ImportError:
-    HAVE_SPACES = False
-
-if HAVE_SPACES:
-    @spaces.GPU
-    def run_zero_gpu_turn_inference():
-        """Run accelerated acoustic turn inference on ZeroGPU (NVIDIA A10G)."""
-        t0 = time.perf_counter()
-        try:
-            from app.services.smart_turn import get_smart_turn_engine
-            engine = get_smart_turn_engine()
-            dummy_audio = np.zeros(16000, dtype=np.float32)
-            prob = engine.predict_turn_probability(dummy_audio, sample_rate=16000)
-            status = "ONLINE"
-        except Exception as exc:
-            prob = 0.0
-            status = f"Warmup notice: {exc}"
-        latency_ms = (time.perf_counter() - t0) * 1000.0
-        return {
-            "hardware": "NVIDIA ZeroGPU (A10G Accelerator)",
-            "model": "Smart-Turn v3.2 ONNX / PyTorch",
-            "inference_latency_ms": round(latency_ms, 2),
-            "turn_probability": round(prob, 4),
-            "engine_status": status,
-            "indic_sovereign_ai": "Active"
-        }
-else:
-    def run_zero_gpu_turn_inference():
-        """CPU fallback acoustic turn inference."""
-        t0 = time.perf_counter()
-        try:
-            from app.services.smart_turn import get_smart_turn_engine
-            engine = get_smart_turn_engine()
-            dummy_audio = np.zeros(16000, dtype=np.float32)
-            prob = engine.predict_turn_probability(dummy_audio, sample_rate=16000)
-            status = "ONLINE"
-        except Exception as exc:
-            prob = 0.0
-            status = f"Warmup notice: {exc}"
-        latency_ms = (time.perf_counter() - t0) * 1000.0
-        return {
-            "hardware": "CPU (Local / Host Architecture)",
-            "model": "Smart-Turn v3.2 CPU ONNX",
-            "inference_latency_ms": round(latency_ms, 2),
-            "turn_probability": round(prob, 4),
-            "engine_status": status,
-            "indic_sovereign_ai": "Active"
-        }
+@spaces.GPU
+def run_zero_gpu_turn_inference(text_input: str = "Indic Multilingual Turn Benchmark Frame"):
+    """Run accelerated acoustic turn inference on ZeroGPU (NVIDIA A10G)."""
+    t0 = time.perf_counter()
+    try:
+        from app.services.smart_turn import get_smart_turn_engine
+        engine = get_smart_turn_engine()
+        dummy_audio = np.zeros(16000, dtype=np.float32)
+        prob = engine.predict_turn_probability(dummy_audio, sample_rate=16000)
+        status = "ONLINE"
+    except Exception as exc:
+        prob = 0.0
+        status = f"Warmup notice: {exc}"
+    latency_ms = (time.perf_counter() - t0) * 1000.0
+    return {
+        "benchmark_query": text_input,
+        "hardware": "NVIDIA ZeroGPU (A10G Accelerator)",
+        "model": "Smart-Turn v3.2 ONNX / PyTorch",
+        "inference_latency_ms": round(latency_ms, 2),
+        "turn_probability": round(prob, 4),
+        "engine_status": status,
+        "indic_sovereign_ai": "Active"
+    }
 
 with gr.Blocks(title="Vartalaap (वार्तालाप) — Sovereign Indic Voice Engine") as demo:
     gr.Markdown(
@@ -137,15 +119,19 @@ with gr.Blocks(title="Vartalaap (वार्तालाप) — Sovereign Indi
                 Test on-device Smart-Turn v3.2 deep learning turn-detection directly on Hugging Face's ZeroGPU infrastructure.
                 """
             )
+            gpu_bench_input = gr.Textbox(value="Indic Multilingual Turn Benchmark Frame", label="Benchmark Query")
             gpu_bench_btn = gr.Button("⚡ Run Smart-Turn v3.2 Inference on ZeroGPU", variant="primary")
             gpu_bench_out = gr.JSON(label="ZeroGPU Hardware & Inference Telemetry")
-            gpu_bench_btn.click(fn=run_zero_gpu_turn_inference, inputs=[], outputs=[gpu_bench_out])
+            gpu_bench_btn.click(fn=run_zero_gpu_turn_inference, inputs=[gpu_bench_input], outputs=[gpu_bench_out])
 
         with gr.TabItem("📊 Empirical Live Benchmark Results"):
             gr.Markdown(benchmark_report_md)
 
         with gr.TabItem("⚙️ System Architecture & Sovereign AI"):
             gr.Markdown(ARCHITECTURE_MD)
+
+# Enable queue required by ZeroGPU dynamic execution
+demo.queue()
 
 # Mount Gradio interface onto our FastAPI application with SSR disabled to prevent Node port collision
 app = gr.mount_gradio_app(fastapi_app, demo, path="/", ssr_mode=False)
