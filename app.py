@@ -22,7 +22,7 @@ import time
 from pathlib import Path
 import numpy as np
 import gradio as gr
-import uvicorn
+from fastapi.staticfiles import StaticFiles
 
 from app.main import app as fastapi_app
 
@@ -130,19 +130,19 @@ with gr.Blocks(title="Vartalaap (वार्तालाप) — Sovereign Indi
         with gr.TabItem("⚙️ System Architecture & Sovereign AI"):
             gr.Markdown(ARCHITECTURE_MD)
 
+# Mount FastAPI routes (including /ws/audio and /api/health) directly onto Gradio's internal FastAPI app
+demo.app.include_router(fastapi_app.router)
+demo.app.mount("/static", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
+
 # Enable queue required by ZeroGPU dynamic execution
 demo.queue()
 
-# Mount Gradio interface onto our FastAPI application with SSR disabled to prevent Node port collision
-app = gr.mount_gradio_app(fastapi_app, demo, path="/", ssr_mode=False)
+# Export ASGI app instance
+app = demo.app
 
 if __name__ == "__main__":
-    port_env = os.environ.get("PORT", "7860")
-    try:
-        port = int(port_env)
-    except ValueError:
-        port = 7860
-    # Enforce standard Hugging Face ingress port 7860
-    if port == 7861:
-        port = 7860
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        ssr_mode=False,
+    )
