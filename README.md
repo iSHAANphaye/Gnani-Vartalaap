@@ -8,7 +8,7 @@ sdk_version: 5.6.0
 app_file: app.py
 pinned: false
 license: apache-2.0
-short_description: Indic-Aware Hybrid Turn Detection Engine for Conversational Voice Agents
+short_description: Indic-Aware Hybrid Turn Detection Engine
 ---
 
 # Vartalaap (वार्तालाप)
