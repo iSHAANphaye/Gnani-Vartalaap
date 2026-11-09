@@ -1,3 +1,16 @@
+---
+title: Vartalaap — Sovereign Indic Voice Turn Engine
+emoji: 🎙️
+colorFrom: red
+colorTo: gray
+sdk: gradio
+sdk_version: 5.6.0
+app_file: app.py
+pinned: false
+license: apache-2.0
+short_description: Indic-Aware Hybrid Turn Detection Engine for Conversational Voice Agents
+---
+
 # Vartalaap (वार्तालाप)
 ### Indic-Aware Hybrid Turn Detection Engine for Conversational Voice Agents
 

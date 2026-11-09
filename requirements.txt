@@ -1,5 +1,5 @@
 fastapi>=0.115.0
-gradio>=4.40.0
+gradio>=5.0.0
 uvicorn[standard]>=0.30.0
 websockets>=13.0
 pydantic-settings>=2.5.0
