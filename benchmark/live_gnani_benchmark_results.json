@@ -1,0 +1,106 @@
+[
+  {
+    "case_id": "PAUSE-01",
+    "name": "Genitive Postposition Pause ('ke')",
+    "category": "MID_UTTERANCE_POSTPOSITION_PAUSE",
+    "full_text": "मेरा अकाउंट बैलेंस के ... बारे में बताओ",
+    "pause_ms": 750,
+    "gnani_tts_latency_ms": 1686.6,
+    "gnani_stt_tokens": 10,
+    "gnani_stt_ttft_ms": 565.9,
+    "gnani_stt_final": "बारे में बताओ",
+    "mid_pause_category": "POSTPOSITION",
+    "mid_pause_markers": [
+      "के"
+    ],
+    "mid_pause_p_complete": 0.0467,
+    "dynamic_ets_ms": 1918.2,
+    "standard_fixed_vad_ms": 500.0,
+    "standard_outcome": "PREMATURE_CUTOFF",
+    "vartalaap_outcome": "FLOOR_RETAINED",
+    "bot_reply_synth_bytes": 87084,
+    "bot_reply_synth_ms": 1298.2
+  },
+  {
+    "case_id": "PAUSE-02",
+    "name": "Coordinating Conjunction Pause ('aur')",
+    "category": "MID_UTTERANCE_CONJUNCTION_PAUSE",
+    "full_text": "बिजली का बिल और ... पानी का बिल दिखाओ",
+    "pause_ms": 800,
+    "gnani_tts_latency_ms": 1596.4,
+    "gnani_stt_tokens": 11,
+    "gnani_stt_ttft_ms": 519.0,
+    "gnani_stt_final": "पानी का बिल दिखाओ",
+    "mid_pause_category": "HANGING_CONJUNCTION",
+    "mid_pause_markers": [
+      "और"
+    ],
+    "mid_pause_p_complete": 0.0,
+    "dynamic_ets_ms": 2000.0,
+    "standard_fixed_vad_ms": 500.0,
+    "standard_outcome": "PREMATURE_CUTOFF",
+    "vartalaap_outcome": "FLOOR_RETAINED",
+    "bot_reply_synth_bytes": 84524,
+    "bot_reply_synth_ms": 1083.5
+  },
+  {
+    "case_id": "PAUSE-03",
+    "name": "Cognitive Hesitation Filler ('matlab ki')",
+    "category": "COGNITIVE_HESITATION_FILLER",
+    "full_text": "मुझे एक टिकट बुक करनी है मतलब की ... मुंबई के लिए",
+    "pause_ms": 850,
+    "gnani_tts_latency_ms": 1773.7,
+    "gnani_stt_tokens": 16,
+    "gnani_stt_ttft_ms": 564.3,
+    "gnani_stt_final": "मुंबई के लिए",
+    "mid_pause_category": "COGNITIVE_HESITATION",
+    "mid_pause_markers": [
+      "मतलब की"
+    ],
+    "mid_pause_p_complete": 0.0,
+    "dynamic_ets_ms": 2000.0,
+    "standard_fixed_vad_ms": 500.0,
+    "standard_outcome": "PREMATURE_CUTOFF",
+    "vartalaap_outcome": "FLOOR_RETAINED",
+    "bot_reply_synth_bytes": 84524,
+    "bot_reply_synth_ms": 1132.4
+  },
+  {
+    "case_id": "BC-01",
+    "name": "Cultural Backchannel Ducking vs False Interruption",
+    "category": "CULTURAL_BACKCHANNEL",
+    "user_interjection": "हाँजी",
+    "bot_utterance": "Aapka electricity bill pichhle mahine ka kul 1450 rupaye hai.",
+    "stage1_ducking_ms": 0.03,
+    "stage1_gain_db": -18.0,
+    "stage2_action": "RESTORE",
+    "stage2_reason": "BACKCHANNEL_IGNORED",
+    "standard_outcome": "FALSE_INTERRUPTION_HALTED",
+    "vartalaap_outcome": "ACOUSTIC_DUCKING_RETAINED",
+    "hard_flush_prevented": true
+  },
+  {
+    "case_id": "BI-01",
+    "name": "Conversational Imperative Barge-In (Hard-Flush)",
+    "category": "IMPERATIVE_BARGE_IN",
+    "user_interjection": "रुको एक मिनट",
+    "hard_flush_triggered": true,
+    "flush_latency_ms": 0.14,
+    "target_latency_budget_ms": 50.0,
+    "status": "PASS"
+  },
+  {
+    "case_id": "TC-01",
+    "name": "Crisp Terminal Closure Dead-Air Reduction",
+    "category": "TERMINAL_CLOSURE",
+    "utterance": "मैंने बिजली का बिल भर दिया है।",
+    "p_complete": 0.884,
+    "matched_markers": [
+      "दिया है"
+    ],
+    "dynamic_ets_ms": 453.1,
+    "standard_vad_ms": 500.0,
+    "latency_saved_ms": 46.9,
+    "percent_faster": 9.4
+  }
+]

@@ -105,6 +105,20 @@ class GnaniTTSClient:
             yield pcm_data[i : i + chunk_size]
 
     @staticmethod
+    def _sanitize_wav_header(data: bytes) -> bytes:
+        """Patch streaming WAV header (0xffffffff chunk sizes) to valid standard PCM WAV."""
+        if data.startswith(b"RIFF") and len(data) >= 44:
+            pcm_len = len(data) - 44
+            return (
+                data[:4]
+                + struct.pack("<I", len(data) - 8)
+                + data[8:40]
+                + struct.pack("<I", pcm_len)
+                + data[44:]
+            )
+        return data
+
+    @staticmethod
     def _wrap_pcm_as_wav(pcm_bytes: bytes, sample_rate: int = 16000) -> bytes:
         """Wrap raw 16-bit mono linear PCM bytes with a standard 44-byte RIFF WAV header."""
         buffer = io.BytesIO()
@@ -123,13 +137,21 @@ class GnaniTTSClient:
             "token": api_key,
             "Content-Type": "application/json",
         }
+        # Format language code appropriately (e.g. 'hi' or 'hi-IN')
+        lang_code = language if "-" in language else f"{language}-IN"
         payload = {
             "text": text,
             "voice": voice,
-            "language": language,
+            "language": lang_code,
             "model": self.model,
-            "audio_format": "wav",
-            "sample_rate": 16000,
+            "speed": 1.0,
+            "audio_config": {
+                "sample_rate": 16000,
+                "num_channels": 1,
+                "sample_width": 2,
+                "encoding": "linear_pcm",
+                "container": "wav",
+            },
         }
 
         response = requests.post(
@@ -141,12 +163,12 @@ class GnaniTTSClient:
         response.raise_for_status()
 
         content_type = response.headers.get("content-type", "")
-        # If response is raw binary PCM or WAV audio
-        if "audio" in content_type or "octet-stream" in content_type or response.content.startswith(b"RIFF"):
-            audio_bytes = response.content
-            if not audio_bytes.startswith(b"RIFF"):
-                audio_bytes = self._wrap_pcm_as_wav(audio_bytes, sample_rate=16000)
-            return audio_bytes
+        # If response is WAV audio or raw binary PCM
+        if response.content.startswith(b"RIFF"):
+            return self._sanitize_wav_header(response.content)
+
+        if "audio" in content_type or "octet-stream" in content_type:
+            return self._wrap_pcm_as_wav(response.content, sample_rate=16000)
 
         # Handle JSON wrapper containing base64 audio if returned
         try:
@@ -155,9 +177,9 @@ class GnaniTTSClient:
             raw_b64 = data.get("audio_content") or data.get("audio") or ""
             if raw_b64:
                 decoded = base64.b64decode(raw_b64)
-                if not decoded.startswith(b"RIFF"):
-                    decoded = self._wrap_pcm_as_wav(decoded, sample_rate=16000)
-                return decoded
+                if decoded.startswith(b"RIFF"):
+                    return self._sanitize_wav_header(decoded)
+                return self._wrap_pcm_as_wav(decoded, sample_rate=16000)
         except Exception:
             pass
 

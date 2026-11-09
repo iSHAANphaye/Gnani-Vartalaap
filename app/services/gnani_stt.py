@@ -84,6 +84,8 @@ class GnaniSTTClient:
             "language_code": self.language,
             "sample_rate": str(self.sample_rate),
             "audio_format": "pcm",
+            "x-partials": "true",
+            "x-partial-interval-ms": "200",
         }
 
         try:
@@ -162,27 +164,37 @@ class GnaniSTTClient:
             logger.error("Error in Gnani STT audio send loop: %s", e)
 
     async def _receive_loop(self) -> None:
-        """Background task receiving interim transcript frames from WebSocket."""
+        """Background task receiving interim and final transcript frames from WebSocket."""
         try:
             while not self._closed and self._ws:
                 message = await self._ws.recv()
                 if isinstance(message, str):
                     try:
                         data = json.loads(message)
-                        text = data.get("transcript") or data.get("text") or ""
-                        if not text and isinstance(data.get("output"), dict):
-                            text = data["output"].get("literal", "")
-                        is_final = data.get("is_final") or data.get("final", False)
-                        confidence = float(data.get("confidence", 0.95))
-                        if text:
-                            await self._transcript_queue.put(
-                                STTTranscript(
-                                    text=text,
-                                    is_final=is_final,
-                                    language=self.language,
-                                    confidence=confidence,
-                                )
+                        msg_type = data.get("type", "")
+
+                        # Handle transcript emissions
+                        if msg_type in ("partial_transcript", "final_transcript", "transcript") or "text" in data or "transcript" in data:
+                            text = data.get("text") or data.get("transcript") or ""
+                            if not text and isinstance(data.get("output"), dict):
+                                text = data["output"].get("literal", "")
+
+                            is_final = (
+                                msg_type == "final_transcript"
+                                or data.get("is_final") is True
+                                or data.get("final") is True
                             )
+                            confidence = float(data.get("confidence", 0.95))
+
+                            if text:
+                                await self._transcript_queue.put(
+                                    STTTranscript(
+                                        text=text,
+                                        is_final=is_final,
+                                        language=self.language,
+                                        confidence=confidence,
+                                    )
+                                )
                     except json.JSONDecodeError:
                         logger.warning("Received non-JSON text from Gnani STT: %s", message)
         except asyncio.CancelledError:
