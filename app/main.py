@@ -442,6 +442,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                         tts_task = None
 
                     engine.reset()
+                    llm.reset()
                     session_state["transcript"] = ""
                     session_state["injected_transcript"] = ""
                     session_state["prev_ducking_action"] = DuckingAction.NONE

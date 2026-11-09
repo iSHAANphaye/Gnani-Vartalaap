@@ -7,7 +7,7 @@ technical architecture specifications.
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Tuple
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     # Conversational LLM Config
     llm_provider: str = Field(
         default="gnani",
-        description="Dialogue orchestrator provider ('gnani' | 'openai' | 'mock')",
+        description="Dialogue orchestrator provider ('gnani' | 'openai' | 'groq' | 'gemini' | 'mock')",
     )
     llm_model: str = Field(
         default="evon-v3.3",
@@ -79,6 +79,20 @@ class Settings(BaseSettings):
     llm_base_url: str = Field(
         default="https://api.vachana.ai/v1",
         description="LLM provider base API URL",
+    )
+
+    # Multi-Provider LLM Keys
+    gemini_api_key: SecretStr = Field(
+        default=SecretStr(""),
+        description="Google Gemini API key",
+    )
+    groq_api_key: SecretStr = Field(
+        default=SecretStr(""),
+        description="Groq API key",
+    )
+    openai_api_key: SecretStr = Field(
+        default=SecretStr(""),
+        description="OpenAI API key",
     )
 
     # Vartalaap Engine Parameters
@@ -142,9 +156,36 @@ class Settings(BaseSettings):
 
     @property
     def has_valid_llm_credentials(self) -> bool:
-        """Return True only if a real, non-placeholder LLM API key is configured."""
+        """Return True if any valid, non-placeholder LLM API key is configured."""
+        if self.gemini_api_key.get_secret_value().strip():
+            return True
+        if self.groq_api_key.get_secret_value().strip():
+            return True
+        if self.openai_api_key.get_secret_value().strip():
+            return True
         val = self.llm_api_key.get_secret_value().strip()
         return bool(val) and val != "your_llm_api_key_here"
+
+    @property
+    def resolved_llm_config(self) -> Tuple[str, str, str, str]:
+        """Resolve active LLM provider, model, base_url, and api_key."""
+        g_key = self.gemini_api_key.get_secret_value().strip()
+        if g_key and g_key != "your_gemini_api_key_here":
+            return "gemini", "gemini-1.5-flash", "https://generativelanguage.googleapis.com/v1beta/openai", g_key
+
+        groq_key = self.groq_api_key.get_secret_value().strip()
+        if groq_key and groq_key != "your_groq_api_key_here":
+            return "groq", "llama-3.3-70b-versatile", "https://api.groq.com/openai/v1", groq_key
+
+        o_key = self.openai_api_key.get_secret_value().strip()
+        if o_key and o_key != "your_openai_api_key_here":
+            return "openai", "gpt-4o-mini", "https://api.openai.com/v1", o_key
+
+        val = self.llm_api_key.get_secret_value().strip()
+        if bool(val) and val != "your_llm_api_key_here":
+            return self.llm_provider, self.llm_model, self.llm_base_url, val
+
+        return "mock", "mock-indic-v1", "", ""
 
     def get_smart_turn_path(self, prefer_gpu: bool = True) -> Path:
         """Get absolute or relative path to appropriate Smart-Turn model weights."""
