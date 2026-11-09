@@ -19,10 +19,12 @@ except ImportError:
 
 import os
 import time
+import threading
 from pathlib import Path
 import numpy as np
 import gradio as gr
-from fastapi.staticfiles import StaticFiles
+from fastapi import APIRouter
+from fastapi.responses import FileResponse, JSONResponse
 
 from app.main import app as fastapi_app
 
@@ -130,24 +132,34 @@ with gr.Blocks(title="Vartalaap (वार्तालाप) — Sovereign Indi
         with gr.TabItem("⚙️ System Architecture & Sovereign AI"):
             gr.Markdown(ARCHITECTURE_MD)
 
-# Mount static files at /console to avoid collision with Gradio internal /static route
-demo.app.mount("/console", StaticFiles(directory=str(STATIC_DIR), html=True), name="console")
-
-# Copy FastAPI routes (/ws/audio, /api/health) onto demo.app
-for route in fastapi_app.routes:
-    if hasattr(route, 'path') and route.path not in [r.path for r in demo.app.routes if hasattr(r, 'path')]:
-        demo.app.routes.append(route)
-
 # Enable queue required by ZeroGPU dynamic execution
 demo.queue()
 
-# Export ASGI app instance
-app = demo.app
-
 if __name__ == "__main__":
-    demo.launch(
+    # Launch Gradio server natively with prevent_thread_lock to allow attaching FastAPI routes
+    server_app, local_url, _ = demo.launch(
         server_name="0.0.0.0",
         server_port=7860,
         ssr_mode=False,
-        _app=demo.app,
+        prevent_thread_lock=True,
     )
+
+    # Attach static Nagra console file serving router
+    console_router = APIRouter()
+
+    @console_router.get("/console/{file_path:path}")
+    def serve_console_file(file_path: str = ""):
+        target = STATIC_DIR / (file_path if file_path else "index.html")
+        if target.is_dir():
+            target = target / "index.html"
+        if target.exists():
+            return FileResponse(target)
+        return JSONResponse(status_code=404, content={"detail": f"File '{file_path}' Not Found"})
+
+    server_app.include_router(console_router)
+
+    # Attach core FastAPI routes (including /ws/audio and /api/health)
+    server_app.include_router(fastapi_app.router)
+
+    # Keep the server thread alive indefinitely
+    threading.Event().wait()
