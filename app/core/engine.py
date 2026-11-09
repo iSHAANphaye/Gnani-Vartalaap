@@ -109,6 +109,7 @@ class DynamicTurnEngine:
         self._last_transcript: str = ""
         self._dynamic_ets_ms: float = self.min_ets_ms
         self._last_eval: Optional[SemanticTurnEvaluation] = None
+        self._user_has_spoken: bool = False
 
         # Speculative prefetch management
         self._prefetch_task: Optional[asyncio.Task[str]] = None
@@ -222,6 +223,7 @@ class DynamicTurnEngine:
         self._elapsed_silence_ms = 0.0
         self._speech_duration_ms = 0.0
         self._is_speech = False
+        self._user_has_spoken = False
         self._last_transcript = ""
         self._dynamic_ets_ms = self.min_ets_ms
         self._last_eval = None
@@ -389,7 +391,9 @@ class DynamicTurnEngine:
         else:
             self._ducking_gain_db = 0.0
 
+            has_text = bool(transcript and transcript.strip())
             if is_speech:
+                self._user_has_spoken = True
                 # User speaking actively; immediately abort any speculative prefetch task
                 self._cancel_prefetch()
                 self._state = TurnState.LISTENING
@@ -413,79 +417,90 @@ class DynamicTurnEngine:
                 self._dynamic_ets_ms = dynamic_ets
 
             else:
-                # User in pause; evaluate acoustic prosody and lexical postpositions
-                recent_audio = self.detector.get_recent_audio(duration_sec=3.0) if chunk_bytes else None
-                eval_res = self.classifier.evaluate(recent_audio, transcript)
-                self._last_eval = eval_res
-                p_complete = eval_res.p_complete
-                p_incomplete = eval_res.p_incomplete
-                category = eval_res.category
-
-                if self.mode == "STANDARD":
-                    dynamic_ets = self.STANDARD_ETS_MS
+                # If user has not spoken yet, remain in passive listening without granting turn
+                if not self._user_has_spoken and not has_text:
+                    self._state = TurnState.LISTENING
+                    reason = "IDLE_LISTENING: awaiting speech onset"
+                    p_complete = 0.0
+                    p_incomplete = 1.0
+                    category = TurnCategory.NEUTRAL
+                    dynamic_ets = self.STANDARD_ETS_MS if self.mode == "STANDARD" else self.min_ets_ms
+                    self._dynamic_ets_ms = dynamic_ets
                 else:
-                    dynamic_ets = self.compute_dynamic_ets(
-                        eval_res.p_acoustic,
-                        eval_res.lexical_penalty,
-                        min_ets_ms=self.min_ets_ms,
-                        max_ets_ms=self.max_ets_ms,
-                    )
-                self._dynamic_ets_ms = dynamic_ets
+                    # User in pause after speaking; evaluate acoustic prosody and lexical postpositions
+                    recent_audio = self.detector.get_recent_audio(duration_sec=3.0) if chunk_bytes else None
+                    eval_res = self.classifier.evaluate(recent_audio, transcript)
+                    self._last_eval = eval_res
+                    p_complete = eval_res.p_complete
+                    p_incomplete = eval_res.p_incomplete
+                    category = eval_res.category
 
-                # State Transition Condition 1: Pause duration has reached or exceeded ETS
-                if elapsed_silence_ms >= dynamic_ets:
-                    self._state = TurnState.TURN_GRANTED
-                    reason = (
-                        f"TURN_GRANTED: silence ({elapsed_silence_ms:.0f}ms) "
-                        f"reached dynamic ETS ({dynamic_ets:.0f}ms)"
-                    )
+                    if self.mode == "STANDARD":
+                        dynamic_ets = self.STANDARD_ETS_MS
+                    else:
+                        dynamic_ets = self.compute_dynamic_ets(
+                            eval_res.p_acoustic,
+                            eval_res.lexical_penalty,
+                            min_ets_ms=self.min_ets_ms,
+                            max_ets_ms=self.max_ets_ms,
+                        )
+                    self._dynamic_ets_ms = dynamic_ets
 
-                    # Resolve prefetched reply
-                    if self._prefetch_task is not None:
-                        if self._prefetch_task.done():
-                            if not self._prefetch_task.cancelled():
+                    # State Transition Condition 1: Pause duration has reached or exceeded ETS
+                    if elapsed_silence_ms >= dynamic_ets:
+                        self._state = TurnState.TURN_GRANTED
+                        self._user_has_spoken = False
+                        self.detector.reset()
+                        reason = (
+                            f"TURN_GRANTED: silence ({elapsed_silence_ms:.0f}ms) "
+                            f"reached dynamic ETS ({dynamic_ets:.0f}ms)"
+                        )
+
+                        # Resolve prefetched reply
+                        if self._prefetch_task is not None:
+                            if self._prefetch_task.done():
+                                if not self._prefetch_task.cancelled():
+                                    try:
+                                        self._prefetched_reply = self._prefetch_task.result()
+                                    except Exception as exc:
+                                        logger.warning("Prefetch task exception: %s", exc)
+                            else:
                                 try:
-                                    self._prefetched_reply = self._prefetch_task.result()
+                                    self._prefetched_reply = await asyncio.wait_for(
+                                        asyncio.shield(self._prefetch_task),
+                                        timeout=1.0,
+                                    )
                                 except Exception as exc:
-                                    logger.warning("Prefetch task exception: %s", exc)
-                        else:
-                            try:
-                                self._prefetched_reply = await asyncio.wait_for(
-                                    asyncio.shield(self._prefetch_task),
-                                    timeout=1.0,
-                                )
-                            except Exception as exc:
-                                logger.warning("Timed out awaiting prefetch task: %s", exc)
+                                    logger.warning("Timed out awaiting prefetch task: %s", exc)
 
-                    if not self._prefetched_reply:
-                        self._prefetched_reply = await self.llm.generate_reply(transcript)
+                        if not self._prefetched_reply:
+                            self._prefetched_reply = await self.llm.generate_reply(transcript)
 
-                    response_text = self._prefetched_reply
-                    self._prefetch_task = None
-                    self._prefetch_cancel_token = None
+                        response_text = self._prefetched_reply
+                        self._prefetch_task = None
+                        self._prefetch_cancel_token = None
 
-                # State Transition Condition 2: Silence >= 200ms and P(complete) > 0.75 -> Speculative Prefetch
-                elif (
-                    self.mode == "VARTALAAP"
-                    and elapsed_silence_ms >= self.PREFETCH_SILENCE_MS
-                    and p_complete > self.PREFETCH_COMPLETION_THRESHOLD
-                ):
-                    if self._prefetch_task is None:
-                        self._start_prefetch(transcript)
-                    self._state = TurnState.SPECULATIVE_PREFETCHING
-                    reason = (
-                        f"SPECULATIVE_PREFETCHING: silence ({elapsed_silence_ms:.0f}ms) >= 200ms "
-                        f"and P(complete)={p_complete:.2f} > 0.75"
-                    )
+                    # State Transition Condition 2: Silence >= 200ms and P(complete) > 0.75 -> Speculative Prefetch
+                    elif (
+                        self.mode == "VARTALAAP"
+                        and elapsed_silence_ms >= self.PREFETCH_SILENCE_MS
+                        and p_complete > self.PREFETCH_COMPLETION_THRESHOLD
+                    ):
+                        if self._prefetch_task is None:
+                            self._start_prefetch(transcript)
+                        self._state = TurnState.SPECULATIVE_PREFETCHING
+                        reason = (
+                            f"SPECULATIVE_PREFETCHING: silence ({elapsed_silence_ms:.0f}ms) >= 200ms "
+                            f"and P(complete)={p_complete:.2f} > 0.75"
+                        )
 
-                # State Transition Condition 3: Silence < 200ms or P(complete) <= 0.75 -> Evaluating pause
-                else:
-                    self._state = TurnState.EVALUATING_PAUSE
-                    reason = (
-                        f"EVALUATING_PAUSE: silence ({elapsed_silence_ms:.0f}ms) "
-                        f"< dynamic ETS ({dynamic_ets:.0f}ms)"
-                    )
-
+                    # State Transition Condition 3: Silence < 200ms or P(complete) <= 0.75 -> Evaluating pause
+                    else:
+                        self._state = TurnState.EVALUATING_PAUSE
+                        reason = (
+                            f"EVALUATING_PAUSE: silence ({elapsed_silence_ms:.0f}ms) "
+                            f"< dynamic ETS ({dynamic_ets:.0f}ms)"
+                        )
         telemetry = EngineTelemetry(
             state=self._state,
             elapsed_silence_ms=float(elapsed_silence_ms),

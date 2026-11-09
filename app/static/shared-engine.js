@@ -248,8 +248,14 @@
           byteOffset = 44;
         }
 
-        const pcm16 = new Int16Array(bytes.buffer, byteOffset, Math.floor((bytes.byteLength - byteOffset) / 2));
-        if (pcm16.length === 0) return;
+        const numSamples = Math.floor((bytes.length - byteOffset) / 2);
+        if (numSamples <= 0) return;
+
+        const pcm16 = new Int16Array(numSamples);
+        const dataView = new DataView(bytes.buffer, bytes.byteOffset + byteOffset);
+        for (let i = 0; i < numSamples; i++) {
+          pcm16[i] = dataView.getInt16(i * 2, true);
+        }
 
         const audioBuffer = this.playAudioCtx.createBuffer(1, pcm16.length, 16000);
         const channelData = audioBuffer.getChannelData(0);
@@ -343,6 +349,16 @@
         this.micStream = stream;
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         this.audioContext = new AudioCtx({ sampleRate: 16000 });
+        if (!this.playAudioCtx) {
+          this.playAudioCtx = new AudioCtx({ sampleRate: 16000 });
+          this.botGainNode = this.playAudioCtx.createGain();
+          this.botGainNode.connect(this.playAudioCtx.destination);
+          this.nextChunkTime = this.playAudioCtx.currentTime;
+          this.activeSources = [];
+        }
+        if (this.playAudioCtx.state === 'suspended') {
+          this.playAudioCtx.resume();
+        }
         const source = this.audioContext.createMediaStreamSource(stream);
         this.analyser = this.audioContext.createAnalyser();
         this.analyser.fftSize = 256;

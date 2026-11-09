@@ -6,6 +6,7 @@ Provides:
 - Deterministic synthetic WAV generator fallback for offline local development.
 """
 
+import asyncio
 import io
 import logging
 import math
@@ -97,7 +98,7 @@ class GnaniTTSClient:
         chunk_size: int = 3200,
     ) -> AsyncGenerator[bytes, None]:
         """Asynchronously stream synthesized audio chunks for low-latency playback."""
-        audio_bytes = self.synthesize(text, voice=voice)
+        audio_bytes = await asyncio.to_thread(self.synthesize, text, voice)
         # Skip standard 44-byte WAV header when streaming raw PCM chunks
         pcm_data = audio_bytes[44:] if len(audio_bytes) > 44 else audio_bytes
 

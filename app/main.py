@@ -357,23 +357,22 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
 
                     # Handle turn granted state transition
                     if telemetry.state == TurnState.TURN_GRANTED:
-                        response_text = telemetry.response_text
-                        if not response_text:
-                            response_text = await llm.generate_reply(current_transcript)
-                        if not response_text:
-                            response_text = "Ji boliye, main sun raha hoon."
+                        # Guard: If bot is already speaking or TTS is actively generating, do not re-trigger
+                        if engine.is_bot_speaking or (tts_task is not None and not tts_task.done()):
+                            logger.debug("Session %s: Turn granted but bot already speaking; skipping", session_id)
+                        else:
+                            response_text = telemetry.response_text
+                            if not response_text:
+                                response_text = await llm.generate_reply(current_transcript)
+                            if not response_text:
+                                response_text = "Ji boliye, main sun raha hoon."
 
-                        logger.info("Session %s: Turn granted. Replying: '%s'", session_id, response_text)
+                            logger.info("Session %s: Turn granted. Replying: '%s'", session_id, response_text)
+                            # Reset session transcripts for next turn
+                            session_state["transcript"] = ""
+                            session_state["injected_transcript"] = ""
 
-                        # Abort any prior playback task cleanly
-                        if tts_task is not None and not tts_task.done():
-                            tts_task.cancel()
-                            try:
-                                await tts_task
-                            except (asyncio.CancelledError, Exception):
-                                pass
-
-                        tts_task = asyncio.create_task(_stream_tts_response(response_text))
+                            tts_task = asyncio.create_task(_stream_tts_response(response_text))
 
             # ------------------------------------------------------------------
             # 2. Incoming JSON Control Messages Processing

@@ -246,6 +246,16 @@
         this.micStream = stream;
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         this.audioContext = new AudioCtx({ sampleRate: 16000 });
+        if (!this.playAudioCtx) {
+          this.playAudioCtx = new AudioCtx({ sampleRate: 16000 });
+          this.botGainNode = this.playAudioCtx.createGain();
+          this.botGainNode.connect(this.playAudioCtx.destination);
+          this.nextChunkTime = this.playAudioCtx.currentTime;
+          this.activeSources = [];
+        }
+        if (this.playAudioCtx.state === 'suspended') {
+          this.playAudioCtx.resume();
+        }
         const source = this.audioContext.createMediaStreamSource(stream);
         this.analyser = this.audioContext.createAnalyser();
         this.analyser.fftSize = 256;
