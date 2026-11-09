@@ -40,6 +40,7 @@
       this.scriptNode = null;
 
       // Current State Data
+      this.mode = 'VARTALAAP'; // Active turn-taking mode: 'VARTALAAP' or 'STANDARD'
       this.state = 'IDLE'; // IDLE, LISTENING, USER_PAUSE, BACKCHANNEL, BOT_SPEAKING, HARD_INTERRUPT, TURN_GRANTED
       this.category = 'NEUTRAL';
       this.pComplete = 0.0;
@@ -185,10 +186,17 @@
           this.emit('transcript', msg);
           break;
 
+        case 'AUDIO_CHUNK':
+          if (msg.audio_base64) {
+            this.playAudioChunk(msg.audio_base64);
+          }
+          break;
+
         case 'BOT_TURN_START':
           this.botIsSpeaking = true;
           this.botResponse = msg.text || '';
           this.state = 'BOT_SPEAKING';
+          this.stopBotPlayback();
           this.emit('stateChange', this.state);
           this.log(`Bot began turn: "${this.botResponse}"`, 'info');
           break;
@@ -202,9 +210,98 @@
 
         case 'CONTROL':
           this.gainDb = msg.gain_db;
+          this.setDuckingGain(msg.gain_db);
+          if (msg.action === 'HARD_FLUSH') {
+            this.stopBotPlayback();
+          }
           this.emit('control', msg);
           this.log(`Control action: ${msg.action} (${msg.gain_db} dB) - ${msg.reason || ''}`, 'warn');
           break;
+      }
+    }
+
+    playAudioChunk(base64Data) {
+      try {
+        const binaryString = window.atob(base64Data);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        if (!this.playAudioCtx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.playAudioCtx = new AudioCtx({ sampleRate: 16000 });
+          this.botGainNode = this.playAudioCtx.createGain();
+          this.botGainNode.connect(this.playAudioCtx.destination);
+          this.nextChunkTime = this.playAudioCtx.currentTime;
+          this.activeSources = [];
+        }
+
+        if (this.playAudioCtx.state === 'suspended') {
+          this.playAudioCtx.resume();
+        }
+
+        // Check for 44-byte RIFF header or raw PCM
+        let byteOffset = 0;
+        if (bytes.length > 44 && bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46) {
+          byteOffset = 44;
+        }
+
+        const pcm16 = new Int16Array(bytes.buffer, byteOffset, Math.floor((bytes.byteLength - byteOffset) / 2));
+        if (pcm16.length === 0) return;
+
+        const audioBuffer = this.playAudioCtx.createBuffer(1, pcm16.length, 16000);
+        const channelData = audioBuffer.getChannelData(0);
+        for (let i = 0; i < pcm16.length; i++) {
+          channelData[i] = pcm16[i] / 32768.0;
+        }
+
+        const source = this.playAudioCtx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(this.botGainNode);
+
+        const startTime = Math.max(this.playAudioCtx.currentTime, this.nextChunkTime || 0);
+        source.start(startTime);
+        this.nextChunkTime = startTime + audioBuffer.duration;
+        this.activeSources = this.activeSources || [];
+        this.activeSources.push(source);
+        source.onended = () => {
+          if (this.activeSources) {
+            const idx = this.activeSources.indexOf(source);
+            if (idx !== -1) this.activeSources.splice(idx, 1);
+          }
+        };
+
+        // Also stimulate audio level meter during bot speech
+        let sum = 0;
+        for (let i = 0; i < pcm16.length; i++) {
+          sum += (pcm16[i] / 32768) * (pcm16[i] / 32768);
+        }
+        const rms = Math.sqrt(sum / pcm16.length);
+        this.audioLevel = Math.min(1.0, rms * 3.5);
+        this.emit('audioLevel', this.audioLevel);
+      } catch (err) {
+        console.warn('Error playing audio chunk:', err);
+      }
+    }
+
+    stopBotPlayback() {
+      if (this.activeSources && this.activeSources.length > 0) {
+        this.activeSources.forEach(s => {
+          try { s.stop(); } catch (e) {}
+        });
+        this.activeSources = [];
+      }
+      if (this.playAudioCtx) {
+        this.nextChunkTime = this.playAudioCtx.currentTime;
+      }
+    }
+
+    setDuckingGain(gainDb) {
+      if (this.botGainNode && this.playAudioCtx) {
+        const linearGain = Math.max(0.0001, Math.pow(10, gainDb / 20));
+        this.botGainNode.gain.setTargetAtTime(linearGain, this.playAudioCtx.currentTime, 0.05);
       }
     }
 
@@ -423,7 +520,7 @@
       // Bot is currently speaking
       this.botIsSpeaking = true;
       this.state = 'BOT_SPEAKING';
-      this.botResponse = 'Aapka ticket confirm ho gaya hai, boarding pass 48 ghante pehle auto-generate ho jayega...';
+      this.botResponse = 'Aapka booking confirm ho gaya hai, boarding pass 48 ghante pehle auto-generate ho jayega...';
       this.gainDb = 0.0;
       this.audioLevel = 0.68;
       this.emitTelemetry();

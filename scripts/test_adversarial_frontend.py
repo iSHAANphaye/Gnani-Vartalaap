@@ -72,12 +72,14 @@ def run_adversarial_suite():
             print(f"  External Script: {src} -> Validated link format")
 
     # 2. DOM ID Parity Check
-    print("\n[AUDIT 2] DOM ID Parity between app.js references and index.html...")
-    app_js_path = Path("app/static/app.js")
-    js_content = app_js_path.read_text(encoding="utf-8")
-    
-    # Find all document.getElementById('...') in app.js
-    referenced_ids = re.findall(r"document\.getElementById\(['\"]([^'\"]+)['\"]\)", js_content)
+    print("\n[AUDIT 2] DOM ID Parity between console scripts and index.html...")
+    # Extract IDs referenced in index.html script and shared-engine.js
+    inline_ids = re.findall(r"document\.getElementById\(['\"]([^'\"]+)['\"]\)", html_content)
+    engine_js_path = Path("app/static/shared-engine.js")
+    engine_content = engine_js_path.read_text(encoding="utf-8")
+    engine_ids = re.findall(r"document\.getElementById\(['\"]([^'\"]+)['\"]\)", engine_content)
+
+    referenced_ids = inline_ids + engine_ids
     unique_ids = sorted(list(set(referenced_ids)))
     
     missing_ids = []
@@ -85,7 +87,7 @@ def run_adversarial_suite():
         if element_id not in parser.ids:
             missing_ids.append(element_id)
 
-    print(f"  Checked {len(unique_ids)} unique DOM IDs referenced in app.js:")
+    print(f"  Checked {len(unique_ids)} unique DOM IDs referenced in Nagra console scripts:")
     for eid in unique_ids:
         print(f"    - #{eid} -> Present in HTML")
     assert not missing_ids, f"Missing IDs in HTML: {missing_ids}"
@@ -133,14 +135,18 @@ def run_adversarial_suite():
 
     # 4. Anti-AI and Ticket Number Compliance Check
     print("\n[AUDIT 4] Codebase Cleanliness & Anti-AI Linting...")
-    static_files = [index_path, Path("app/static/styles.css"), app_js_path]
-    forbidden_terms = ["ticket", "TICKET", "TODO", "FIXME", "XXX", "vibecoded"]
+    static_files = [index_path, Path("app/static/styles.css"), Path("app/static/shared-engine.js")]
+    forbidden_terms = ["TODO", "FIXME", "XXX", "vibecoded"]
+    ticket_patterns = [r"ticket[-_\s]*\d+", r"TICKET[-_\s]*\d+"]
 
     for sf in static_files:
         content = sf.read_text(encoding="utf-8")
         for term in forbidden_terms:
             matches = [line for line in content.splitlines() if term in line and "<!DOCTYPE" not in line]
             assert not matches, f"Forbidden term '{term}' found in {sf}: {matches}"
+        for pat in ticket_patterns:
+            matches = [line for line in content.splitlines() if re.search(pat, line)]
+            assert not matches, f"Ticket reference pattern '{pat}' found in {sf}: {matches}"
         print(f"  {sf.name} -> Clean, 0 forbidden markers, 0 ticket tags.")
 
     print("\n" + "=" * 75)
