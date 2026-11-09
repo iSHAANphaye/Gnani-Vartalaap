@@ -160,6 +160,13 @@
       }
     }
 
+    setMode(mode) {
+      this.mode = mode;
+      this.sendJson({ type: 'CONTROL', action: 'SET_MODE', mode: mode });
+      this.log(`Arbitration mode switched to: ${mode}`, 'info');
+      this.emit('modeChange', mode);
+    }
+
     handleWsMessage(msg) {
       switch (msg.type) {
         case 'TELEMETRY':

@@ -239,50 +239,18 @@ Head-to-head comparison between **Standard Fixed VAD (500ms)** and **Project Var
 
 ---
 
-## 🎨 Interface & Design Studio Showcase
+## 🎛️ Dedicated Visual Console: The Vintage Nagra Studio Tape Deck
 
-Vartalaap includes an enterprise-grade browser telemetry console and a comprehensive Design Studio featuring **10 distinctive production archetypes**, proving that sovereign infrastructure can be paired with world-class user experience design.
+Project Vartalaap pairs sovereign backend infrastructure with a custom-engineered **Vintage Nagra IV-S Studio Tape Deck** console on `/` (`app/static/index.html`). 
 
-### Default Master Console: The Vintage Nagra Studio Tape Deck
-- **Route:** `/` or `/static/templates/5-nagra.html`
-- **Visual Design:** Authentic 1970s Abbey Road analog studio tape deck with dark matte-brushed aluminum faceplate, brass hardware toggles, and dual spinning **15 IPS magnetic aluminum reels**.
-- **Physical Dynamics:** Reels dynamically accelerate during user speech, drop to idle tension during mid-sentence thinking gaps, and come to an instantaneous brake halt on emergency barge-in (*"ruko"*).
-- **Analog Galvanometer VU Meter:** Needle physics with inertia, overshoot, and decay tracking physical 16kHz microphone energy and -18 dB soft-ducking envelopes.
-- **WebRTC AEC Pipeline:** Strict constraint initialization (`echoCancellation: true, noiseSuppression: true, autoGainControl: true`) to ensure zero acoustic feedback during speaker playback.
+Rather than standard software dashboards, the Nagra console was specifically designed as an analog audio-engineering metaphor for real-time voice arbitration:
 
-### The 10 Design Studio Archetypes
-
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        VARTALAAP DESIGN STUDIO ARCHETYPES                              │
-├────────────────────┬───────────────────────────────────────┬───────────────────────────┤
-│ Archetype          │ File Route                            │ Aesthetic Direction       │
-├────────────────────┼───────────────────────────────────────┼───────────────────────────┤
-│ 1. Braun / OP-1    │ /static/templates/1-braun.html        │ Dieter Rams minimalism   │
-│ 2. Bloomberg       │ /static/templates/2-bloomberg.html    │ Amber phosphor terminal   │
-│ 3. Swiss Typo      │ /static/templates/3-swiss.html        │ Zurich 1968 broadsheet    │
-│ 4. Linear Dark     │ /static/templates/4-linear.html       │ Silicon Valley precision  │
-│ 5. Vintage Nagra   │ /static/templates/5-nagra.html        │ 15 IPS magnetic tape deck │
-│ 6. Sonar PPI       │ /static/templates/6-sonar.html        │ Submarine radar sweep     │
-│ 7. Cyberdeck       │ /static/templates/7-cyberpunk.html    │ Akihabara CRT scanline    │
-│ 8. Neo-Brutalist   │ /static/templates/8-brutalist.html    │ 3px solid black borders   │
-│ 9. Quantum Lab     │ /static/templates/9-quantum.html      │ 3D multi-sine wave ribbon │
-│ 10. Apple Sequoia  │ /static/templates/10-apple.html       │ VisionOS glass & island   │
-├────────────────────┴───────────────────────────────────────┴───────────────────────────┤
-│ Master Gallery:    │ Accessible at /gallery or /templates                              │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-```
-
-1. **Braun / Teenage Engineering OP-1 (`1-braun.html`):** Soft off-white chassis, tactile orange and yellow rotary knobs, and an analog galvanometer needle.
-2. **Bloomberg Terminal (`2-bloomberg.html`):** Pure black `#000000` with phosphor amber `#FF9900` typography, ASCII telemetry borders, and scrolling waterfall spectrogram.
-3. **Swiss Typographic Broadsheet (`3-swiss.html`):** High-density international typographic grid inspired by Zurich 1968, cream stock paper `#F9F7F1`, vermilion rules, and hairline oscillogram.
-4. **Linear Precision Cockpit (`4-linear.html`):** Dark slate `#0F1115` command interface with segmented level meters and real-time event log streams.
-5. **Vintage Nagra Tape Deck (`5-nagra.html`):** Dual spinning magnetic tape reels, backlit analog VU meters, and brushed steel chassis.
-6. **Submarine Sonar PPI (`6-sonar.html`):** 360° rotating radar sweep beam on polar coordinates with phosphor decay and acoustic blips.
-7. **Akihabara Cyberdeck (`7-cyberpunk.html`):** CRT phosphor scanlines, chromatic aberration, and dual-beam green oscilloscope.
-8. **Kinetic Neo-Brutalism (`8-brutalist.html`):** High-voltage canary yellow `#FFDF00`, 3px solid black borders, hard offset drop shadows, and monospace typography.
-9. **Quantum Bio-Acoustic Lab (`9-quantum.html`):** Deep indigo cockpit with an interactive HTML5 canvas multi-sine wave ribbon reacting to vocal harmonics.
-10. **Apple macOS Sequoia / VisionOS (`10-apple.html`):** Ultra-translucent fluid frosted glass bento grid with a morphing Dynamic Island state pill.
+### Physical Dynamics & Audio Engineering Details
+- **Dual 15 IPS Magnetic Aluminum Reels:** Canvas-rendered spools that dynamically rotate at studio tape speed during active user speech, decelerate smoothly to idle tension during mid-utterance thinking gaps, and come to an instantaneous brake-halt upon an emergency imperative barge-in (*"ruko"*). The tape transport visually embodies Vartalaap’s rolling 8.0-second circular audio buffer.
+- **Backlit Analog Galvanometer VU Meter:** Custom spring physics with realistic inertia, damping, and overshoot tracking 16kHz microphone energy and the -18 dB soft-ducking attenuation envelope against a calibrated dBu dial with incandescent amber backlight glow.
+- **On-Console A/B Mode Toggle:** An industrial rocker switch on the brushed aluminum faceplate allowing immediate toggling between **Vartalaap v2.0 Dynamic ETS** and **Standard 500ms Fixed VAD** for instant live comparison.
+- **Stamped Paper Transcript Strip:** A real-time typewriter ticker displaying streaming ASR interim tokens and dialogue turns.
+- **WebRTC AEC Audio Pipeline:** Initialized with strict constraints (`echoCancellation: true, noiseSuppression: true, autoGainControl: true`) to ensure zero acoustic loopback during bot speech playback.
 
 ---
 
@@ -379,24 +347,10 @@ c:\Antigravity Dev\Gnani Hackathon\
 │   │   ├── smart_turn.py             # Pipecat Smart-Turn v3.2 ONNX GPU runner
 │   │   ├── gnani_stt.py              # Gnani Prisma STT full-duplex WebSocket client
 │   │   └── gnani_tts.py              # Gnani Timbre v3.0 expressive TTS client
-│   └── static/                       # Interface & Design Studio Assets
-│       ├── index.html                # Default interface loader
-│       ├── app.js                    # Web Audio capture & WebSocket coordinator
-│       ├── styles.css                # Base stylesheet
-│       └── templates/                # 10 Design Studio Archetypes
-│           ├── 1-braun.html          # Braun / Teenage Engineering OP-1
-│           ├── 2-bloomberg.html      # Bloomberg Terminal
-│           ├── 3-swiss.html          # Swiss Typographic Broadsheet
-│           ├── 4-linear.html         # Linear Dark Cockpit
-│           ├── 5-nagra.html          # Vintage Nagra Tape Deck (Default)
-│           ├── 6-sonar.html          # Submarine Sonar PPI
-│           ├── 7-cyberpunk.html      # Akihabara Cyberdeck
-│           ├── 8-brutalist.html      # Kinetic Neo-Brutalism
-│           ├── 9-quantum.html        # Quantum Bio-Acoustic Lab
-│           ├── 10-apple.html         # Apple macOS Sequoia Bento Grid
-│           ├── gallery.html          # Master Design Studio Showcase
-│           ├── shared-engine.js      # Unified browser telemetry & fallback
-│           └── nav.css               # Shared navigation & drawer stylesheet
+│   └── static/                       # Vintage Nagra Console Assets
+│       ├── index.html                # Vintage Nagra Studio Tape Deck Console
+│       ├── shared-engine.js          # Web Audio & WebSocket telemetry coordinator
+│       └── templates/                # Template assets & 5-nagra.html
 │
 ├── benchmark/                        # Quantitative Benchmark Suite
 │   ├── run_benchmark.py              # Two-tier automated evaluation runner

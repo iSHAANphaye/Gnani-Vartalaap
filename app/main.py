@@ -20,7 +20,7 @@ import uuid
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import torch
 
@@ -101,9 +101,9 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR), html=True), name="st
 
 
 @app.get("/", include_in_schema=False)
-async def root_redirect() -> RedirectResponse:
-    """Redirect root access to primary conversation interface (Nagra Theme)."""
-    return RedirectResponse(url="/static/templates/5-nagra.html")
+async def root_index() -> FileResponse:
+    """Serve the finalized Vintage Nagra Tape Deck console directly at root."""
+    return FileResponse(STATIC_DIR / "index.html")
 
 
 @app.get("/templates", include_in_schema=False)

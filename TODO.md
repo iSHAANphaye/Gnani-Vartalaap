@@ -108,7 +108,7 @@
   - Deep dive into the 4 Voice Bot Duplex Bottlenecks in Indian speech.
   - ASCII and Mermaid diagrams of the dual-stream neuro-symbolic architecture.
   - Complete Tier A (500 segments) & Tier B (30 Indic scenarios) verified benchmark tables.
-  - Interface showcase featuring the Vintage Nagra Console and 10 Design Studio Archetypes.
+  - Dedicated visual interface featuring the Vintage Nagra IV-S Studio Console with analog VU and spinning 15 IPS tape reels.
   - Step-by-step Quickstart reproduction guide (`uv run ...`).
   - DPDP Act 2023 zero-retention ephemeral audio privacy architecture.
 - [x] Project is 100% complete, verified, and submission-ready.
