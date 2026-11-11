@@ -1,0 +1,22 @@
+# Vartalaap Production Turn Profile - Tuned from Audit SLA
+version: "2.0.0"
+mode: "VARTALAAP"
+
+# Silence & Latency Arbitration
+speculative_silence_ms: 150.0
+speculative_eot_threshold: 0.85
+min_silence_threshold_ms: 850
+max_silence_threshold_ms: 2000
+hesitation_extended_ms: 1800
+conjunction_extended_ms: 1800
+
+# Two-Tier Barge-In
+soft_duck_gain_db: -18.0
+soft_duck_trigger_ms: 60.0
+hard_flush_trigger_ms: 450.0
+
+# Concurrency & GPU Persistence
+max_concurrent_sessions: 45
+smart_turn_warmup_interval_sec: 3.0
+smart_turn_max_batch_size: 8
+save_debug_wav: false

@@ -59,23 +59,51 @@ def get_system_hardware_info() -> Tuple[bool, str]:
     return False, "None"
 
 
+# Global session admission tracking (Rule 8: MAX_CONCURRENT_SESSIONS=45)
+active_sessions_count: int = 0
+active_sessions_lock: asyncio.Lock = asyncio.Lock()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Application lifespan context for model pre-warming and cleanup."""
+    """Application lifespan context for model pre-warming, persistence, and cleanup."""
     settings = get_settings()
     cuda_ok, gpu_name = get_system_hardware_info()
     logger.info("Initializing Project Vartalaap Server (Host: %s, Port: %d)", settings.host, settings.port)
     logger.info("Hardware Acceleration: CUDA=%s, Device='%s'", cuda_ok, gpu_name)
 
-    # Pre-warm Smart-Turn acoustic engine on target device
+    # Pre-warm Smart-Turn acoustic engine and Silero VAD on target device
     try:
+        from app.core.vad import SileroVAD
+        _vad_warmup = SileroVAD()
         engine = get_smart_turn_engine(settings=settings)
-        logger.info("Smart-Turn acoustic engine pre-warmed on device: %s", engine.device)
+        logger.info("Acoustic engines pre-warmed: Silero VAD on CPU, Smart-Turn on %s", engine.device)
     except Exception as exc:
         logger.warning("Smart-Turn acoustic engine warmup encountered notice: %s", exc)
 
+    # Rule 5: 3-Second CUDA Persistence Warmup Loop to prevent GTX 1650 P8 downclocking
+    warmup_stop_event = asyncio.Event()
+
+    async def _cuda_persistence_loop():
+        interval = float(settings.smart_turn_warmup_interval_sec)
+        dummy = np.zeros(16000, dtype=np.float32)
+        while not warmup_stop_event.is_set():
+            try:
+                await asyncio.sleep(interval)
+                if not warmup_stop_event.is_set():
+                    eng = get_smart_turn_engine(settings=settings)
+                    eng.predict_incomplete(dummy)
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.debug("CUDA persistence loop tick notice: %s", e)
+
+    warmup_task = asyncio.create_task(_cuda_persistence_loop())
+
     yield
 
+    warmup_stop_event.set()
+    warmup_task.cancel()
     logger.info("Shutting down Project Vartalaap Server")
 
 
@@ -154,17 +182,34 @@ class ThreadSafeWebSocket:
 @app.websocket("/ws/audio")
 async def audio_websocket_endpoint(websocket: WebSocket) -> None:
     """Full-duplex bi-directional audio streaming and state telemetry endpoint."""
+    global active_sessions_count
+    settings = get_settings()
+
+    # Rule 8: Hard Session Admission Control Cap (MAX_CONCURRENT_SESSIONS=45)
+    async with active_sessions_lock:
+        if active_sessions_count >= settings.max_concurrent_sessions:
+            logger.warning(
+                "Rejected WebSocket connection: active sessions (%d) >= max cap (%d)",
+                active_sessions_count,
+                settings.max_concurrent_sessions,
+            )
+            await websocket.close(code=1013, reason="Server capacity limit reached. Try again later.")
+            return
+        active_sessions_count += 1
+
     await websocket.accept()
     session_id = uuid.uuid4().hex[:8]
     safe_ws = ThreadSafeWebSocket(websocket)
 
-    logger.info("WebSocket connected [session=%s, client=%s]", session_id, websocket.client)
+    logger.info("WebSocket connected [session=%s, client=%s, active_sessions=%d]", session_id, websocket.client, active_sessions_count)
 
     # Initialize per-connection conversational pipeline components
-    settings = get_settings()
-    detector = AcousticDetector(sample_rate=16000, ring_buffer_duration_sec=8.0)
+    detector = AcousticDetector(sample_rate=16000, ring_buffer_duration_sec=10.0)
     classifier = HybridTurnClassifier(settings=settings)
-    gate = TwoStageBackchannelGate()
+    gate = TwoStageBackchannelGate(
+        soft_duck_db=settings.soft_duck_gain_db,
+        prolonged_threshold_ms=settings.hard_flush_trigger_ms,
+    )
     llm = LLMBrain(settings=settings)
     engine = DynamicTurnEngine(
         detector=detector,
@@ -182,6 +227,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
         "transcript": "",
         "injected_transcript": "",
         "prev_ducking_action": DuckingAction.NONE,
+        "turn_id": 0,
     }
     pcm_buffer = bytearray()
     tts_task: Optional[asyncio.Task[None]] = None
@@ -212,34 +258,64 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
 
     stt_task = asyncio.create_task(_stt_receive_loop())
 
-    async def _stream_tts_response(text: str) -> None:
-        """Asynchronously synthesize and stream audio chunks to client with cooperative yielding."""
+    async def _stream_tts_response(
+        prompt_to_answer: str,
+        turn_id: int,
+        prefetched_text: Optional[str] = None,
+    ) -> None:
+        """Asynchronously synthesize and stream audio chunks to client with sub-clause pipelining."""
         try:
             engine.set_bot_speaking(True)
+            initial_text = prefetched_text or prompt_to_answer
             await safe_ws.send_json(
                 {
                     "type": "BOT_TURN_START",
-                    "text": text,
+                    "turn_id": turn_id,
+                    "text": initial_text,
                 }
             )
 
-            async for pcm_chunk in tts.synthesize_stream(text):
-                b64_audio = base64.b64encode(pcm_chunk).decode("ascii")
-                await safe_ws.send_json(
-                    {
-                        "type": "AUDIO_CHUNK",
-                        "audio_base64": b64_audio,
-                        "format": "audio/wav",
-                        "is_final": False,
-                        "is_final_chunk": False,
-                    }
-                )
-                await asyncio.sleep(0.05)
+            full_reply_parts: List[str] = []
+
+            if prefetched_text:
+                # Fast Path: Speculative prefetch already generated complete response
+                full_reply_parts.append(prefetched_text)
+                async for pcm_chunk in tts.synthesize_stream(prefetched_text):
+                    b64_audio = base64.b64encode(pcm_chunk).decode("ascii")
+                    await safe_ws.send_json(
+                        {
+                            "type": "AUDIO_CHUNK",
+                            "turn_id": turn_id,
+                            "audio_base64": b64_audio,
+                            "format": "audio/wav",
+                            "is_final": False,
+                            "is_final_chunk": False,
+                        }
+                    )
+                    await asyncio.sleep(0.001)
+            else:
+                # Two-Speed Sub-Clause Streaming: Chunk 1 (3-5 words) -> immediate synthesis!
+                async for text_chunk in llm.stream_sentence_chunks(prompt_to_answer):
+                    full_reply_parts.append(text_chunk)
+                    async for pcm_chunk in tts.synthesize_stream(text_chunk):
+                        b64_audio = base64.b64encode(pcm_chunk).decode("ascii")
+                        await safe_ws.send_json(
+                            {
+                                "type": "AUDIO_CHUNK",
+                                "turn_id": turn_id,
+                                "audio_base64": b64_audio,
+                                "format": "audio/wav",
+                                "is_final": False,
+                                "is_final_chunk": False,
+                            }
+                        )
+                        await asyncio.sleep(0.001)
 
             # Signal end of synthesized response stream
             await safe_ws.send_json(
                 {
                     "type": "AUDIO_CHUNK",
+                    "turn_id": turn_id,
                     "audio_base64": "",
                     "format": "audio/wav",
                     "is_final": True,
@@ -249,14 +325,15 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
             await safe_ws.send_json(
                 {
                     "type": "BOT_TURN_END",
-                    "text": text,
+                    "turn_id": turn_id,
+                    "text": " ".join(full_reply_parts).strip(),
                 }
             )
         except asyncio.CancelledError:
-            logger.info("Session %s: Bot TTS streaming cancelled by barge-in", session_id)
+            logger.info("Session %s: Bot TTS streaming [turn_id=%d] cancelled by barge-in", session_id, turn_id)
             raise
         except Exception as exc:
-            logger.error("Session %s: Error streaming bot TTS audio: %s", session_id, exc)
+            logger.error("Session %s: Error streaming bot TTS audio [turn_id=%d]: %s", session_id, turn_id, exc)
         finally:
             engine.set_bot_speaking(False)
 
@@ -313,6 +390,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                                 {
                                     "type": "CONTROL",
                                     "action": "HARD_FLUSH",
+                                    "turn_id": session_state["turn_id"],
                                     "gain_db": -100.0,
                                     "reason": telemetry.reason,
                                 }
@@ -325,6 +403,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                                 {
                                     "type": "CONTROL",
                                     "action": "DUCK",
+                                    "turn_id": session_state["turn_id"],
                                     "gain_db": telemetry.ducking_gain_db,
                                     "reason": telemetry.reason,
                                 }
@@ -337,6 +416,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                                 {
                                     "type": "CONTROL",
                                     "action": "RESTORE",
+                                    "turn_id": session_state["turn_id"],
                                     "gain_db": 0.0,
                                     "reason": telemetry.reason,
                                 }
@@ -349,6 +429,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                                 {
                                     "type": "CONTROL",
                                     "action": "RESTORE",
+                                    "turn_id": session_state["turn_id"],
                                     "gain_db": 0.0,
                                     "reason": "SPEECH_ENDED_RESTORE",
                                 }
@@ -360,6 +441,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                         {
                             "type": "TELEMETRY",
                             "state": telemetry.state.value,
+                            "turn_id": session_state["turn_id"],
                             "elapsed_silence_ms": round(float(telemetry.elapsed_silence_ms), 1),
                             "dynamic_ets_ms": round(float(telemetry.dynamic_ets_ms), 1),
                             "p_complete": round(float(telemetry.p_complete), 4),
@@ -384,19 +466,30 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                                 engine.clear_transcript()
                                 continue
 
-                            response_text = telemetry.response_text
-                            if not response_text:
-                                response_text = await llm.generate_reply(prompt_to_answer)
-                            if not response_text:
-                                response_text = "Ji boliye, main sun raha hoon."
+                            session_state["turn_id"] += 1
+                            current_turn_id = session_state["turn_id"]
+                            prefetched_text = telemetry.response_text
 
-                            logger.info("Session %s: Turn granted. Replying: '%s'", session_id, response_text)
+                            logger.info(
+                                "Session %s: Turn granted [id=%d]. Prompt: '%s' (Prefetched: %s)",
+                                session_id,
+                                current_turn_id,
+                                prompt_to_answer,
+                                bool(prefetched_text),
+                            )
+
                             # Reset session transcripts for next turn
                             session_state["transcript"] = ""
                             session_state["injected_transcript"] = ""
                             engine.clear_transcript()
 
-                            tts_task = asyncio.create_task(_stream_tts_response(response_text))
+                            tts_task = asyncio.create_task(
+                                _stream_tts_response(
+                                    prompt_to_answer=prompt_to_answer,
+                                    turn_id=current_turn_id,
+                                    prefetched_text=prefetched_text,
+                                )
+                            )
 
             # ------------------------------------------------------------------
             # 2. Incoming JSON Control Messages Processing
@@ -507,4 +600,6 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
 
         await stt.close()
         engine.reset()
-        logger.info("Session %s: Connection lifecycle completed cleanly", session_id)
+        async with active_sessions_lock:
+            active_sessions_count = max(0, active_sessions_count - 1)
+        logger.info("Session %s: Connection lifecycle completed cleanly (active_sessions=%d)", session_id, active_sessions_count)

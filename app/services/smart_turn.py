@@ -139,8 +139,14 @@ class SmartTurnPyTorchModel(torch.nn.Module):
         from transformers import WhisperConfig
         from transformers.models.whisper.modeling_whisper import WhisperEncoder
 
-        config = WhisperConfig.from_pretrained("openai/whisper-tiny")
-        config.max_source_positions = 400
+        config = WhisperConfig(
+            encoder_layers=4,
+            encoder_attention_heads=6,
+            d_model=384,
+            encoder_ffn_dim=1536,
+            num_mel_bins=80,
+            max_source_positions=400,
+        )
         self.encoder = WhisperEncoder(config)
 
         hidden_size = config.d_model

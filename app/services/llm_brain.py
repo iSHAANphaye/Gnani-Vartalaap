@@ -15,7 +15,8 @@ import asyncio
 import json
 import logging
 import re
-from typing import Any, AsyncGenerator, Dict, List, Optional
+import unicodedata
+from typing import Any, AsyncGenerator, Dict, List, Optional, Set
 
 import aiohttp
 
@@ -91,8 +92,11 @@ class LLMBrain:
             return self._mock_override_reply
 
         clean = user_text.lower().strip()
-        # Strip common punctuation for keyword parsing
-        clean_norm = re.sub(r"[^\w\s]", " ", clean).strip()
+        # Strip punctuation while preserving Indic Unicode combining marks (matras, virama, anusvara)
+        clean_norm = "".join(
+            ch if unicodedata.category(ch)[0] in ("L", "N", "M") else " "
+            for ch in clean
+        ).strip()
         words = set(clean_norm.split())
 
         # ----------------------------------------------------------------------
@@ -101,7 +105,8 @@ class LLMBrain:
         ack_tokens = {
             "accha", "acha", "achha", "achhaa", "haan", "han", "ha", "haanji",
             "hanji", "theek", "theek hai", "thik", "thik hai", "sahi", "sahi hai",
-            "ok", "okay", "hmmm", "hmm", "sari", "seri", "avunu", "aama", "bilkul"
+            "ok", "okay", "hmmm", "hmm", "sari", "seri", "avunu", "aama", "bilkul",
+            "अच्छा", "अच्छाजी", "हाँ", "हा", "हाँजी", "ठीक", "ठीक है", "सही", "सही है", "बिल्कुल"
         }
         is_pure_ack = clean_norm in ack_tokens or (len(words) <= 2 and words.issubset(ack_tokens))
 
@@ -150,27 +155,29 @@ class LLMBrain:
         # ----------------------------------------------------------------------
         # 2. Flight & Travel Domain Intent
         # ----------------------------------------------------------------------
-        flight_keywords = {"flight", "flights", "plane", "airplane", "airways", "indigo", "air india", "vistara", "ticket", "airline", "boarding"}
+        flight_keywords = {
+            "flight", "flights", "plane", "airplane", "airways", "indigo", "air india", "vistara", "ticket", "airline", "boarding",
+            "फ्लाइट", "फ्लाइट्स", "प्लेन", "हवाई", "जहाज", "टिकट", "इंडिगो", "विस्तारा", "उड़ान"
+        }
         cities = {
-            "chandigarh": "Chandigarh",
-            "lucknow": "Lucknow",
-            "delhi": "Delhi",
-            "mumbai": "Mumbai",
-            "bangalore": "Bangalore",
-            "bengaluru": "Bangalore",
-            "kolkata": "Kolkata",
-            "hyderabad": "Hyderabad",
-            "chennai": "Chennai",
-            "jaipur": "Jaipur",
-            "goa": "Goa",
-            "pune": "Pune",
-            "ahmedabad": "Ahmedabad",
+            "chandigarh": "Chandigarh", "चंडीगढ़": "Chandigarh",
+            "lucknow": "Lucknow", "लखनऊ": "Lucknow",
+            "delhi": "Delhi", "दिल्ली": "Delhi",
+            "mumbai": "Mumbai", "मुंबई": "Mumbai",
+            "bangalore": "Bangalore", "bengaluru": "Bangalore", "बेंगलुरु": "Bangalore", "बैंगलोर": "Bangalore",
+            "kolkata": "Kolkata", "कोलकाता": "Kolkata",
+            "hyderabad": "Hyderabad", "हैदराबाद": "Hyderabad",
+            "chennai": "Chennai", "चेन्नई": "Chennai",
+            "jaipur": "Jaipur", "जयपुर": "Jaipur",
+            "goa": "Goa", "गोवा": "Goa",
+            "pune": "Pune", "पुणे": "Pune",
+            "ahmedabad": "Ahmedabad", "अहमदाबाद": "Ahmedabad",
         }
 
         mentioned_cities = [cities[c] for c in cities if c in words]
-        is_flight_related = bool(words & flight_keywords) or (len(mentioned_cities) >= 2 and any(w in words for w in ("se", "to", "ke", "liye", "jaana")))
+        is_flight_related = bool(words & flight_keywords) or (len(mentioned_cities) >= 2 and any(w in words for w in ("se", "to", "ke", "liye", "jaana", "से", "को", "के", "लिए", "जाना")))
 
-        if is_flight_related or (self.active_topic == "FLIGHTS" and any(w in words for w in ("kab", "time", "timing", "price", "kiraya", "fare", "cost", "subah", "shaam", "direct", "book", "seat", "available"))):
+        if is_flight_related or (self.active_topic == "FLIGHTS" and any(w in words for w in ("kab", "time", "timing", "price", "kiraya", "fare", "cost", "subah", "shaam", "direct", "book", "seat", "available", "समय", "कब", "कितने", "बजे", "सुबह", "शाम", "किराया", "किराये", "दाम", "रुपये"))):
             self.active_topic = "FLIGHTS"
             if len(mentioned_cities) >= 2:
                 self.topic_entities["origin"] = mentioned_cities[0]
@@ -185,15 +192,15 @@ class LLMBrain:
             destination = self.topic_entities.get("destination", "Lucknow")
 
             # Follow-up: Timing
-            if any(w in words for w in ("timing", "time", "kab", "kitne", "baje", "subah", "shaam")):
+            if any(w in words for w in ("timing", "time", "kab", "kitne", "baje", "subah", "shaam", "समय", "कब", "कितने", "बजे", "सुबह", "शाम", "टाइम")):
                 return f"{origin} se {destination} ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain."
 
             # Follow-up: Fare / Price
-            if any(w in words for w in ("fare", "price", "kiraya", "cost", "paisa", "rupaye", "rate")):
+            if any(w in words for w in ("fare", "price", "kiraya", "cost", "paisa", "rupaye", "rate", "किराया", "किराये", "दाम", "रुपये", "पैसे", "खर्च")):
                 return f"{origin} se {destination} ka one-way economy fare lagbhag 4,200 rupaye se shuru hota hai. Kya aap seat book karna chahte hain?"
 
             # Follow-up: Booking confirmation
-            if any(w in words for w in ("book", "karo", "kardo", "kar", "reserve", "seat", "ha", "haan")):
+            if any(w in words for w in ("book", "karo", "kardo", "kar", "reserve", "seat", "ha", "haan", "बुक", "करो", "करदो", "हाँ")):
                 return f"Bilkul! Main {origin} se {destination} ke liye IndiGo flight 6E-428 reserve kar raha hoon. Kripya passenger ka poora naam batayein."
 
             # General flight query opening
@@ -272,9 +279,128 @@ class LLMBrain:
             "Ji haan, sun raha hoon. Is vishay mein aap aage kya karna chahenge?",
         ]
         candidate = variations[(self._generic_counter - 1) % len(variations)]
-        if candidate == self.last_response:
+        if candidate == self.last_response or self._is_semantically_repetitive(candidate):
             candidate = variations[self._generic_counter % len(variations)]
         return candidate
+
+    def _is_semantically_repetitive(self, candidate: str) -> bool:
+        """Check whether candidate response is semantically repetitive against recent turns."""
+        if not candidate or not self.history:
+            return False
+        recent_assistant_turns = [
+            t["content"] for t in self.history[-6:] if t.get("role") == "assistant"
+        ]
+        if not recent_assistant_turns:
+            return False
+
+        def extract_content_tokens(text: str) -> Set[str]:
+            cleaned = re.sub(r"\b\d+(?::\d+)?(?:\s*(?:am|pm|baje|rupaye|rs|gb|mb))?\b", "", text.lower())
+            cleaned = "".join(
+                ch if unicodedata.category(ch)[0] in ("L", "N", "M") else " "
+                for ch in cleaned
+            )
+            stop_words = {
+                "hai", "hain", "ke", "se", "ko", "me", "mein", "aur", "ki", "ka",
+                "kya", "aap", "ji", "haan", "bhi", "liye", "par", "ek", "yeh", "woh"
+            }
+            return {w for w in cleaned.split() if w not in stop_words and len(w) > 2}
+
+        cand_tokens = extract_content_tokens(candidate)
+        if not cand_tokens:
+            return False
+
+        for prev in recent_assistant_turns:
+            prev_tokens = extract_content_tokens(prev)
+            if not prev_tokens:
+                continue
+            overlap = len(cand_tokens & prev_tokens) / max(1, len(cand_tokens | prev_tokens))
+            if overlap >= 0.60:
+                return True
+        return False
+
+    async def stream_sentence_chunks(
+        self,
+        user_text: str,
+        cancel_token: Optional[asyncio.Event] = None,
+    ) -> AsyncGenerator[str, None]:
+        """Stream conversational chunks with two-speed prosodic splitting.
+
+        - Chunk 1 (Fast TTFA): Yields the first sub-clause (3-5 words ending in a comma,
+          conjunction, or conversational opener like 'Ji bilkul,', 'Dekhiye,', 'Haanji,')
+          so TTS can synthesize and play the first audio frame in <= 380ms.
+        - Chunk 2+ (Natural Prosody): Yields full sentence boundaries ([।?!] or abbreviation-safe
+          period) to prevent splintering abbreviations like 'Rs. 4500' or 'Flight No. 6E'.
+        """
+        buffer = ""
+        is_first_chunk = True
+        abbreviations = {
+            "rs", "mr", "ms", "dr", "no", "st", "flight", "approx",
+            "jan", "feb", "mar", "apr", "aug", "sept", "oct", "nov", "dec"
+        }
+        first_chunk_openers = {
+            "ji", "haan", "haanji", "bilkul", "dekhiye", "theek", "acha", "accha", "suno", "sure"
+        }
+
+        def find_sentence_split(text: str) -> int:
+            for m in re.finditer(r"([।?!]|\.\s+)", text):
+                end_pos = m.end()
+                matched = m.group(0)
+                if matched.startswith("."):
+                    pre = text[: m.start()].rstrip().split()
+                    if pre:
+                        last_word = pre[-1].lower().rstrip(".")
+                        if last_word in abbreviations:
+                            continue
+                return end_pos
+            return -1
+
+        async for token in self.generate_response(user_text, cancel_token=cancel_token):
+            if cancel_token is not None and cancel_token.is_set():
+                return
+            buffer += token
+
+            if is_first_chunk:
+                clean_buf = buffer.strip()
+                words = clean_buf.split()
+                has_subclause_punct = bool(re.search(r"[,;—\n]", buffer))
+                sent_idx = find_sentence_split(buffer)
+                first_word = words[0].lower().rstrip(",;.") if words else ""
+
+                should_yield_first = False
+                split_idx = -1
+
+                if has_subclause_punct and len(words) >= 2:
+                    m = re.search(r"[,;—\n]", buffer)
+                    if m:
+                        split_idx = m.end()
+                        should_yield_first = True
+                elif sent_idx > 0 and len(words) >= 2:
+                    split_idx = sent_idx
+                    should_yield_first = True
+                elif len(words) >= 4 and (first_word in first_chunk_openers or len(words) >= 5):
+                    matches = list(re.finditer(r"\S+\s*", buffer))
+                    if len(matches) >= 4:
+                        split_idx = matches[3].end()
+                        should_yield_first = True
+
+                if should_yield_first and split_idx > 0:
+                    chunk = buffer[:split_idx].strip()
+                    buffer = buffer[split_idx:].lstrip()
+                    is_first_chunk = False
+                    if chunk:
+                        yield chunk
+            else:
+                sent_idx = find_sentence_split(buffer)
+                while sent_idx > 0:
+                    chunk = buffer[:sent_idx].strip()
+                    buffer = buffer[sent_idx:].lstrip()
+                    if chunk:
+                        yield chunk
+                    sent_idx = find_sentence_split(buffer)
+
+        trailing = buffer.strip()
+        if trailing:
+            yield trailing
 
     async def generate_response(
         self,
@@ -351,11 +477,25 @@ class LLMBrain:
         if self.provider == "gnani":
             headers["X-API-Key-ID"] = self.api_key
 
+        recent_assistant_replies = [
+            t["content"] for t in self.history[-4:] if t.get("role") == "assistant"
+        ]
+        forbidden_clause = ""
+        if recent_assistant_replies:
+            forbidden_clause = (
+                f"\n<forbidden_repeats>Do not repeat exact sentence phrasing from your recent replies: "
+                f"{json.dumps(recent_assistant_replies, ensure_ascii=False)}. "
+                f"You may repeat transactional numbers, dates, times, and fares, but use fresh sentence phrasing.</forbidden_repeats>"
+            )
+
         system_prompt = (
-            "You are Vartalaap, an intelligent, sovereign Indian conversational voice assistant. "
-            "Always respond in natural, polite Hindi or Hinglish in 1 to 2 concise spoken sentences. "
+            "You are Vartalaap, an enterprise-grade full-duplex Indic conversational voice assistant. "
+            "Always respond in natural, polite Hindi or Hinglish in 1 to 2 concise spoken sentences (max 25 words total). "
+            "Start your reply with a natural conversational grounded opener (e.g., 'Ji bilkul,', 'Haanji,', 'Dekhiye,', 'Theek hai,') "
+            "so the speech synthesis pipeline can deliver immediate first-clause audio. "
             "Never format with markdown asterisks or bullet points since your response will be read aloud by TTS. "
             "Be helpful, direct, and conversational."
+            + forbidden_clause
         )
 
         messages: List[Dict[str, str]] = [{"role": "system", "content": system_prompt}]

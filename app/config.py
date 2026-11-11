@@ -95,13 +95,23 @@ class Settings(BaseSettings):
         description="OpenAI API key",
     )
 
-    # Vartalaap Engine Parameters
+    # Concurrency & Admission Control
+    max_concurrent_sessions: int = Field(
+        default=45,
+        description="Hard session admission control cap (protects system RAM)",
+    )
+    save_debug_wav: bool = Field(
+        default=False,
+        description="Persist debug audio files to disk (disabled in production)",
+    )
+
+    # Vartalaap Engine Parameters & Audit Thresholds
     default_silence_threshold_ms: int = Field(
         default=600,
         description="Baseline silence timeout before turn transition",
     )
     min_silence_threshold_ms: int = Field(
-        default=250,
+        default=850,
         description="Minimum floor for dynamic silence timeout",
     )
     max_silence_threshold_ms: int = Field(
@@ -113,8 +123,38 @@ class Settings(BaseSettings):
         description="Extended silence timeout when cognitive filler is detected",
     )
     conjunction_extended_ms: int = Field(
-        default=1500,
+        default=1800,
         description="Extended silence timeout when hanging conjunction is detected",
+    )
+
+    # Speculative Prefetch & Two-Tier Barge-In Timing (v2.0 Audit SLA)
+    speculative_silence_ms: float = Field(
+        default=150.0,
+        description="Elapsed silence ms before triggering speculative Smart-Turn EoT evaluation",
+    )
+    speculative_eot_threshold: float = Field(
+        default=0.85,
+        description="Minimum EoT probability (1.0 - P_incomplete) required to fire speculative LLM",
+    )
+    soft_duck_trigger_ms: float = Field(
+        default=60.0,
+        description="Acoustic voice onset duration to trigger client soft-ducking",
+    )
+    hard_flush_trigger_ms: float = Field(
+        default=450.0,
+        description="Sustained speech duration to upgrade to hard flush barge-in",
+    )
+    soft_duck_gain_db: float = Field(
+        default=-18.0,
+        description="Soft-ducking attenuation gain in dB",
+    )
+    smart_turn_warmup_interval_sec: float = Field(
+        default=3.0,
+        description="Interval in seconds for background zero-tensor CUDA persistence warmup",
+    )
+    smart_turn_max_batch_size: int = Field(
+        default=8,
+        description="Max micro-batch size for Smart-Turn inference",
     )
 
     # Device Acceleration
@@ -171,7 +211,7 @@ class Settings(BaseSettings):
         """Resolve active LLM provider, model, base_url, and api_key."""
         g_key = self.gemini_api_key.get_secret_value().strip()
         if g_key and g_key != "your_gemini_api_key_here":
-            return "gemini", "gemini-1.5-flash", "https://generativelanguage.googleapis.com/v1beta/openai", g_key
+            return "gemini", "gemini-2.0-flash", "https://generativelanguage.googleapis.com/v1beta/openai", g_key
 
         groq_key = self.groq_api_key.get_secret_value().strip()
         if groq_key and groq_key != "your_groq_api_key_here":

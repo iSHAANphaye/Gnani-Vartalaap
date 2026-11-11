@@ -69,10 +69,10 @@ class DynamicTurnEngine:
     """
 
     MIN_ETS_MS: float = 250.0
-    MAX_ETS_MS: float = 2000.0
+    MAX_ETS_MS: float = 1400.0
     STANDARD_ETS_MS: float = 500.0
-    PREFETCH_SILENCE_MS: float = 200.0
-    PREFETCH_COMPLETION_THRESHOLD: float = 0.75
+    PREFETCH_SILENCE_MS: float = 150.0
+    PREFETCH_COMPLETION_THRESHOLD: float = 0.85
 
     def __init__(
         self,
@@ -87,7 +87,10 @@ class DynamicTurnEngine:
         self.settings = settings or get_settings()
         self.detector = detector or AcousticDetector()
         self.classifier = classifier or HybridTurnClassifier(settings=self.settings)
-        self.gate = gate or TwoStageBackchannelGate()
+        self.gate = gate or TwoStageBackchannelGate(
+            soft_duck_db=self.settings.soft_duck_gain_db,
+            prolonged_threshold_ms=self.settings.hard_flush_trigger_ms,
+        )
         self.llm = llm or LLMBrain(settings=self.settings)
 
         self._mode = mode.upper()
@@ -98,6 +101,8 @@ class DynamicTurnEngine:
 
         self.min_ets_ms = float(self.settings.min_silence_threshold_ms)
         self.max_ets_ms = float(self.settings.max_silence_threshold_ms)
+        self.prefetch_silence_ms = float(self.settings.speculative_silence_ms)
+        self.prefetch_eot_threshold = float(self.settings.speculative_eot_threshold)
 
         # Internal state
         self._state: TurnState = TurnState.LISTENING
@@ -445,7 +450,7 @@ class DynamicTurnEngine:
                     self._dynamic_ets_ms = dynamic_ets
                 else:
                     # User in pause after speaking; evaluate acoustic prosody and lexical postpositions
-                    recent_audio = self.detector.get_recent_audio(duration_sec=3.0) if chunk_bytes else None
+                    recent_audio = self.detector.get_recent_audio(duration_sec=8.0) if chunk_bytes else None
                     eval_res = self.classifier.evaluate(recent_audio, transcript)
                     self._last_eval = eval_res
                     p_complete = eval_res.p_complete
@@ -501,18 +506,18 @@ class DynamicTurnEngine:
                         self._prefetch_cancel_token = None
                         self._last_transcript = ""
 
-                    # State Transition Condition 2: Silence >= 200ms and P(complete) > 0.75 -> Speculative Prefetch
+                    # State Transition Condition 2: Silence >= prefetch_silence_ms and P(complete) >= prefetch_eot_threshold -> Speculative Prefetch
                     elif (
                         self.mode == "VARTALAAP"
-                        and elapsed_silence_ms >= self.PREFETCH_SILENCE_MS
-                        and p_complete > self.PREFETCH_COMPLETION_THRESHOLD
+                        and elapsed_silence_ms >= self.prefetch_silence_ms
+                        and p_complete >= self.prefetch_eot_threshold
                     ):
                         if self._prefetch_task is None:
                             self._start_prefetch(transcript)
                         self._state = TurnState.SPECULATIVE_PREFETCHING
                         reason = (
-                            f"SPECULATIVE_PREFETCHING: silence ({elapsed_silence_ms:.0f}ms) >= 200ms "
-                            f"and P(complete)={p_complete:.2f} > 0.75"
+                            f"SPECULATIVE_PREFETCHING: silence ({elapsed_silence_ms:.0f}ms) >= {self.prefetch_silence_ms:.0f}ms "
+                            f"and P(complete)={p_complete:.2f} >= {self.prefetch_eot_threshold:.2f}"
                         )
 
                     # State Transition Condition 3: Silence < 200ms or P(complete) <= 0.75 -> Evaluating pause

@@ -187,18 +187,23 @@
           break;
 
         case 'AUDIO_CHUNK':
+          if (msg.turn_id !== undefined && this.currentTurnId !== undefined && msg.turn_id < this.currentTurnId) {
+            // Discard stale chunk from a cancelled or prior turn
+            return;
+          }
           if (msg.audio_base64) {
-            this.playAudioChunk(msg.audio_base64);
+            this.playAudioChunk(msg.audio_base64, msg.turn_id);
           }
           break;
 
         case 'BOT_TURN_START':
+          this.currentTurnId = msg.turn_id !== undefined ? msg.turn_id : ((this.currentTurnId || 0) + 1);
           this.botIsSpeaking = true;
           this.botResponse = msg.text || '';
           this.state = 'BOT_SPEAKING';
           this.stopBotPlayback();
           this.emit('stateChange', this.state);
-          this.log(`Bot began turn: "${this.botResponse}"`, 'info');
+          this.log(`Bot began turn [id=${this.currentTurnId}]: "${this.botResponse}"`, 'info');
           break;
 
         case 'BOT_TURN_END':
@@ -212,6 +217,9 @@
           this.gainDb = msg.gain_db;
           this.setDuckingGain(msg.gain_db);
           if (msg.action === 'HARD_FLUSH') {
+            if (msg.turn_id !== undefined) {
+              this.currentTurnId = Math.max(this.currentTurnId || 0, msg.turn_id) + 1;
+            }
             this.stopBotPlayback();
           }
           this.emit('control', msg);
@@ -343,7 +351,7 @@
             channelCount: 1,
             echoCancellation: true,
             noiseSuppression: true,
-            autoGainControl: false
+            autoGainControl: true
           }
         });
 
