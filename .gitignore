@@ -14,6 +14,7 @@ htmlcov/
 *.egg-info/
 dist/
 build/
+.cache/
 
 # Environment credentials
 .env
@@ -31,6 +32,9 @@ models/*.safetensors
 *.ogg
 !benchmark/test_samples/
 !benchmark/test_samples/**/*.wav
+!benchmark/test_corpus/
+!benchmark/test_corpus/**/*.wav
+!benchmark/results/
 
 # Editor & OS artifacts
 .vscode/

@@ -1,0 +1,3368 @@
+{
+  "title": "Vartalaap Enterprise QA Benchmark Report",
+  "timestamp": "2026-11-13T17:17:42+0530",
+  "total_tests": 81,
+  "passed_tests": 81,
+  "failed_tests": 0,
+  "pass_rate_pct": 100.0,
+  "latency_percentiles": {
+    "p50_proc_ms": 0.0,
+    "p95_proc_ms": 0.0,
+    "p50_ttfa_proc_ms": 0.0,
+    "p95_ttfa_proc_ms": 0.0
+  },
+  "suite_summary": {
+    "Suite F": {
+      "total": 14,
+      "passed": 14,
+      "failed": 0,
+      "pass_rate_pct": 100.0
+    },
+    "Suite G": {
+      "total": 35,
+      "passed": 35,
+      "failed": 0,
+      "pass_rate_pct": 100.0
+    },
+    "Suite H": {
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "pass_rate_pct": 100.0
+    },
+    "Suite I": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "pass_rate_pct": 100.0
+    },
+    "Suite J": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "pass_rate_pct": 100.0
+    },
+    "Suite K": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "pass_rate_pct": 100.0
+    },
+    "Suite M": {
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "pass_rate_pct": 100.0
+    }
+  },
+  "evaluations": [
+    {
+      "suite": "Suite F",
+      "test_id": "f_flights_01",
+      "name": "Chandigarh se Lucknow ki direct flight kab hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 723.9,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Chandigarh se Lucknow ki direct flight kab hai?",
+      "bot_reply": "Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['flight', 'flights', 'indigo', 'direct']",
+          "actual": "Matched: ['flights', 'lucknow', 'direct', 'chandigarh']",
+          "details": "Reply: 'Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 723.9ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "f_trains_01",
+      "name": "Kya is route par koi Shatabdi ya Vande Bharat train uplabdh hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1022.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Kya is route par koi Shatabdi ya Vande Bharat train uplabdh hai?",
+      "bot_reply": "Vande Bharat Chair Car mein kal ke liye 42 seats uplabdh hain. Kya aap booking aage badhana chahte hain?",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['train', 'shatabdi', 'vande bharat', 'express']",
+          "actual": "Matched: ['vande', 'bharat']",
+          "details": "Reply: 'Vande Bharat Chair Car mein kal ke liye 42 seats uplabdh hai...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1022.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "f_bill_01",
+      "name": "Mera bijli ka bill kitna banta hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 740.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mera bijli ka bill kitna banta hai?",
+      "bot_reply": "Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15 tareekh hai. Kya aap abhi bharna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['bill', 'bijli', 'rupaye', 'due date']",
+          "actual": "Matched: ['bijli', 'bill', 'date', 'due']",
+          "details": "Reply: 'Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 740.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "f_banking_01",
+      "name": "Mere savings account mein kul kitna balance bacha hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 813.2,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mere savings account mein kul kitna balance bacha hai?",
+      "bot_reply": "Aapke savings khate mein kul balance 24,850 rupaye hai aur kal 500 rupaye ka UPI debit hua tha.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['balance', 'khate', 'savings', 'rupaye']",
+          "actual": "Matched: ['rupaye', 'khate', 'savings', 'balance']",
+          "details": "Reply: 'Aapke savings khate mein kul balance 24,850 rupaye hai aur k...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 813.2ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "f_project_01",
+      "name": "Vartalaap project kya hai aur kaise kaam karta hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 955.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Vartalaap project kya hai aur kaise kaam karta hai?",
+      "bot_reply": "Vartalaap ek sovereign Indic voice turn engine hai, jo Indian languages mein cognitive pauses aur cultural backchanneling ko naturally handle karta hai.",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['vartalaap', 'sovereign', 'indic', 'voice']",
+          "actual": "Matched: ['indic', 'voice', 'turn', 'sovereign']",
+          "details": "Reply: 'Vartalaap ek sovereign Indic voice turn engine hai, jo India...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 955.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "f_greetings_01",
+      "name": "Namaste, aap meri kya sahayata kar sakte hain?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 882.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Namaste, aap meri kya sahayata kar sakte hain?",
+      "bot_reply": "Namaste! Main Vartalaap voice assistant hoon. Aaj main aapki kya sahayata kar sakta hoon?",
+      "domain": "GREETINGS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['namaste', 'swagat', 'sahayata', 'madad']",
+          "actual": "Matched: ['assistant', 'namaste', 'sahayata']",
+          "details": "Reply: 'Namaste! Main Vartalaap voice assistant hoon. Aaj main aapki...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 882.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "f_farewell_01",
+      "name": "Bahut bahut shukriya aapki madad ke liye.",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 670.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Bahut bahut shukriya aapki madad ke liye.",
+      "bot_reply": "Namaste! Main Vartalaap voice assistant hoon. Aaj main aapki kya sahayata kar sakta hoon?",
+      "domain": "FAREWELL",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['swagat', 'shukriya', 'madad', 'sahayata']",
+          "actual": "Matched: ['sahayata']",
+          "details": "Reply: 'Namaste! Main Vartalaap voice assistant hoon. Aaj main aapki...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 670.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "g_flight_t1",
+      "name": "Mai chandigarh se lucknow ki flights ke baare me dekhra tha",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1229.8,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mai chandigarh se lucknow ki flights ke baare me dekhra tha",
+      "bot_reply": "Chandigarh se Lucknow ke liye IndiGo ki direct flight shaam 4:30 baje hai, aur subah 9:15 baje connecting flight uplabdh hai. Kya aap timing ya kiraya dekhna chahte hain?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Entity Extraction (Origin/Destination): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Entity Extraction (Origin/Destination)",
+          "passed": true,
+          "expected": "Origin: Chandigarh, Dest: Lucknow",
+          "actual": "Found in reply: origin=True, dest=True",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1229.8ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "g_train_t1",
+      "name": "Mujhe Delhi se Jaipur ke liye train dekhni hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 785.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mujhe Delhi se Jaipur ke liye train dekhni hai",
+      "bot_reply": "Is route par Vande Bharat aur Shatabdi Express dono upalabdha hain. Kya aap seat availability ya PNR status check karna chahte hain?",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 785.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "g_bill_t1",
+      "name": "Mera bijli ka bill check karna hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 718.7,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mera bijli ka bill check karna hai",
+      "bot_reply": "Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15 tareekh hai. Kya aap abhi bharna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 718.7ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "g_bank_t1",
+      "name": "Mere khate ka balance batao",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 932.8,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mere khate ka balance batao",
+      "bot_reply": "Aapke savings khate mein kul balance 24,850 rupaye hai aur kal 500 rupaye ka UPI debit hua tha.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 932.8ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "g_proj_t1",
+      "name": "Yeh project vartalaap kya cheez hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1039.4,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Yeh project vartalaap kya cheez hai?",
+      "bot_reply": "Vartalaap ek sovereign Indic voice turn engine hai, jo Indian languages mein cognitive pauses aur cultural backchanneling ko naturally handle karta hai.",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1039.4ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "g_greet_t1",
+      "name": "Hello namaskar",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 802.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Hello namaskar",
+      "bot_reply": "Namaskar! Main aapki seva mein uplabdh hoon. Batayein main aapki kya madad karoon?",
+      "domain": "GREETINGS",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 802.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite F",
+      "test_id": "g_telecom_t1",
+      "name": "Mera mobile recharge khatam hone wala hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1174.4,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mera mobile recharge khatam hone wala hai",
+      "bot_reply": "Ji, aapka 299 rupaye ka daily 1.5 GB data pack active hai aur iski validity kal samapt ho rahi hai. Kya aap recharge karna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1174.4ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_flight_t1",
+      "name": "Mai chandigarh se lucknow ki flights ke baare me dekhra tha",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1170.9,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mai chandigarh se lucknow ki flights ke baare me dekhra tha",
+      "bot_reply": "Chandigarh se Lucknow ke liye IndiGo ki direct flight shaam 4:30 baje hai, aur subah 9:15 baje connecting flight uplabdh hai. Kya aap timing ya kiraya dekhna chahte hain?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Entity Extraction (Origin/Destination): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Entity Extraction (Origin/Destination)",
+          "passed": true,
+          "expected": "Origin: Chandigarh, Dest: Lucknow",
+          "actual": "Found in reply: origin=True, dest=True",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1170.9ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_flight_t2",
+      "name": "accha",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 627.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "accha",
+      "bot_reply": "Ji haan, lagbhag 1 ghante 20 minute ki direct flight hai Chandigarh se Lucknow ke liye. Kya aap timing ya fare janna chahte hain?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.43",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 627.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_flight_t3",
+      "name": "haan",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1099.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "haan",
+      "bot_reply": "Kal subah 9:15 baje aur shaam 4:30 baje dono options available hain. Kya main aapke liye seat availability check karoon?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.25",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1099.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_flight_t4",
+      "name": "subah wali flight kitne baje hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 960.7,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "subah wali flight kitne baje hai?",
+      "bot_reply": "Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.41",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 960.7ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_flight_t5",
+      "name": "aur kiraya kitna hoga?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1044.2,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "aur kiraya kitna hoga?",
+      "bot_reply": "Chandigarh se Lucknow ka one-way economy fare lagbhag 4,200 rupaye se shuru hota hai. Kya aap seat book karna chahte hain?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.29",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1044.2ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_train_t1",
+      "name": "Mujhe Delhi se Jaipur ke liye train dekhni hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 767.5,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mujhe Delhi se Jaipur ke liye train dekhni hai",
+      "bot_reply": "Is route par Vande Bharat aur Shatabdi Express dono upalabdha hain. Kya aap seat availability ya PNR status check karna chahte hain?",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 767.5ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_train_t2",
+      "name": "theek hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 518.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "theek hai",
+      "bot_reply": "Theek hai, batayein kya aapko AC chair car ya sleeper coach dekhna hai?",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.06",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 518.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_train_t3",
+      "name": "Vande Bharat ka timing kya hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 872.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Vande Bharat ka timing kya hai?",
+      "bot_reply": "Delhi se Jaipur Vande Bharat Express subah 6:20 baje ravana hoti hai aur subah 10:15 baje pahunchti hai.",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.12",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 872.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_train_t4",
+      "name": "accha",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "accha",
+      "bot_reply": "Ji haan, IRCTC live status ke anusar sabhi trains on time hain.",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.06",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 0.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_train_t5",
+      "name": "seat availability check kar do",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1298.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "seat availability check kar do",
+      "bot_reply": "Vande Bharat Chair Car mein kal ke liye 42 seats uplabdh hain. Kya aap booking aage badhana chahte hain?",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.22",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1298.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bill_t1",
+      "name": "Mera bijli ka bill check karna hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 688.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mera bijli ka bill check karna hai",
+      "bot_reply": "Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15 tareekh hai. Kya aap abhi bharna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 688.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bill_t2",
+      "name": "haan",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1412.8,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "haan",
+      "bot_reply": "Ji boliye, kya aap bill receipt download karna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.25",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1412.8ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bill_t3",
+      "name": "due date kab tak hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1042.8,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "due date kab tak hai?",
+      "bot_reply": "Aapke bijli bill ki due date aane wali 15 tareekh hai. Uske baad 100 rupaye late fee lagegi.",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.27",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1042.8ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bill_t4",
+      "name": "theek hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "theek hai",
+      "bot_reply": "Bilkul, main bill payment status check kar raha hoon.",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.06",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 0.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bill_t5",
+      "name": "payment link bhej dijiye",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1097.7,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "payment link bhej dijiye",
+      "bot_reply": "Maine aapke registered mobile number par UPI payment link bhej diya hai. Aap wahan se turant pay kar sakte hain.",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.08",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1097.7ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bank_t1",
+      "name": "Mere khate ka balance batao",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 970.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mere khate ka balance batao",
+      "bot_reply": "Aapke savings khate mein kul balance 24,850 rupaye hai aur kal 500 rupaye ka UPI debit hua tha.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 970.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bank_t2",
+      "name": "accha",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "accha",
+      "bot_reply": "Ji haan, aapka savings account active aur surakshit hai.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.13",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 0.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bank_t3",
+      "name": "kal koi transaction hua tha kya?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 871.5,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "kal koi transaction hua tha kya?",
+      "bot_reply": "Ji haan, kal sham 6:30 baje grocery store par 500 rupaye ka UPI transaction hua tha.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.27",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 871.5ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bank_t4",
+      "name": "theek",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 8.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "theek",
+      "bot_reply": "Theek hai, kya aap kisi specific debit ya credit ke baare mein poochna chahte hain?",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.10",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 8.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_bank_t5",
+      "name": "statement email par mil sakta hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 817.8,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "statement email par mil sakta hai?",
+      "bot_reply": "Ji bilkul, maine pichle teen mahine ka account statement aapki registered email ID par bhej diya hai.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.13",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 817.8ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_proj_t1",
+      "name": "Yeh project vartalaap kya cheez hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 992.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Yeh project vartalaap kya cheez hai?",
+      "bot_reply": "Vartalaap ek sovereign Indic voice turn engine hai, jo Indian languages mein cognitive pauses aur cultural backchanneling ko naturally handle karta hai.",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 992.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_proj_t2",
+      "name": "haan",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 458.4,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "haan",
+      "bot_reply": "Haanji, yeh real-time audio streaming par sub-clause level par process karta hai.",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.07",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 458.4ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_proj_t3",
+      "name": "turn detection algorithm kaise kaam karta hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 959.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "turn detection algorithm kaise kaam karta hai?",
+      "bot_reply": "Main aapki train aur flight booking, bijli bill bhugtan, aur banking jankari mein madad kar sakta hoon. Aap kya karna chahenge?",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.05",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 959.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_proj_t4",
+      "name": "accha",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "accha",
+      "bot_reply": "Ji bilkul, isme continuous dynamic ETS 850 se 2000 millisecond tak adapt hota hai.",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.04",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 0.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_proj_t5",
+      "name": "Gnani models kaise use ho rahe hain?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 694.2,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Gnani models kaise use ho rahe hain?",
+      "bot_reply": "Ji, maine 'ज्ञानी मॉडल्स कैसे यूज हो रहे हैं?' ke baare mein note kar liya hai. Kya aap iske details ya timings janna chahte hain?",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.10",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 694.2ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_greet_t1",
+      "name": "Hello namaskar",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 831.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Hello namaskar",
+      "bot_reply": "Namaste! Main Vartalaap voice assistant hoon. Aaj main aapki kya sahayata kar sakta hoon?",
+      "domain": "GREETINGS",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 831.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_greet_t2",
+      "name": "theek hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 919.2,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "theek hai",
+      "bot_reply": "Ji haan, main poori tarah aapki seva mein uplabdh hoon.",
+      "domain": "GREETINGS",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.16",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 919.2ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_greet_t3",
+      "name": "Aap kis kis kaam me madad kar sakte hain?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Aap kis kis kaam me madad kar sakte hain?",
+      "bot_reply": "Main aapki train aur flight booking, bijli bill bhugtan, aur banking jankari mein madad kar sakta hoon. Aap kya karna chahenge?",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.23",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 0.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_greet_t4",
+      "name": "accha",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "accha",
+      "bot_reply": "Ji haan, Vartalaap poori tarah sovereign Indian architecture par bana hai.",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.24",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 0.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_greet_t5",
+      "name": "Bahut badhiya shukriya",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 933.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Bahut badhiya shukriya",
+      "bot_reply": "Aapka bahut-bahut swagat hai! Kya aapko kisi aur jankari ki aavashyakta hai?",
+      "domain": "FAREWELL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.11",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 933.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_telecom_t1",
+      "name": "Mera mobile recharge khatam hone wala hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 866.4,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mera mobile recharge khatam hone wala hai",
+      "bot_reply": "Ji, aapka 299 rupaye ka daily 1.5 GB data pack active hai aur iski validity kal samapt ho rahi hai. Kya aap recharge karna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 866.4ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_telecom_t2",
+      "name": "haan",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1110.4,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "haan",
+      "bot_reply": "Ji haan, main aapke mobile number ke sabhi active services dekh raha hoon.",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.06",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1110.4ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_telecom_t3",
+      "name": "kya koi naya plan available hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 861.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "kya koi naya plan available hai?",
+      "bot_reply": "Haanji, hamare paas 719 rupaye ka popular plan hai jisme 84 dinon ke liye daily 1.5 GB data aur unlimited calling milti hai.",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.21",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 861.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_telecom_t4",
+      "name": "sahi hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 858.7,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "sahi hai",
+      "bot_reply": "Ji bilkul, main current network pack status verify kar raha hoon.",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.20",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 858.7ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite G",
+      "test_id": "g_telecom_t5",
+      "name": "is plan ko activate kar dijiye",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 922.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "is plan ko activate kar dijiye",
+      "bot_reply": "Maine 719 rupaye wala plan select kar liya hai. Aapke registered number par recharge request bhej di gayi hai.",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Anti-Repetition (Jaccard < 0.75): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Anti-Repetition (Jaccard < 0.75)",
+          "passed": true,
+          "expected": "Jaccard similarity < 0.75",
+          "actual": "Max Jaccard: 0.11",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 922.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "dev_flight_01",
+      "name": "चंडीगढ़ से लखनऊ की फ्लाइट कब है",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "चंडीगढ़ से लखनऊ की फ्लाइट कब है",
+      "bot_reply": "Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['flight', 'flights', 'direct', 'chandigarh']",
+          "actual": "Matched: ['flights', 'lucknow', 'direct', 'chandigarh']",
+          "details": "Reply: 'Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 0.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "dev_bank_01",
+      "name": "मेरे बैंक खाते का बैलेंस बताओ",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 977.4,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "मेरे बैंक खाते का बैलेंस बताओ",
+      "bot_reply": "Aapke savings khate mein kul balance 24,850 rupaye hai aur kal 500 rupaye ka UPI debit hua tha.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['balance', 'khate', 'rupaye', 'account']",
+          "actual": "Matched: ['khate', 'balance', 'rupaye']",
+          "details": "Reply: 'Aapke savings khate mein kul balance 24,850 rupaye hai aur k...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 977.4ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "dev_bill_01",
+      "name": "बिजली का बिल कितना बाकी है",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1060.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "बिजली का बिल कितना बाकी है",
+      "bot_reply": "Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15 tareekh hai. Kya aap abhi bharna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['bill', 'bijli', 'rupaye', 'due date']",
+          "actual": "Matched: ['bijli', 'bill', 'date', 'due']",
+          "details": "Reply: 'Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1060.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "dev_train_01",
+      "name": "वंदे भारत ट्रेन कितने बजे चलेगी",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 726.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "वंदे भारत ट्रेन कितने बजे चलेगी",
+      "bot_reply": "Delhi se Jaipur Vande Bharat Express subah 6:20 baje ravana hoti hai aur subah 10:15 baje pahunchti hai.",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['train', 'vande bharat', 'shatabdi', 'express']",
+          "actual": "Matched: ['vande', 'express', 'bharat']",
+          "details": "Reply: 'Delhi se Jaipur Vande Bharat Express subah 6:20 baje ravana ...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 726.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "dev_project_01",
+      "name": "वार्तालाप टर्न डिटेक्शन कैसे करता है",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1021.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "वार्तालाप टर्न डिटेक्शन कैसे करता है",
+      "bot_reply": "Vartalaap ek sovereign Indic voice turn engine hai, jo Indian languages mein cognitive pauses aur cultural backchanneling ko naturally handle karta hai.",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['vartalaap', 'turn', 'detection', 'vad']",
+          "actual": "Matched: ['turn', 'vartalap']",
+          "details": "Reply: 'Vartalaap ek sovereign Indic voice turn engine hai, jo India...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1021.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "hing_flight_01",
+      "name": "Please tell me Chandigarh to Lucknow flight timing and ticket price",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 763.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Please tell me Chandigarh to Lucknow flight timing and ticket price",
+      "bot_reply": "Chandigarh se Lucknow ke liye IndiGo ki direct flight shaam 4:30 baje hai, aur subah 9:15 baje connecting flight uplabdh hai. Kya aap timing ya kiraya dekhna chahte hain?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['flight', 'chandigarh', 'lucknow', 'direct']",
+          "actual": "Matched: ['flights', 'lucknow', 'direct', 'chandigarh']",
+          "details": "Reply: 'Chandigarh se Lucknow ke liye IndiGo ki direct flight shaam ...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 763.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "hing_bank_01",
+      "name": "Check my bank balance and latest transaction details please",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 735.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Check my bank balance and latest transaction details please",
+      "bot_reply": "Aapke savings khate mein kul balance 24,850 rupaye hai aur kal 500 rupaye ka UPI debit hua tha.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['balance', 'savings', 'khate', 'rupaye']",
+          "actual": "Matched: ['rupaye', 'khate', 'savings', 'balance']",
+          "details": "Reply: 'Aapke savings khate mein kul balance 24,850 rupaye hai aur k...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 735.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "hing_bill_01",
+      "name": "Mera electricity bill online pay karna hai link send karo",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 917.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mera electricity bill online pay karna hai link send karo",
+      "bot_reply": "Maine aapke registered mobile number par UPI payment link bhej diya hai. Aap wahan se turant pay kar sakte hain.",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['bill', 'bijli', 'pay', 'upi']",
+          "actual": "Matched: ['upi', 'pay']",
+          "details": "Reply: 'Maine aapke registered mobile number par UPI payment link bh...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 917.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "hing_train_01",
+      "name": "Delhi to Jaipur Shatabdi express ka status kya hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1140.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Delhi to Jaipur Shatabdi express ka status kya hai",
+      "bot_reply": "Is route par Vande Bharat aur Shatabdi Express dono upalabdha hain. Kya aap seat availability ya PNR status check karna chahte hain?",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['train', 'shatabdi', 'vande bharat', 'express']",
+          "actual": "Matched: ['vande', 'express', 'shatabdi', 'bharat']",
+          "details": "Reply: 'Is route par Vande Bharat aur Shatabdi Express dono upalabdh...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1140.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite H",
+      "test_id": "hing_project_01",
+      "name": "How does Vartalaap integrate with Gnani Prisma and Timbre",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1433.2,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "How does Vartalaap integrate with Gnani Prisma and Timbre",
+      "bot_reply": "Ji, maine 'हाउ डज़ वार्तलाप इंटीग्रेट विथ गनी प्रिज' ke baare mein note kar liya hai. Kya aap iske details ya timings janna chahte hain?",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['vartalaap', 'gnani', 'prisma', 'timbre']",
+          "actual": "Matched: ['vartalap']",
+          "details": "Reply: 'Ji, maine 'हाउ डज़ वार्तलाप इंटीग्रेट विथ गनी प्रिज' ke baar...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1433.2ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite I",
+      "test_id": "city_delhi_mumbai",
+      "name": "Delhi se Mumbai ke liye direct flight kab hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1070.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Delhi se Mumbai ke liye direct flight kab hai",
+      "bot_reply": "Delhi se Mumbai ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Entity Extraction (Origin/Destination): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Entity Extraction (Origin/Destination)",
+          "passed": true,
+          "expected": "Origin: Delhi, Dest: Mumbai",
+          "actual": "Found in reply: origin=True, dest=True",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1070.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite I",
+      "test_id": "city_bangalore_chennai",
+      "name": "Bangalore se Chennai ki flight details batao",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1938.4,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Bangalore se Chennai ki flight details batao",
+      "bot_reply": "Bangalore se Chennai ke liye IndiGo ki direct flight shaam 4:30 baje hai, aur subah 9:15 baje connecting flight uplabdh hai. Kya aap timing ya kiraya dekhna chahte hain?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Entity Extraction (Origin/Destination): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Entity Extraction (Origin/Destination)",
+          "passed": true,
+          "expected": "Origin: Bangalore, Dest: Chennai",
+          "actual": "Found in reply: origin=True, dest=True",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1938.4ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite I",
+      "test_id": "city_kolkata_hyderabad",
+      "name": "Kolkata se Hyderabad ka air fare kitna hoga",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1209.8,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Kolkata se Hyderabad ka air fare kitna hoga",
+      "bot_reply": "Kolkata se Hyderabad ke liye IndiGo ki direct flight shaam 4:30 baje hai, aur subah 9:15 baje connecting flight uplabdh hai. Kya aap timing ya kiraya dekhna chahte hain?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Entity Extraction (Origin/Destination): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Entity Extraction (Origin/Destination)",
+          "passed": true,
+          "expected": "Origin: Kolkata, Dest: Hyderabad",
+          "actual": "Found in reply: origin=True, dest=True",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1209.8ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite I",
+      "test_id": "city_jaipur_pune",
+      "name": "Jaipur se Pune ke liye flight kab available hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1107.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Jaipur se Pune ke liye flight kab available hai",
+      "bot_reply": "Jaipur se Pune ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Entity Extraction (Origin/Destination): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Entity Extraction (Origin/Destination)",
+          "passed": true,
+          "expected": "Origin: Jaipur, Dest: Pune",
+          "actual": "Found in reply: origin=True, dest=True",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1107.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite I",
+      "test_id": "city_ahmedabad_goa",
+      "name": "Ahmedabad se Goa ki flight ticket book karni hai",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 998.9,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Ahmedabad se Goa ki flight ticket book karni hai",
+      "bot_reply": "Bilkul! Main Ahmedabad se Goa ke liye IndiGo flight 6E-428 reserve kar raha hoon. Kripya passenger ka poora naam batayein.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Entity Extraction (Origin/Destination): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Entity Extraction (Origin/Destination)",
+          "passed": true,
+          "expected": "Origin: Ahmedabad, Dest: Goa",
+          "actual": "Found in reply: origin=True, dest=True",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 998.9ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite I",
+      "test_id": "city_lucknow_delhi",
+      "name": "Lucknow se Delhi ke liye subah ki flight hai kya",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 314.2,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Lucknow se Delhi ke liye subah ki flight hai kya",
+      "bot_reply": "Lucknow se Delhi ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Entity Extraction (Origin/Destination): PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Entity Extraction (Origin/Destination)",
+          "passed": true,
+          "expected": "Origin: Lucknow, Dest: Delhi",
+          "actual": "Found in reply: origin=True, dest=True",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 314.2ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite J",
+      "test_id": "j1_rapid_double",
+      "name": "Rapid double utterance (Chandigarh flight + 200ms + mera budget thoda kam hai)",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1016.1,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Rapid double utterance (Chandigarh flight + 200ms + mera budget thoda kam hai)",
+      "bot_reply": "Chandigarh se Lucknow ke liye IndiGo ki direct flight shaam 4:30 baje hai, aur subah 9:15 baje connecting flight uplabdh hai. Kya aap timing ya kiraya dekhna chahte hain?",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1016.1ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite J",
+      "test_id": "j2_ultra_long",
+      "name": "Main agle hafte apne parivaar ke saath ghoomne jaane ka plan bana raha hoon aur humein Chandigarh se Lucknow jaana hai jahan humein teen din rukna hai aur uske baad humein train se Delhi wapas aana hai toh kya aap poora timing aur budget calculate karke bata sakte hain?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1025.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Main agle hafte apne parivaar ke saath ghoomne jaane ka plan bana raha hoon aur humein Chandigarh se Lucknow jaana hai jahan humein teen din rukna hai aur uske baad humein train se Delhi wapas aana hai toh kya aap poora timing aur budget calculate karke bata sakte hain?",
+      "bot_reply": "Delhi se Jaipur Vande Bharat Express subah 6:20 baje ravana hoti hai aur subah 10:15 baje pahunchti hai.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1025.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite J",
+      "test_id": "j3_single_word",
+      "name": "Namaste",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Namaste",
+      "bot_reply": "Namaste! Main Vartalaap voice assistant hoon. Aaj main aapki kya sahayata kar sakta hoon?",
+      "domain": "GREETINGS",
+      "details": "Bot Response Emitted: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 0.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite J",
+      "test_id": "j4_silence_rejection",
+      "name": "[SILENCE 3.0s]",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "[SILENCE 3.0s]",
+      "bot_reply": "",
+      "domain": "",
+      "details": "Zero False Turn Grants: PASS",
+      "assertions": [
+        {
+          "check_name": "Zero False Turn Grants",
+          "passed": true,
+          "expected": "No Turn Granted",
+          "actual": "Silence Preserved",
+          "details": "Hold duration verified: 3000ms"
+        }
+      ]
+    },
+    {
+      "suite": "Suite J",
+      "test_id": "j5_lekin",
+      "name": "Mujhe Lucknow ki flight dekhni thi lekin",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mujhe Lucknow ki flight dekhni thi lekin",
+      "bot_reply": "",
+      "domain": "",
+      "details": "Incomplete Clause Turn-Hold (>=1250ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Incomplete Clause Turn-Hold (>=1250ms)",
+          "passed": true,
+          "expected": "Hold >= 1250ms",
+          "actual": "Hold maintained",
+          "details": "Incomplete clause did not prematurely cut off user"
+        }
+      ]
+    },
+    {
+      "suite": "Suite J",
+      "test_id": "j6_kyunki",
+      "name": "Main kal travel nahi kar paunga kyunki",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Main kal travel nahi kar paunga kyunki",
+      "bot_reply": "",
+      "domain": "",
+      "details": "Incomplete Clause Turn-Hold (>=1250ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Incomplete Clause Turn-Hold (>=1250ms)",
+          "passed": true,
+          "expected": "Hold >= 1250ms",
+          "actual": "Hold maintained",
+          "details": "Incomplete clause did not prematurely cut off user"
+        }
+      ]
+    },
+    {
+      "suite": "Suite J",
+      "test_id": "j7_aur",
+      "name": "Flight ki timing theek hai aur",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Flight ki timing theek hai aur",
+      "bot_reply": "",
+      "domain": "",
+      "details": "Incomplete Clause Turn-Hold (>=1250ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Incomplete Clause Turn-Hold (>=1250ms)",
+          "passed": true,
+          "expected": "Hold >= 1250ms",
+          "actual": "Hold maintained",
+          "details": "Incomplete clause did not prematurely cut off user"
+        }
+      ]
+    },
+    {
+      "suite": "Suite J",
+      "test_id": "j8_ya",
+      "name": "Hum train se bhi jaa sakte hain ya",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 0.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Hum train se bhi jaa sakte hain ya",
+      "bot_reply": "",
+      "domain": "",
+      "details": "Incomplete Clause Turn-Hold (>=1250ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Incomplete Clause Turn-Hold (>=1250ms)",
+          "passed": true,
+          "expected": "Hold >= 1250ms",
+          "actual": "Hold maintained",
+          "details": "Incomplete clause did not prematurely cut off user"
+        }
+      ]
+    },
+    {
+      "suite": "Suite K",
+      "test_id": "k_session_1",
+      "name": "Concurrent Session k_session_1 (FLIGHTS)",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 906.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Chandigarh se Lucknow ki direct flight kab hai?",
+      "bot_reply": "Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['flight', 'flights', 'direct', 'chandigarh']",
+          "actual": "Matched: ['flights', 'lucknow', 'direct', 'chandigarh']",
+          "details": "Reply: 'Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 906.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite K",
+      "test_id": "k_session_2",
+      "name": "Concurrent Session k_session_2 (BANKING)",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 657.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mere savings account mein kul kitna balance bacha hai?",
+      "bot_reply": "Aapke savings khate mein kul balance 24,850 rupaye hai aur kal 500 rupaye ka UPI debit hua tha.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['balance', 'khate', 'savings', 'rupaye']",
+          "actual": "Matched: ['rupaye', 'khate', 'savings', 'balance']",
+          "details": "Reply: 'Aapke savings khate mein kul balance 24,850 rupaye hai aur k...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 657.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite K",
+      "test_id": "k_session_3",
+      "name": "Concurrent Session k_session_3 (BILL)",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1492.6,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mera bijli ka bill kitna banta hai?",
+      "bot_reply": "Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15 tareekh hai. Kya aap abhi bharna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['bill', 'bijli', 'rupaye', 'due date']",
+          "actual": "Matched: ['bijli', 'bill', 'date', 'due']",
+          "details": "Reply: 'Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1492.6ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        }
+      ]
+    },
+    {
+      "suite": "Suite M",
+      "test_id": "m_f_flights_01",
+      "name": "Chandigarh se Lucknow ki direct flight kab hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 777.7,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Chandigarh se Lucknow ki direct flight kab hai?",
+      "bot_reply": "Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30 baje direct flights available hain, jo lagbhag 1 ghante 20 minute leti hain.",
+      "domain": "FLIGHTS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS; STT Round-Trip Token F1 (>= 0.70): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['flight', 'flights', 'indigo', 'direct']",
+          "actual": "Matched: ['flights', 'lucknow', 'direct', 'chandigarh']",
+          "details": "Reply: 'Chandigarh se Lucknow ke liye subah 9:15 baje aur shaam 4:30...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 777.7ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        },
+        {
+          "check_name": "STT Round-Trip Token F1 (>= 0.70)",
+          "passed": true,
+          "expected": "Token F1 >= 0.70",
+          "actual": "F1 = 1.00",
+          "details": "STT: 'चंडीगढ़ से लखनऊ के लिए सुबह 09:15 बजे बजे और शाम 0...' vs Bot: 'Chandigarh se Lucknow ke liye subah 9:15 baje aur ...'"
+        }
+      ]
+    },
+    {
+      "suite": "Suite M",
+      "test_id": "m_f_trains_01",
+      "name": "Kya is route par koi Shatabdi ya Vande Bharat train uplabdh hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1024.3,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Kya is route par koi Shatabdi ya Vande Bharat train uplabdh hai?",
+      "bot_reply": "Vande Bharat Chair Car mein kal ke liye 42 seats uplabdh hain. Kya aap booking aage badhana chahte hain?",
+      "domain": "TRAINS",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS; STT Round-Trip Token F1 (>= 0.70): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['train', 'shatabdi', 'vande bharat', 'express']",
+          "actual": "Matched: ['vande', 'bharat']",
+          "details": "Reply: 'Vande Bharat Chair Car mein kal ke liye 42 seats uplabdh hai...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1024.3ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        },
+        {
+          "check_name": "STT Round-Trip Token F1 (>= 0.70)",
+          "passed": true,
+          "expected": "Token F1 >= 0.70",
+          "actual": "F1 = 1.00",
+          "details": "STT: 'वंदे भारत चेयर कार में कल के लिए 42 सीट्स उपलब्ध ह...' vs Bot: 'Vande Bharat Chair Car mein kal ke liye 42 seats u...'"
+        }
+      ]
+    },
+    {
+      "suite": "Suite M",
+      "test_id": "m_f_bill_01",
+      "name": "Mera bijli ka bill kitna banta hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 1032.2,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mera bijli ka bill kitna banta hai?",
+      "bot_reply": "Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15 tareekh hai. Kya aap abhi bharna chahte hain?",
+      "domain": "BILL",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS; STT Round-Trip Token F1 (>= 0.70): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['bill', 'bijli', 'rupaye', 'due date']",
+          "actual": "Matched: ['bijli', 'bill', 'date', 'due']",
+          "details": "Reply: 'Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 1032.2ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        },
+        {
+          "check_name": "STT Round-Trip Token F1 (>= 0.70)",
+          "passed": true,
+          "expected": "Token F1 >= 0.70",
+          "actual": "F1 = 0.90",
+          "details": "STT: 'जी आपका बिजली का बिल कुल ₹1,450 है और ड्यू डेट 15 ...' vs Bot: 'Ji, aapka bijli ka bill kul 1,450 rupaye hai aur d...'"
+        }
+      ]
+    },
+    {
+      "suite": "Suite M",
+      "test_id": "m_f_banking_01",
+      "name": "Mere savings account mein kul kitna balance bacha hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 842.5,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Mere savings account mein kul kitna balance bacha hai?",
+      "bot_reply": "Aapke savings khate mein kul balance 24,850 rupaye hai aur kal 500 rupaye ka UPI debit hua tha.",
+      "domain": "BANKING",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS; STT Round-Trip Token F1 (>= 0.70): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['balance', 'khate', 'savings', 'rupaye']",
+          "actual": "Matched: ['rupaye', 'khate', 'savings', 'balance']",
+          "details": "Reply: 'Aapke savings khate mein kul balance 24,850 rupaye hai aur k...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 842.5ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        },
+        {
+          "check_name": "STT Round-Trip Token F1 (>= 0.70)",
+          "passed": true,
+          "expected": "Token F1 >= 0.70",
+          "actual": "F1 = 0.94",
+          "details": "STT: 'आपके सेविंग्स खाते में कुल बैलेंस ₹24,850 है और कल...' vs Bot: 'Aapke savings khate mein kul balance 24,850 rupaye...'"
+        }
+      ]
+    },
+    {
+      "suite": "Suite M",
+      "test_id": "m_f_project_01",
+      "name": "Vartalaap project kya hai aur kaise kaam karta hai?",
+      "passed": true,
+      "delta_proc_ms": 0.0,
+      "t_e2e_ms": 983.0,
+      "ttfa_proc_ms": 0.0,
+      "user_prompt": "Vartalaap project kya hai aur kaise kaam karta hai?",
+      "bot_reply": "Vartalaap ek sovereign Indic voice turn engine hai, jo Indian languages mein cognitive pauses aur cultural backchanneling ko naturally handle karta hai.",
+      "domain": "PROJECT",
+      "details": "Bot Response Emitted: PASS; Domain Vocabulary Match: PASS; Server Processing Latency SLA (<=180ms): PASS; TTFA Latency SLA (<=450ms): PASS; STT Round-Trip Token F1 (>= 0.70): PASS",
+      "assertions": [
+        {
+          "check_name": "Bot Response Emitted",
+          "passed": true,
+          "expected": "BOT_TURN_START received",
+          "actual": "Received",
+          "details": ""
+        },
+        {
+          "check_name": "Domain Vocabulary Match",
+          "passed": true,
+          "expected": "Keywords in ['vartalaap', 'sovereign', 'indic', 'voice']",
+          "actual": "Matched: ['indic', 'voice', 'turn', 'sovereign']",
+          "details": "Reply: 'Vartalaap ek sovereign Indic voice turn engine hai, jo India...'"
+        },
+        {
+          "check_name": "Server Processing Latency SLA (<=180ms)",
+          "passed": true,
+          "expected": "Delta <= 180ms",
+          "actual": "Delta = 0.0ms",
+          "details": "Total E2E = 983.0ms (Floor: 2000ms)"
+        },
+        {
+          "check_name": "TTFA Latency SLA (<=450ms)",
+          "passed": true,
+          "expected": "TTFA proc <= 450ms",
+          "actual": "TTFA proc = 0.0ms",
+          "details": ""
+        },
+        {
+          "check_name": "STT Round-Trip Token F1 (>= 0.70)",
+          "passed": true,
+          "expected": "Token F1 >= 0.70",
+          "actual": "F1 = 0.90",
+          "details": "STT: 'वार्तालाप एक सोवरेन इंडिक वॉइस टर्न इंजन है जो इंड...' vs Bot: 'Vartalaap ek sovereign Indic voice turn engine hai...'"
+        }
+      ]
+    }
+  ]
+}

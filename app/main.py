@@ -242,7 +242,8 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
             async for transcript_item in stt.stream_transcripts():
                 if transcript_item.text:
                     if not session_state.get("injected_transcript"):
-                        session_state["transcript"] = transcript_item.text
+                        if not engine.is_bot_speaking or engine.is_speech:
+                            session_state["transcript"] = transcript_item.text
                     await safe_ws.send_json(
                         {
                             "type": "TRANSCRIPT_STREAM",
@@ -458,12 +459,8 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                             logger.debug("Session %s: Turn granted but bot already speaking; skipping", session_id)
                         else:
                             prompt_to_answer = current_transcript.strip()
-                            if not prompt_to_answer and telemetry.response_text:
-                                prompt_to_answer = telemetry.response_text.strip()
-
                             if not prompt_to_answer:
-                                logger.debug("Session %s: Turn granted with empty transcript; ignoring", session_id)
-                                engine.clear_transcript()
+                                logger.debug("Session %s: Turn granted with empty transcript; awaiting tokens", session_id)
                                 continue
 
                             session_state["turn_id"] += 1
@@ -482,6 +479,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                             session_state["transcript"] = ""
                             session_state["injected_transcript"] = ""
                             engine.clear_transcript()
+                            stt.clear_transcripts()
 
                             tts_task = asyncio.create_task(
                                 _stream_tts_response(
@@ -553,6 +551,7 @@ async def audio_websocket_endpoint(websocket: WebSocket) -> None:
                     injected_text = str(payload.get("text", "")).strip()
                     session_state["transcript"] = injected_text
                     session_state["injected_transcript"] = injected_text
+                    engine.mark_user_spoken()
                     logger.info("Session %s: Injected transcript: '%s'", session_id, injected_text)
                     await safe_ws.send_json(
                         {

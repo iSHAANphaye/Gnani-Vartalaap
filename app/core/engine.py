@@ -226,6 +226,20 @@ class DynamicTurnEngine:
         self._user_has_spoken = False
         self._cancel_prefetch()
 
+    def mark_user_spoken(self) -> None:
+        """Mark that user input has started (e.g. via text injection)."""
+        self._user_has_spoken = True
+
+    @property
+    def user_has_spoken(self) -> bool:
+        """Check whether user has initiated speech in current turn."""
+        return self._user_has_spoken
+
+    @property
+    def is_speech(self) -> bool:
+        """Check whether acoustic speech is currently detected."""
+        return self._is_speech
+
     def reset(self) -> None:
         """Reset internal turn-taking state machine and all subcomponents."""
         self._cancel_prefetch()
@@ -242,6 +256,7 @@ class DynamicTurnEngine:
         self._dynamic_ets_ms = self.min_ets_ms
         self._last_eval = None
         self._prefetched_reply = None
+        self._prefetched_prompt = ""
         self._last_cancelled_task = None
         self._last_telemetry = None
 
@@ -253,6 +268,7 @@ class DynamicTurnEngine:
         if self._prefetch_task is not None and not self._prefetch_task.done():
             return
 
+        self._prefetched_prompt = prompt.strip()
         self._prefetch_cancel_token = asyncio.Event()
         cancel_tok = self._prefetch_cancel_token
 
@@ -440,7 +456,7 @@ class DynamicTurnEngine:
 
             else:
                 # If user has not spoken yet, remain in passive listening without granting turn
-                if not self._user_has_spoken and not has_text:
+                if not self._user_has_spoken:
                     self._state = TurnState.LISTENING
                     reason = "IDLE_LISTENING: awaiting speech onset"
                     p_complete = 0.0
@@ -469,42 +485,57 @@ class DynamicTurnEngine:
                     self._dynamic_ets_ms = dynamic_ets
 
                     # State Transition Condition 1: Pause duration has reached or exceeded ETS
+                    # If user has spoken but no transcript has arrived from ASR yet, wait for ASR tokens
+                    # (up to max_ets_ms so we never hang indefinitely on pure acoustic noise/cough)
                     if elapsed_silence_ms >= dynamic_ets:
-                        self._state = TurnState.TURN_GRANTED
-                        self._user_has_spoken = False
-                        self.detector.reset()
-                        reason = (
-                            f"TURN_GRANTED: silence ({elapsed_silence_ms:.0f}ms) "
-                            f"reached dynamic ETS ({dynamic_ets:.0f}ms)"
-                        )
+                        if not has_text and elapsed_silence_ms < self.max_ets_ms:
+                            self._state = TurnState.LISTENING
+                            reason = f"AWAITING_ASR: silence ({elapsed_silence_ms:.0f}ms) reached ETS ({dynamic_ets:.0f}ms) but awaiting transcript"
+                        else:
+                            self._state = TurnState.TURN_GRANTED
+                            self._user_has_spoken = False
+                            self.detector.reset()
+                            reason = (
+                                f"TURN_GRANTED: silence ({elapsed_silence_ms:.0f}ms) "
+                                f"reached dynamic ETS ({dynamic_ets:.0f}ms)"
+                            )
 
-                        # Resolve prefetched reply
-                        if self._prefetch_task is not None:
-                            if self._prefetch_task.done():
-                                if not self._prefetch_task.cancelled():
+                            # Resolve prefetched reply
+                            if self._prefetch_task is not None:
+                                if self._prefetch_task.done():
+                                    if not self._prefetch_task.cancelled():
+                                        try:
+                                            self._prefetched_reply = self._prefetch_task.result()
+                                        except Exception as exc:
+                                            logger.warning("Prefetch task exception: %s", exc)
+                                else:
                                     try:
-                                        self._prefetched_reply = self._prefetch_task.result()
+                                        self._prefetched_reply = await asyncio.wait_for(
+                                            asyncio.shield(self._prefetch_task),
+                                            timeout=1.0,
+                                        )
                                     except Exception as exc:
-                                        logger.warning("Prefetch task exception: %s", exc)
-                            else:
-                                try:
-                                    self._prefetched_reply = await asyncio.wait_for(
-                                        asyncio.shield(self._prefetch_task),
-                                        timeout=1.0,
-                                    )
-                                except Exception as exc:
-                                    logger.warning("Timed out awaiting prefetch task: %s", exc)
+                                        logger.warning("Timed out awaiting prefetch task: %s", exc)
 
-                        if not self._prefetched_reply:
-                            if transcript and transcript.strip():
-                                self._prefetched_reply = await self.llm.generate_reply(transcript)
-                            else:
-                                self._prefetched_reply = None
+                            clean_t = (transcript or "").strip()
+                            # If transcript changed from speculative prefetch prompt, regenerate with final prompt
+                            if getattr(self, "_prefetched_prompt", "") != clean_t:
+                                if clean_t:
+                                    self._prefetched_reply = await self.llm.generate_reply(clean_t)
+                                else:
+                                    self._prefetched_reply = None
+                            elif not self._prefetched_reply:
+                                if clean_t:
+                                    self._prefetched_reply = await self.llm.generate_reply(clean_t)
+                                else:
+                                    self._prefetched_reply = None
 
-                        response_text = self._prefetched_reply
-                        self._prefetch_task = None
-                        self._prefetch_cancel_token = None
-                        self._last_transcript = ""
+                            response_text = self._prefetched_reply
+                            self._prefetched_reply = None
+                            self._prefetched_prompt = ""
+                            self._prefetch_task = None
+                            self._prefetch_cancel_token = None
+                            self._last_transcript = ""
 
                     # State Transition Condition 2: Silence >= prefetch_silence_ms and P(complete) >= prefetch_eot_threshold -> Speculative Prefetch
                     elif (

@@ -137,6 +137,15 @@ class GnaniSTTClient:
 
         await self._audio_queue.put(audio_bytes)
 
+    def clear_transcripts(self) -> None:
+        """Drain any queued transcript items to prevent leakage into subsequent turns."""
+        while not self._transcript_queue.empty():
+            try:
+                self._transcript_queue.get_nowait()
+                self._transcript_queue.task_done()
+            except (asyncio.QueueEmpty, ValueError):
+                break
+
     async def stream_transcripts(self) -> AsyncGenerator[STTTranscript, None]:
         """Asynchronously yield incoming interim and final transcripts."""
         while not self._closed:
@@ -249,35 +258,44 @@ class GnaniSTTClient:
 
         api_key = self.settings.gnani_api_key.get_secret_value()
         headers = {
+            "token": api_key,
             "X-API-Key-ID": api_key,
-            "Content-Type": f"audio/{audio_format}",
         }
-        params = {"language": self.language}
+        files = {
+            "audio_file": (f"audio.{audio_format}", audio_bytes, f"audio/{audio_format}"),
+        }
+        data = {
+            "language_code": self.language,
+        }
 
-        try:
-            response = requests.post(
-                self.settings.gnani_stt_rest_url,
-                headers=headers,
-                params=params,
-                data=audio_bytes,
-                timeout=5.0,
-            )
-            response.raise_for_status()
-            data = response.json()
-            return STTTranscript(
-                text=data.get("transcript", ""),
-                is_final=True,
-                language=self.language,
-                confidence=float(data.get("confidence", 0.9)),
-            )
-        except Exception as e:
-            logger.warning("Gnani STT REST fallback request failed: %s. Returning mock.", e)
-            return STTTranscript(
-                text="Mera electricity bill bhar diya hai",
-                is_final=True,
-                language=self.language,
-                confidence=0.8,
-            )
+        for attempt in range(1, 4):
+            try:
+                response = requests.post(
+                    self.settings.gnani_stt_rest_url,
+                    headers=headers,
+                    files=files,
+                    data=data,
+                    timeout=20.0,
+                )
+                response.raise_for_status()
+                res_data = response.json()
+                return STTTranscript(
+                    text=res_data.get("transcript", ""),
+                    is_final=True,
+                    language=self.language,
+                    confidence=float(res_data.get("confidence", 0.9)),
+                )
+            except Exception as e:
+                logger.warning("Gnani STT REST request attempt %d/3 failed: %s", attempt, e)
+                if attempt < 3:
+                    time.sleep(1.0)
+                else:
+                    return STTTranscript(
+                        text="",
+                        is_final=True,
+                        language=self.language,
+                        confidence=0.0,
+                    )
 
     async def close(self) -> None:
         """Gracefully release client resources and close socket."""

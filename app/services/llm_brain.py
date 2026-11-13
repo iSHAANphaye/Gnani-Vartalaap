@@ -99,6 +99,23 @@ class LLMBrain:
         ).strip()
         words = set(clean_norm.split())
 
+        def _pick_fresh(candidates: List[str], offset: int = 0) -> str:
+            recent_assistant = [t["content"] for t in self.history if t.get("role") == "assistant"]
+            n = len(candidates)
+            for i in range(n):
+                cand = candidates[(offset + i) % n]
+                if cand != self.last_response and cand not in recent_assistant and not self._is_semantically_repetitive(cand):
+                    return cand
+            for i in range(n):
+                cand = candidates[(offset + i) % n]
+                if cand != self.last_response and cand not in recent_assistant:
+                    return cand
+            for i in range(n):
+                cand = candidates[(offset + i) % n]
+                if cand != self.last_response:
+                    return cand
+            return candidates[offset % n]
+
         # ----------------------------------------------------------------------
         # 1. Standalone Cultural Acknowledgment / Backchannel Detection
         # ----------------------------------------------------------------------
@@ -106,7 +123,8 @@ class LLMBrain:
             "accha", "acha", "achha", "achhaa", "haan", "han", "ha", "haanji",
             "hanji", "theek", "theek hai", "thik", "thik hai", "sahi", "sahi hai",
             "ok", "okay", "hmmm", "hmm", "sari", "seri", "avunu", "aama", "bilkul",
-            "अच्छा", "अच्छाजी", "हाँ", "हा", "हाँजी", "ठीक", "ठीक है", "सही", "सही है", "बिल्कुल"
+            "अच्छा", "अच्छाजी", "हाँ", "हा", "हाँजी", "हान", "हम्म", "ठीक", "ठीक है",
+            "सही", "सही है", "बिल्कुल", "जी", "जीहाँ", "जी हाँ", "ओके"
         }
         is_pure_ack = clean_norm in ack_tokens or (len(words) <= 2 and words.issubset(ack_tokens))
 
@@ -115,27 +133,69 @@ class LLMBrain:
             if self.active_topic == "FLIGHTS":
                 origin = self.topic_entities.get("origin", "Chandigarh")
                 destination = self.topic_entities.get("destination", "Lucknow")
+                if origin == destination:
+                    destination = "Lucknow" if origin != "Lucknow" else "Chandigarh"
                 conts = [
                     f"Ji haan, lagbhag 1 ghante 20 minute ki direct flight hai {origin} se {destination} ke liye. Kya aap timing ya fare janna chahte hain?",
                     f"Kal subah 9:15 baje aur shaam 4:30 baje dono options available hain. Kya main aapke liye seat availability check karoon?",
                     "Economy class mein lagbhag 4,200 rupaye se shuruat hai. Kya aap booking details confirm karna chahenge?",
                     "Ji boliye, main flight details lock kar raha hoon. Kya aap aage badhna chahte hain?",
                 ]
-                reply = conts[(self._backchannel_counter - 1) % len(conts)]
-                if reply == self.last_response:
-                    reply = conts[self._backchannel_counter % len(conts)]
-                return reply
+                return _pick_fresh(conts, self._backchannel_counter - 1)
+
+            if self.active_topic == "TRAINS":
+                conts = [
+                    "Ji bilkul, main train routes aur schedule dekh raha hoon.",
+                    "Theek hai, batayein kya aapko AC chair car ya sleeper coach dekhna hai?",
+                    "Ji boliye, main train ticket booking process shuru kar sakta hoon.",
+                    "Ji haan, IRCTC live status ke anusar sabhi trains on time hain.",
+                ]
+                return _pick_fresh(conts, self._backchannel_counter - 1)
 
             if self.active_topic == "BILL":
                 conts = [
-                    "Ji, aapka bill UPI ya Net Banking se turant pay ho sakta hai. Kya main payment link generate karoon?",
-                    "Ji haan, due date 15 tareekh hai. Kya aap abhi payment proceed karna chahte hain?",
-                    "Ji boliye, main aapki poori madad karne ke liye tayar hoon.",
+                    "Theek hai, main aapke bijli connection ki details verify kar raha hoon.",
+                    "Ji boliye, kya aap bill receipt download karna chahte hain?",
+                    "Haanji, pichle mahine ki billing history bhi available hai.",
+                    "Bilkul, main bill payment status check kar raha hoon.",
                 ]
-                reply = conts[(self._backchannel_counter - 1) % len(conts)]
-                if reply == self.last_response:
-                    reply = conts[self._backchannel_counter % len(conts)]
-                return reply
+                return _pick_fresh(conts, self._backchannel_counter - 1)
+
+            if self.active_topic == "BANKING":
+                conts = [
+                    "Ji haan, aapka savings account active aur surakshit hai.",
+                    "Theek hai, kya aap kisi specific debit ya credit ke baare mein poochna chahte hain?",
+                    "Ji boliye, main aapke registered mobile par banking alert bhej sakta hoon.",
+                    "Bilkul, main aapke account details verify kar raha hoon.",
+                ]
+                return _pick_fresh(conts, self._backchannel_counter - 1)
+
+            if self.active_topic == "TELECOM":
+                conts = [
+                    "Ji haan, main aapke mobile number ke sabhi active services dekh raha hoon.",
+                    "Theek hai, kya aap talktime ya extra data voucher ki jankari chahte hain?",
+                    "Ji bilkul, main current network pack status verify kar raha hoon.",
+                    "Ji boliye, telecom plans mein aage kya sahayata chahiye?",
+                ]
+                return _pick_fresh(conts, self._backchannel_counter - 1)
+
+            if self.active_topic == "PROJECT":
+                conts = [
+                    "Haanji, yeh real-time audio streaming par sub-clause level par process karta hai.",
+                    "Ji bilkul, isme continuous dynamic ETS 850 se 2000 millisecond tak adapt hota hai.",
+                    "Ji haan, Vartalaap poori tarah sovereign Indian architecture par bana hai.",
+                    "Bilkul, aap iske latency metrics ya live STT integration ke baare mein pooch sakte hain.",
+                ]
+                return _pick_fresh(conts, self._backchannel_counter - 1)
+
+            if self.active_topic == "GREETINGS":
+                conts = [
+                    "Haanji boliye, aap mujhse flights, trains, bijli bill ya banking balance ke baare mein pooch sakte hain.",
+                    "Ji haan, main poori tarah aapki seva mein uplabdh hoon.",
+                    "Theek hai, batayein main aapki kya sahayata karoon?",
+                    "Ji bilkul, main sun raha hoon, batayein kya sawal hai aapka?",
+                ]
+                return _pick_fresh(conts, self._backchannel_counter - 1)
 
             # Default conversational prompts for acknowledgment when no specific topic is active
             prompts = [
@@ -144,17 +204,15 @@ class LLMBrain:
                 "Ji bilkul, aap koi bhi sawal pooch sakte hain.",
                 "Haanji, main yahan hoon, boliye.",
             ]
-            reply = prompts[(self._backchannel_counter - 1) % len(prompts)]
-            if reply == self.last_response:
-                reply = prompts[self._backchannel_counter % len(prompts)]
-            return reply
-
-        # Reset backchannel counter on a substantive utterance
-        self._backchannel_counter = 0
+            return _pick_fresh(prompts, self._backchannel_counter - 1)
 
         # ----------------------------------------------------------------------
         # 2. Flight & Travel Domain Intent
         # ----------------------------------------------------------------------
+        train_keywords = {
+            "train", "trains", "railway", "irctc", "shatabdi", "vande bharat", "rajdhani", "pnr", "coach",
+            "ट्रेन", "ट्रेनों", "रेलवे", "शताब्दी", "वंदे", "भारत", "राजधानी", "गाड़ी", "गाडी"
+        }
         flight_keywords = {
             "flight", "flights", "plane", "airplane", "airways", "indigo", "air india", "vistara", "ticket", "airline", "boarding",
             "फ्लाइट", "फ्लाइट्स", "प्लेन", "हवाई", "जहाज", "टिकट", "इंडिगो", "विस्तारा", "उड़ान"
@@ -174,22 +232,32 @@ class LLMBrain:
             "ahmedabad": "Ahmedabad", "अहमदाबाद": "Ahmedabad",
         }
 
-        mentioned_cities = [cities[c] for c in cities if c in words]
-        is_flight_related = bool(words & flight_keywords) or (len(mentioned_cities) >= 2 and any(w in words for w in ("se", "to", "ke", "liye", "jaana", "से", "को", "के", "लिए", "जाना")))
+        # Preserve word order for origin -> destination
+        ordered_cities: List[str] = []
+        for w in clean_norm.split():
+            if w in cities:
+                c_name = cities[w]
+                if c_name not in ordered_cities:
+                    ordered_cities.append(c_name)
+
+        is_flight_related = (bool(words & flight_keywords) or (len(ordered_cities) >= 2 and any(w in words for w in ("se", "to", "ke", "liye", "jaana", "से", "को", "के", "लिए", "जाना")))) and not bool(words & train_keywords)
 
         if is_flight_related or (self.active_topic == "FLIGHTS" and any(w in words for w in ("kab", "time", "timing", "price", "kiraya", "fare", "cost", "subah", "shaam", "direct", "book", "seat", "available", "समय", "कब", "कितने", "बजे", "सुबह", "शाम", "किराया", "किराये", "दाम", "रुपये"))):
             self.active_topic = "FLIGHTS"
-            if len(mentioned_cities) >= 2:
-                self.topic_entities["origin"] = mentioned_cities[0]
-                self.topic_entities["destination"] = mentioned_cities[1]
-            elif len(mentioned_cities) == 1:
-                if "origin" not in self.topic_entities:
-                    self.topic_entities["origin"] = mentioned_cities[0]
-                else:
-                    self.topic_entities["destination"] = mentioned_cities[0]
+            if len(ordered_cities) >= 2:
+                self.topic_entities["origin"] = ordered_cities[0]
+                self.topic_entities["destination"] = ordered_cities[1]
+            elif len(ordered_cities) == 1:
+                cur_orig = self.topic_entities.get("origin")
+                if not cur_orig:
+                    self.topic_entities["origin"] = ordered_cities[0]
+                elif cur_orig != ordered_cities[0]:
+                    self.topic_entities["destination"] = ordered_cities[0]
 
             origin = self.topic_entities.get("origin", "Chandigarh")
             destination = self.topic_entities.get("destination", "Lucknow")
+            if origin == destination:
+                destination = "Lucknow" if origin != "Lucknow" else "Chandigarh"
 
             # Follow-up: Timing
             if any(w in words for w in ("timing", "time", "kab", "kitne", "baje", "subah", "shaam", "समय", "कब", "कितने", "बजे", "सुबह", "शाम", "टाइम")):
@@ -209,63 +277,121 @@ class LLMBrain:
         # ----------------------------------------------------------------------
         # 3. Train & Railways Domain Intent
         # ----------------------------------------------------------------------
-        train_keywords = {"train", "trains", "railway", "irctc", "shatabdi", "vande bharat", "rajdhani", "pnr", "coach"}
-        if words & train_keywords:
+        train_keywords = {
+            "train", "trains", "railway", "irctc", "shatabdi", "vande bharat", "rajdhani", "pnr", "coach",
+            "ट्रेन", "ट्रेनों", "रेलवे", "शताब्दी", "वंदे", "भारत", "राजधानी", "गाड़ी", "गाडी"
+        }
+        if words & train_keywords or (self.active_topic == "TRAINS" and any(w in words for w in ("timing", "time", "kab", "kitne", "baje", "seat", "available", "availability", "berth", "pnr", "status", "समय", "कब", "कितने", "बजे", "सीट", "बुकिंग", "टाइमिंग", "टाइम"))):
             self.active_topic = "TRAINS"
+            # Follow-up: Timing
+            if any(w in words for w in ("timing", "time", "kab", "kitne", "baje", "subah", "shaam", "समय", "कब", "कितने", "बजे", "टाइम", "टाइमिंग")):
+                return "Delhi se Jaipur Vande Bharat Express subah 6:20 baje ravana hoti hai aur subah 10:15 baje pahunchti hai."
+            # Follow-up: Seat availability
+            if any(w in words for w in ("seat", "seats", "available", "availability", "berth", "check", "सीट", "बुकिंग", "उपलब्ध")):
+                return "Vande Bharat Chair Car mein kal ke liye 42 seats uplabdh hain. Kya aap booking aage badhana chahte hain?"
+            # Route / General Train query
             return "Is route par Vande Bharat aur Shatabdi Express dono upalabdha hain. Kya aap seat availability ya PNR status check karna chahte hain?"
 
         # ----------------------------------------------------------------------
         # 4. Utilities & Billing Domain Intent
         # ----------------------------------------------------------------------
-        bill_keywords = {"bill", "bijli", "electricity", "kanta", "meter", "recharge", "pani", "water", "gas"}
-        if words & bill_keywords:
+        bill_keywords = {
+            "bill", "bijli", "electricity", "kanta", "meter", "pani", "water", "gas",
+            "बिल", "बिजली", "मीटर", "पानी", "गैस"
+        }
+        if words & bill_keywords or (self.active_topic == "BILL" and any(w in words for w in ("due", "date", "tareekh", "tarikh", "link", "pay", "payment", "bhej", "bharna", "upi", "पेमेंट", "लिंक", "तारीख", "ड्यू", "डेट", "कब", "तक", "भरना", "भेज"))):
             self.active_topic = "BILL"
+            # Follow-up: Due date
+            if any(w in words for w in ("due", "date", "tareekh", "tarikh", "kab", "tak", "अंतिम", "तारीख", "कब", "ड्यू", "डेट")):
+                return "Aapke bijli bill ki due date aane wali 15 tareekh hai. Uske baad 100 rupaye late fee lagegi."
+            # Follow-up: Payment link / pay
+            if any(w in words for w in ("link", "pay", "payment", "bhej", "bharna", "upi", "पेमेंट", "लिंक", "भेज", "भरना")):
+                return "Maine aapke registered mobile number par UPI payment link bhej diya hai. Aap wahan se turant pay kar sakte hain."
+            # General Bill query
             return "Ji, aapka bijli ka bill kul 1,450 rupaye hai aur due date 15 tareekh hai. Kya aap abhi bharna chahte hain?"
 
         # ----------------------------------------------------------------------
         # 5. Banking & Account Domain Intent
         # ----------------------------------------------------------------------
-        banking_keywords = {"balance", "khata", "savings", "account", "paisa", "statement", "bank", "upi"}
-        if words & banking_keywords:
+        banking_keywords = {
+            "balance", "khata", "savings", "account", "paisa", "statement", "bank", "upi",
+            "बैलेंस", "खाता", "खाते", "सेविंग्स", "अकाउंट", "स्टेटमेंट", "बैंक", "पैसे"
+        }
+        if words & banking_keywords or (self.active_topic == "BANKING" and any(w in words for w in ("transaction", "transactions", "debit", "credit", "kharch", "statement", "email", "mail", "लेनदेन", "ट्रांजैक्शन", "स्टेटमेंट", "ईमेल"))):
             self.active_topic = "BANKING"
+            # Follow-up: Recent transaction
+            if any(w in words for w in ("transaction", "transactions", "debit", "credit", "kharch", "hua", "tha", "kal", "लेनदेन", "ट्रांजैक्शन", "खर्च")):
+                return "Ji haan, kal sham 6:30 baje grocery store par 500 rupaye ka UPI transaction hua tha."
+            # Follow-up: Statement
+            if any(w in words for w in ("statement", "email", "mail", "pdf", "bhejo", "mil", "स्टेटमेंट", "ईमेल", "भेज")):
+                return "Ji bilkul, maine pichle teen mahine ka account statement aapki registered email ID par bhej diya hai."
+            # General Balance query
             return "Aapke savings khate mein kul balance 24,850 rupaye hai aur kal 500 rupaye ka UPI debit hua tha."
+
+        # ----------------------------------------------------------------------
+        # 5b. Telecom & Mobile Services Domain Intent
+        # ----------------------------------------------------------------------
+        telecom_keywords = {
+            "telecom", "recharge", "data", "plan", "pack", "sim", "validity",
+            "रिचार्ज", "डेटा", "प्लान", "इंटरनेट", "वैलिडिटी", "पैक", "सिम"
+        }
+        if words & telecom_keywords or (self.active_topic == "TELECOM" and any(w in words for w in ("naya", "plan", "offers", "activate", "chalu", "kardo", "लागू", "शुरू", "नया"))):
+            self.active_topic = "TELECOM"
+            # Follow-up: New plan
+            if any(w in words for w in ("naya", "new", "available", "offers", "offer", "नया", "ऑफर")):
+                return "Haanji, hamare paas 719 rupaye ka popular plan hai jisme 84 dinon ke liye daily 1.5 GB data aur unlimited calling milti hai."
+            # Follow-up: Plan activation
+            if any(w in words for w in ("activate", "chalu", "kardo", "kar do", "dijiye", "लगा", "चालू", "एक्टिवेट", "दीजिए")):
+                return "Maine 719 rupaye wala plan select kar liya hai. Aapke registered number par recharge request bhej di gayi hai."
+            # General Recharge query
+            return "Ji, aapka 299 rupaye ka daily 1.5 GB data pack active hai aur iski validity kal samapt ho rahi hai. Kya aap recharge karna chahte hain?"
 
         # ----------------------------------------------------------------------
         # 6. Consumer ID / Account Numbers
         # ----------------------------------------------------------------------
-        if any(w in words for w in ("consumer", "number", "id", "kramank", "account number")):
+        if any(w in words for w in ("consumer", "number", "id", "kramank", "account number", "क्रमांक", "नंबर")):
             return "Ji boliye, main aapka consumer number note kar raha hoon."
 
         # ----------------------------------------------------------------------
         # 7. Project Vartalaap Explainer Intents
         # ----------------------------------------------------------------------
-        if any(w in words for w in ("project", "vartalaap", "what is", "kya hai", "about")):
-            self.active_topic = "PROJECT"
-            return "Vartalaap ek sovereign Indic voice turn engine hai, jo Indian languages mein cognitive pauses aur cultural backchanneling ko naturally handle karta hai."
-
-        if any(w in words for w in ("turn", "detection", "kaise", "how does", "working", "logic", "algorithm")):
+        # Specific sub-intents first to prevent greedy keyword capture
+        if any(w in words for w in ("turn", "detection", "algorithm", "kaise", "how does", "working", "logic")):
             self.active_topic = "PROJECT"
             return "Vartalaap Silero acoustic VAD, Smart-Turn prosody model, aur Indic lexical parser ko fuse karta hai, jisse mid-sentence pauses par user cut-off nahi hota."
 
-        if any(w in words for w in ("gnani", "api", "prisma", "timbre", "vachana")):
+        if any(w in words for w in ("gnani", "api", "prisma", "timbre", "vachana", "models", "model")):
             self.active_topic = "PROJECT"
             return "Hamne Gnani.ai ki Prisma streaming STT ko 200ms partial tokens ke liye, aur Timbre TTS ko Shivani voice mein streaming speech synthesis ke liye integrate kiya hai."
 
         if any(w in words for w in ("backchannel", "ducking", "soft duck", "barge in")):
             self.active_topic = "PROJECT"
-            return "Cultural backchanneling mein jab bot bolta hai aur aap 'haanji' ya 'theek hai' kehte hain, bot volume -18 dB par duck hota hai bina bot ko interrupt kiye."
+            return "Cultural backchanneling mein jab bot bolta hai aur aap 'haanji' ya 'theek hai' kehte hain, bot volume -18 dB par duck hota bina bot ko interrupt kiye."
 
         if any(w in words for w in ("benchmark", "score", "result", "performance", "metrics")):
             self.active_topic = "PROJECT"
             return "Empirical benchmarks mein Vartalaap ne 1,000 Indic turns par 94.2% cut-off reduction aur 320ms faster turn handover deliver kiya hai."
 
+        if any(w in words for w in ("project", "vartalaap", "प्रोजेक्ट", "वार्तालाप", "वार्तालाब")) or (self.active_topic == "PROJECT" and any(w in words for w in ("kya hai", "about"))):
+            self.active_topic = "PROJECT"
+            return "Vartalaap ek sovereign Indic voice turn engine hai, jo Indian languages mein cognitive pauses aur cultural backchanneling ko naturally handle karta hai."
+
+        if any(w in words for w in ("capabilities", "features", "kaam", "काम")):
+            self.active_topic = "PROJECT"
+            return "Main aapki train aur flight booking, bijli bill bhugtan, aur banking jankari mein madad kar sakta hoon. Aap kya karna chahenge?"
+
         # ----------------------------------------------------------------------
         # 8. Greetings & Common Courtesies
         # ----------------------------------------------------------------------
-        if any(w in words for w in ("namaste", "namaskar", "hello", "hi", "vanakkam", "pranam", "khemcho")):
-            return "Namaste! Main Vartalaap voice assistant hoon. Aaj main aapki kya sahayata kar sakta hoon?"
+        if any(w in words for w in ("namaste", "namaskar", "hello", "hi", "vanakkam", "pranam", "khemcho", "sahayata", "madad", "नमस्ते", "नमस्कार", "प्रणाम", "हेलो", "हाय", "सहायता", "मदद")):
+            self.active_topic = "GREETINGS"
+            greetings = [
+                "Namaste! Main Vartalaap voice assistant hoon. Aaj main aapki kya sahayata kar sakta hoon?",
+                "Namaskar! Main aapki seva mein uplabdh hoon. Batayein main aapki kya madad karoon?",
+            ]
+            return _pick_fresh(greetings)
 
-        if any(w in words for w in ("shukriya", "dhanyawaad", "thanks", "thank you")):
+        if any(w in words for w in ("shukriya", "dhanyawaad", "thanks", "thank you", "शुक्रिया", "धन्यवाद")):
             return "Aapka bahut-bahut swagat hai! Kya aapko kisi aur jankari ki aavashyakta hai?"
 
         # ----------------------------------------------------------------------
@@ -278,10 +404,7 @@ class LLMBrain:
             "Ji bilkul, main is vishay par aapki poori madad kar sakta hoon. Kripya apna agla sawal batayein.",
             "Ji haan, sun raha hoon. Is vishay mein aap aage kya karna chahenge?",
         ]
-        candidate = variations[(self._generic_counter - 1) % len(variations)]
-        if candidate == self.last_response or self._is_semantically_repetitive(candidate):
-            candidate = variations[self._generic_counter % len(variations)]
-        return candidate
+        return _pick_fresh(variations, self._generic_counter - 1)
 
     def _is_semantically_repetitive(self, candidate: str) -> bool:
         """Check whether candidate response is semantically repetitive against recent turns."""

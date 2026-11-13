@@ -1,0 +1,781 @@
+# Vartalaap 87-Sample Testing Corpus Manifest (Patched v2.2)
+# Multi-voice distribution: Shivani (F), Riyaa (F), Avinash (M)
+
+version: "2.2.0"
+sample_rate: 16000
+channels: 1
+sample_width: 2
+
+samples:
+  # ----------------------------------------------------------------------------
+  # 1. Domain Coverage (Suite F) - 7 queries
+  # ----------------------------------------------------------------------------
+  - id: "f_flights_01"
+    suite: "Suite F"
+    text: "Chandigarh se Lucknow ki direct flight kab hai?"
+    domain: "FLIGHTS"
+    voice: "Shivani"
+    type: "speech"
+    expected_keywords: ["flight", "flights", "indigo", "direct", "chandigarh", "lucknow"]
+
+  - id: "f_trains_01"
+    suite: "Suite F"
+    text: "Kya is route par koi Shatabdi ya Vande Bharat train uplabdh hai?"
+    domain: "TRAINS"
+    voice: "Avinash"
+    type: "speech"
+    expected_keywords: ["train", "shatabdi", "vande bharat", "express", "route"]
+
+  - id: "f_bill_01"
+    suite: "Suite F"
+    text: "Mera bijli ka bill kitna banta hai?"
+    domain: "BILL"
+    voice: "Riyaa"
+    type: "speech"
+    expected_keywords: ["bill", "bijli", "rupaye", "due date", "pay"]
+
+  - id: "f_banking_01"
+    suite: "Suite F"
+    text: "Mere savings account mein kul kitna balance bacha hai?"
+    domain: "BANKING"
+    voice: "Shivani"
+    type: "speech"
+    expected_keywords: ["balance", "khate", "savings", "rupaye", "account"]
+
+  - id: "f_project_01"
+    suite: "Suite F"
+    text: "Vartalaap project kya hai aur kaise kaam karta hai?"
+    domain: "PROJECT"
+    voice: "Avinash"
+    type: "speech"
+    expected_keywords: ["vartalaap", "sovereign", "indic", "voice", "engine", "turn"]
+
+  - id: "f_greetings_01"
+    suite: "Suite F"
+    text: "Namaste, aap meri kya sahayata kar sakte hain?"
+    domain: "GREETINGS"
+    voice: "Riyaa"
+    type: "speech"
+    expected_keywords: ["namaste", "swagat", "sahayata", "madad", "assistant"]
+
+  - id: "f_farewell_01"
+    suite: "Suite F"
+    text: "Bahut bahut shukriya aapki madad ke liye."
+    domain: "FAREWELL"
+    voice: "Shivani"
+    type: "speech"
+    expected_keywords: ["swagat", "shukriya", "madad", "sahayata"]
+
+  # ----------------------------------------------------------------------------
+  # 2. Multi-Turn Dialogues (Suite G) - 7 domains x 5 turns = 35 utterances
+  # ----------------------------------------------------------------------------
+  # G1: Flights
+  - id: "g_flight_t1"
+    suite: "Suite G"
+    conversation_id: "flight_conv"
+    turn: 1
+    text: "Mai chandigarh se lucknow ki flights ke baare me dekhra tha"
+    domain: "FLIGHTS"
+    voice: "Avinash"
+    type: "speech"
+    origin: "Chandigarh"
+    destination: "Lucknow"
+
+  - id: "g_flight_t2"
+    suite: "Suite G"
+    conversation_id: "flight_conv"
+    turn: 2
+    text: "accha"
+    domain: "FLIGHTS"
+    voice: "Riyaa"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_flight_t3"
+    suite: "Suite G"
+    conversation_id: "flight_conv"
+    turn: 3
+    text: "haan"
+    domain: "FLIGHTS"
+    voice: "Shivani"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_flight_t4"
+    suite: "Suite G"
+    conversation_id: "flight_conv"
+    turn: 4
+    text: "subah wali flight kitne baje hai?"
+    domain: "FLIGHTS"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "g_flight_t5"
+    suite: "Suite G"
+    conversation_id: "flight_conv"
+    turn: 5
+    text: "aur kiraya kitna hoga?"
+    domain: "FLIGHTS"
+    voice: "Riyaa"
+    type: "speech"
+
+  # G2: Trains
+  - id: "g_train_t1"
+    suite: "Suite G"
+    conversation_id: "train_conv"
+    turn: 1
+    text: "Mujhe Delhi se Jaipur ke liye train dekhni hai"
+    domain: "TRAINS"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "g_train_t2"
+    suite: "Suite G"
+    conversation_id: "train_conv"
+    turn: 2
+    text: "theek hai"
+    domain: "TRAINS"
+    voice: "Shivani"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_train_t3"
+    suite: "Suite G"
+    conversation_id: "train_conv"
+    turn: 3
+    text: "Vande Bharat ka timing kya hai?"
+    domain: "TRAINS"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "g_train_t4"
+    suite: "Suite G"
+    conversation_id: "train_conv"
+    turn: 4
+    text: "accha"
+    domain: "TRAINS"
+    voice: "Riyaa"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_train_t5"
+    suite: "Suite G"
+    conversation_id: "train_conv"
+    turn: 5
+    text: "seat availability check kar do"
+    domain: "TRAINS"
+    voice: "Shivani"
+    type: "speech"
+
+  # G3: Utilities / Bill
+  - id: "g_bill_t1"
+    suite: "Suite G"
+    conversation_id: "bill_conv"
+    turn: 1
+    text: "Mera bijli ka bill check karna hai"
+    domain: "BILL"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "g_bill_t2"
+    suite: "Suite G"
+    conversation_id: "bill_conv"
+    turn: 2
+    text: "haan"
+    domain: "BILL"
+    voice: "Avinash"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_bill_t3"
+    suite: "Suite G"
+    conversation_id: "bill_conv"
+    turn: 3
+    text: "due date kab tak hai?"
+    domain: "BILL"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "g_bill_t4"
+    suite: "Suite G"
+    conversation_id: "bill_conv"
+    turn: 4
+    text: "theek hai"
+    domain: "BILL"
+    voice: "Shivani"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_bill_t5"
+    suite: "Suite G"
+    conversation_id: "bill_conv"
+    turn: 5
+    text: "payment link bhej dijiye"
+    domain: "BILL"
+    voice: "Avinash"
+    type: "speech"
+
+  # G4: Banking
+  - id: "g_bank_t1"
+    suite: "Suite G"
+    conversation_id: "bank_conv"
+    turn: 1
+    text: "Mere khate ka balance batao"
+    domain: "BANKING"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "g_bank_t2"
+    suite: "Suite G"
+    conversation_id: "bank_conv"
+    turn: 2
+    text: "accha"
+    domain: "BANKING"
+    voice: "Shivani"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_bank_t3"
+    suite: "Suite G"
+    conversation_id: "bank_conv"
+    turn: 3
+    text: "kal koi transaction hua tha kya?"
+    domain: "BANKING"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "g_bank_t4"
+    suite: "Suite G"
+    conversation_id: "bank_conv"
+    turn: 4
+    text: "theek"
+    domain: "BANKING"
+    voice: "Avinash"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_bank_t5"
+    suite: "Suite G"
+    conversation_id: "bank_conv"
+    turn: 5
+    text: "statement email par mil sakta hai?"
+    domain: "BANKING"
+    voice: "Shivani"
+    type: "speech"
+
+  # G5: Project Explainer
+  - id: "g_proj_t1"
+    suite: "Suite G"
+    conversation_id: "proj_conv"
+    turn: 1
+    text: "Yeh project vartalaap kya cheez hai?"
+    domain: "PROJECT"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "g_proj_t2"
+    suite: "Suite G"
+    conversation_id: "proj_conv"
+    turn: 2
+    text: "haan"
+    domain: "PROJECT"
+    voice: "Shivani"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_proj_t3"
+    suite: "Suite G"
+    conversation_id: "proj_conv"
+    turn: 3
+    text: "turn detection algorithm kaise kaam karta hai?"
+    domain: "PROJECT"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "g_proj_t4"
+    suite: "Suite G"
+    conversation_id: "proj_conv"
+    turn: 4
+    text: "accha"
+    domain: "PROJECT"
+    voice: "Riyaa"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_proj_t5"
+    suite: "Suite G"
+    conversation_id: "proj_conv"
+    turn: 5
+    text: "Gnani models kaise use ho rahe hain?"
+    domain: "PROJECT"
+    voice: "Shivani"
+    type: "speech"
+
+  # G6: Greetings & General Inquiry
+  - id: "g_greet_t1"
+    suite: "Suite G"
+    conversation_id: "greet_conv"
+    turn: 1
+    text: "Hello namaskar"
+    domain: "GREETINGS"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "g_greet_t2"
+    suite: "Suite G"
+    conversation_id: "greet_conv"
+    turn: 2
+    text: "theek hai"
+    domain: "GREETINGS"
+    voice: "Avinash"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_greet_t3"
+    suite: "Suite G"
+    conversation_id: "greet_conv"
+    turn: 3
+    text: "Aap kis kis kaam me madad kar sakte hain?"
+    domain: "PROJECT"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "g_greet_t4"
+    suite: "Suite G"
+    conversation_id: "greet_conv"
+    turn: 4
+    text: "accha"
+    domain: "PROJECT"
+    voice: "Shivani"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_greet_t5"
+    suite: "Suite G"
+    conversation_id: "greet_conv"
+    turn: 5
+    text: "Bahut badhiya shukriya"
+    domain: "FAREWELL"
+    voice: "Avinash"
+    type: "speech"
+
+  # G7: Telecom / Mobile Recharge
+  - id: "g_telecom_t1"
+    suite: "Suite G"
+    conversation_id: "telecom_conv"
+    turn: 1
+    text: "Mera mobile recharge khatam hone wala hai"
+    domain: "BILL"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "g_telecom_t2"
+    suite: "Suite G"
+    conversation_id: "telecom_conv"
+    turn: 2
+    text: "haan"
+    domain: "BILL"
+    voice: "Riyaa"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_telecom_t3"
+    suite: "Suite G"
+    conversation_id: "telecom_conv"
+    turn: 3
+    text: "kya koi naya plan available hai?"
+    domain: "BILL"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "g_telecom_t4"
+    suite: "Suite G"
+    conversation_id: "telecom_conv"
+    turn: 4
+    text: "sahi hai"
+    domain: "BILL"
+    voice: "Avinash"
+    type: "speech"
+    is_backchannel: true
+
+  - id: "g_telecom_t5"
+    suite: "Suite G"
+    conversation_id: "telecom_conv"
+    turn: 5
+    text: "is plan ko activate kar dijiye"
+    domain: "BILL"
+    voice: "Riyaa"
+    type: "speech"
+
+  # ----------------------------------------------------------------------------
+  # 3. Backchannel Tokens - 6 utterances
+  # ----------------------------------------------------------------------------
+  - id: "bc_haan"
+    suite: "Suite B"
+    text: "haan"
+    domain: "BACKCHANNEL"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "bc_accha"
+    suite: "Suite B"
+    text: "accha"
+    domain: "BACKCHANNEL"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "bc_theek_hai"
+    suite: "Suite B"
+    text: "theek hai"
+    domain: "BACKCHANNEL"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "bc_hmm"
+    suite: "Suite B"
+    text: "hmm"
+    domain: "BACKCHANNEL"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "bc_bilkul"
+    suite: "Suite B"
+    text: "bilkul"
+    domain: "BACKCHANNEL"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "bc_sahi_hai"
+    suite: "Suite B"
+    text: "sahi hai"
+    domain: "BACKCHANNEL"
+    voice: "Riyaa"
+    type: "speech"
+
+  # ----------------------------------------------------------------------------
+  # 4. Barge-In Commands - 5 utterances
+  # ----------------------------------------------------------------------------
+  - id: "barge_ruko"
+    suite: "Suite C"
+    text: "ruko"
+    domain: "BARGE_IN"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "barge_bas_karo"
+    suite: "Suite C"
+    text: "bas karo"
+    domain: "BARGE_IN"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "barge_ruko_ek_minute"
+    suite: "Suite C"
+    text: "ruko ek minute"
+    domain: "BARGE_IN"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "barge_cancel_karo"
+    suite: "Suite C"
+    text: "cancel karo"
+    domain: "BARGE_IN"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "barge_wait_suno"
+    suite: "Suite C"
+    text: "wait suno"
+    domain: "BARGE_IN"
+    voice: "Avinash"
+    type: "speech"
+
+  # ----------------------------------------------------------------------------
+  # 5. Incomplete Clauses (Trailing Conjunctions) - 5 utterances
+  # ----------------------------------------------------------------------------
+  - id: "incomp_lekin"
+    suite: "Suite A"
+    text: "Mujhe Lucknow ki flight dekhni thi lekin"
+    domain: "FLIGHTS"
+    voice: "Avinash"
+    type: "speech"
+    has_trailing_conjunction: true
+
+  - id: "incomp_kyunki"
+    suite: "Suite A"
+    text: "Main kal travel nahi kar paunga kyunki"
+    domain: "FLIGHTS"
+    voice: "Shivani"
+    type: "speech"
+    has_trailing_conjunction: true
+
+  - id: "incomp_aur"
+    suite: "Suite A"
+    text: "Flight ki timing theek hai aur"
+    domain: "FLIGHTS"
+    voice: "Riyaa"
+    type: "speech"
+    has_trailing_conjunction: true
+
+  - id: "incomp_ya"
+    suite: "Suite A"
+    text: "Hum train se bhi jaa sakte hain ya"
+    domain: "TRAINS"
+    voice: "Avinash"
+    type: "speech"
+    has_trailing_conjunction: true
+
+  - id: "incomp_matlab"
+    suite: "Suite A"
+    text: "Mera budget thoda tight hai matlab"
+    domain: "FLIGHTS"
+    voice: "Shivani"
+    type: "speech"
+    has_trailing_conjunction: true
+
+  # ----------------------------------------------------------------------------
+  # 6. Hesitation Fillers - 5 utterances
+  # ----------------------------------------------------------------------------
+  - id: "hes_woh_kya"
+    suite: "Suite J"
+    text: "Woh kya hai na mujhe ticket book karni thi"
+    domain: "FLIGHTS"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "hes_matlab"
+    suite: "Suite J"
+    text: "Matlab mujhe thoda discount mil sakta hai kya"
+    domain: "FLIGHTS"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "hes_actually"
+    suite: "Suite J"
+    text: "Actually mujhe subah ki flight chahiye thi"
+    domain: "FLIGHTS"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "hes_ummm"
+    suite: "Suite J"
+    text: "Ummm kya aap wapas bata sakte hain"
+    domain: "PROJECT"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "hes_seri_na"
+    suite: "Suite J"
+    text: "Seri na main check karke batata hoon"
+    domain: "PROJECT"
+    voice: "Avinash"
+    type: "speech"
+
+  # ----------------------------------------------------------------------------
+  # 7. Synthetic Noise & Breathing (No Speech) - 3 samples
+  # ----------------------------------------------------------------------------
+  - id: "noise_silence"
+    suite: "Suite E"
+    text: "[SILENCE]"
+    domain: "NOISE"
+    type: "synthetic_noise"
+    noise_type: "silence"
+    duration_sec: 3.0
+
+  - id: "noise_breathing"
+    suite: "Suite E"
+    text: "[BREATHING]"
+    domain: "NOISE"
+    type: "synthetic_noise"
+    noise_type: "breathing"
+    duration_sec: 3.0
+
+  - id: "noise_fan"
+    suite: "Suite E"
+    text: "[FAN_NOISE]"
+    domain: "NOISE"
+    type: "synthetic_noise"
+    noise_type: "fan"
+    duration_sec: 3.0
+
+  # ----------------------------------------------------------------------------
+  # 8. Devanagari Script Queries - 5 utterances
+  # ----------------------------------------------------------------------------
+  - id: "dev_flight_01"
+    suite: "Suite H"
+    text: "चंडीगढ़ से लखनऊ की फ्लाइट कब है"
+    domain: "FLIGHTS"
+    voice: "Shivani"
+    type: "speech"
+    expected_keywords: ["flight", "flights", "direct", "chandigarh", "lucknow", "indigo"]
+
+  - id: "dev_bank_01"
+    suite: "Suite H"
+    text: "मेरे बैंक खाते का बैलेंस बताओ"
+    domain: "BANKING"
+    voice: "Avinash"
+    type: "speech"
+    expected_keywords: ["balance", "khate", "rupaye", "account"]
+
+  - id: "dev_bill_01"
+    suite: "Suite H"
+    text: "बिजली का बिल कितना बाकी है"
+    domain: "BILL"
+    voice: "Riyaa"
+    type: "speech"
+    expected_keywords: ["bill", "bijli", "rupaye", "due date"]
+
+  - id: "dev_train_01"
+    suite: "Suite H"
+    text: "वंदे भारत ट्रेन कितने बजे चलेगी"
+    domain: "TRAINS"
+    voice: "Shivani"
+    type: "speech"
+    expected_keywords: ["train", "vande bharat", "shatabdi", "express"]
+
+  - id: "dev_project_01"
+    suite: "Suite H"
+    text: "वार्तालाप टर्न डिटेक्शन कैसे करता है"
+    domain: "PROJECT"
+    voice: "Avinash"
+    type: "speech"
+    expected_keywords: ["vartalaap", "turn", "detection", "vad", "smart turn"]
+
+  # ----------------------------------------------------------------------------
+  # 9. Hinglish Code-Mix - 5 utterances
+  # ----------------------------------------------------------------------------
+  - id: "hing_flight_01"
+    suite: "Suite H"
+    text: "Please tell me Chandigarh to Lucknow flight timing and ticket price"
+    domain: "FLIGHTS"
+    voice: "Riyaa"
+    type: "speech"
+    expected_keywords: ["flight", "chandigarh", "lucknow", "direct", "fare", "rupaye"]
+
+  - id: "hing_bank_01"
+    suite: "Suite H"
+    text: "Check my bank balance and latest transaction details please"
+    domain: "BANKING"
+    voice: "Shivani"
+    type: "speech"
+    expected_keywords: ["balance", "savings", "khate", "rupaye"]
+
+  - id: "hing_bill_01"
+    suite: "Suite H"
+    text: "Mera electricity bill online pay karna hai link send karo"
+    domain: "BILL"
+    voice: "Avinash"
+    type: "speech"
+    expected_keywords: ["bill", "bijli", "pay", "upi", "net banking"]
+
+  - id: "hing_train_01"
+    suite: "Suite H"
+    text: "Delhi to Jaipur Shatabdi express ka status kya hai"
+    domain: "TRAINS"
+    voice: "Riyaa"
+    type: "speech"
+    expected_keywords: ["train", "shatabdi", "vande bharat", "express"]
+
+  - id: "hing_project_01"
+    suite: "Suite H"
+    text: "How does Vartalaap integrate with Gnani Prisma and Timbre"
+    domain: "PROJECT"
+    voice: "Shivani"
+    type: "speech"
+    expected_keywords: ["vartalaap", "gnani", "prisma", "timbre", "stt", "tts"]
+
+  # ----------------------------------------------------------------------------
+  # 10. City Pair Permutations - 6 utterances
+  # ----------------------------------------------------------------------------
+  - id: "city_delhi_mumbai"
+    suite: "Suite I"
+    text: "Delhi se Mumbai ke liye direct flight kab hai"
+    domain: "FLIGHTS"
+    voice: "Avinash"
+    type: "speech"
+    origin: "Delhi"
+    destination: "Mumbai"
+
+  - id: "city_bangalore_chennai"
+    suite: "Suite I"
+    text: "Bangalore se Chennai ki flight details batao"
+    domain: "FLIGHTS"
+    voice: "Riyaa"
+    type: "speech"
+    origin: "Bangalore"
+    destination: "Chennai"
+
+  - id: "city_kolkata_hyderabad"
+    suite: "Suite I"
+    text: "Kolkata se Hyderabad ka air fare kitna hoga"
+    domain: "FLIGHTS"
+    voice: "Shivani"
+    type: "speech"
+    origin: "Kolkata"
+    destination: "Hyderabad"
+
+  - id: "city_jaipur_pune"
+    suite: "Suite I"
+    text: "Jaipur se Pune ke liye flight kab available hai"
+    domain: "FLIGHTS"
+    voice: "Avinash"
+    type: "speech"
+    origin: "Jaipur"
+    destination: "Pune"
+
+  - id: "city_ahmedabad_goa"
+    suite: "Suite I"
+    text: "Ahmedabad se Goa ki flight ticket book karni hai"
+    domain: "FLIGHTS"
+    voice: "Riyaa"
+    type: "speech"
+    origin: "Ahmedabad"
+    destination: "Goa"
+
+  - id: "city_lucknow_delhi"
+    suite: "Suite I"
+    text: "Lucknow se Delhi ke liye subah ki flight hai kya"
+    domain: "FLIGHTS"
+    voice: "Shivani"
+    type: "speech"
+    origin: "Lucknow"
+    destination: "Delhi"
+
+  # ----------------------------------------------------------------------------
+  # 11. Acoustic Edge Cases - 5 utterances
+  # ----------------------------------------------------------------------------
+  - id: "edge_single_word"
+    suite: "Suite J"
+    text: "Namaste"
+    domain: "GREETINGS"
+    voice: "Shivani"
+    type: "speech"
+
+  - id: "edge_ultra_long"
+    suite: "Suite J"
+    text: "Main agle hafte apne parivaar ke saath ghoomne jaane ka plan bana raha hoon aur humein Chandigarh se Lucknow jaana hai jahan humein teen din rukna hai aur uske baad humein train se Delhi wapas aana hai toh kya aap poora timing aur budget calculate karke bata sakte hain?"
+    domain: "FLIGHTS"
+    voice: "Avinash"
+    type: "speech"
+
+  - id: "edge_rapid_01"
+    suite: "Suite J"
+    text: "Chandigarh flight"
+    domain: "FLIGHTS"
+    voice: "Riyaa"
+    type: "speech"
+
+  - id: "edge_whisper"
+    suite: "Suite J"
+    text: "Mera balance batao"
+    domain: "BANKING"
+    voice: "Shivani"
+    type: "speech"
+    amplitude_scale: 0.20
+
+  - id: "edge_continuation"
+    suite: "Suite A"
+    text: "mera budget thoda kam hai"
+    domain: "FLIGHTS"
+    voice: "Avinash"
+    type: "speech"

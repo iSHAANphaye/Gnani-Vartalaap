@@ -136,10 +136,12 @@ TERMINAL_CLOSURE_MARKERS: FrozenSet[str] = frozenset({
     "hoga", "hogi", "honge", "chahiye", "gaya", "gayi", "gaye", "diya", "diye", "di",
     "liya", "liye", "li", "raha hai", "rahi hai", "rahe hain", "diya hai", "gaya hai",
     "kardiya", "kar diya", "ho gaya", "ho gayi", "bhar diya hai", "kijiye na", "boliye",
+    "shukriya", "dhanyawaad", "madad ke liye", "bahut shukriya",
     # Hindi (Devanagari)
     "करो", "कीजिए", "कीजिये", "है", "हैं", "था", "थी", "थे", "होगा", "होगी", "होंगे",
     "चाहिए", "गया", "गयी", "गए", "दिया", "दिए", "लिया", "लिए", "रहा है", "रही है", "रहे हैं",
     "दिया है", "गया है", "हो गया", "कर दिया", "बोलिए",
+    "शुक्रिया", "धन्यवाद", "मदद के लिए",
     # Tamil (Romanized & Native)
     "pannunga", "pannu", "irukku", "aachu", "venum", "mudinjidhu", "kudunga", "sollunga", "irukkum",
     "பண்ணுங்க", "இருக்கு", "ஆச்சு", "வேணும்", "முடிஞ்சிது", "குடுங்க", "சொல்லுங்க",

@@ -7,6 +7,7 @@ Provides:
 """
 
 import asyncio
+import hashlib
 import io
 import logging
 import math
@@ -45,15 +46,18 @@ class GnaniTTSClient:
         self.language = language or self.settings.gnani_default_lang
         self.model = model or self.settings.gnani_tts_model
         self.is_mock_mode = not self.settings.has_valid_gnani_credentials
+        self.cache_dir = Path(__file__).resolve().parent.parent.parent / ".cache" / "tts_cache"
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
 
         if self.is_mock_mode:
             logger.info("GnaniTTSClient initialized in MOCK / OFFLINE fallback mode")
         else:
             logger.info(
-                "GnaniTTSClient initialized with voice='%s', model='%s', endpoint='%s'",
+                "GnaniTTSClient initialized with voice='%s', model='%s', endpoint='%s' (disk_cache=%s)",
                 self.voice,
                 self.model,
                 self.settings.gnani_tts_rest_url,
+                self.cache_dir,
             )
 
     def synthesize(
@@ -63,19 +67,40 @@ class GnaniTTSClient:
         language: Optional[str] = None,
         output_path: Optional[str | Path] = None,
     ) -> bytes:
-        """Synthesize text into WAV audio bytes.
+        """Synthesize text into WAV audio bytes with persistent disk caching.
 
         Supports inline emotional tags like `<excited>`, `<pauses>`, `<laugh>`.
         Falls back to deterministic mock audio generation if unauthenticated or offline.
         """
         chosen_voice = voice or self.voice
         chosen_lang = language or self.language
+        clean_text = strip_expressive_tags(text).strip()
+
+        # Check persistent disk cache first for zero-latency TTFA
+        cache_key = hashlib.sha256(
+            f"{self.model}:{chosen_voice}:{chosen_lang}:{clean_text}".encode("utf-8")
+        ).hexdigest()
+        cache_file = self.cache_dir / f"{cache_key}.wav"
+        if cache_file.exists():
+            try:
+                audio_bytes = cache_file.read_bytes()
+                if output_path:
+                    out_p = Path(output_path)
+                    out_p.parent.mkdir(parents=True, exist_ok=True)
+                    out_p.write_bytes(audio_bytes)
+                return audio_bytes
+            except Exception as e:
+                logger.debug("Failed reading TTS cache file %s: %s", cache_file, e)
 
         if self.is_mock_mode:
             audio_bytes = self._generate_mock_wav(text)
         else:
             try:
                 audio_bytes = self._request_timbre_tts(text, chosen_voice, chosen_lang)
+                try:
+                    cache_file.write_bytes(audio_bytes)
+                except Exception as e:
+                    logger.debug("Failed writing TTS cache file %s: %s", cache_file, e)
             except Exception as e:
                 logger.warning(
                     "Gnani Timbre TTS request failed (%s). Falling back to mock audio generator.",
