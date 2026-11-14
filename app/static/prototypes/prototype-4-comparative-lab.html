@@ -235,46 +235,18 @@
       border-color: rgba(16, 185, 129, 0.3);
     }
 
-    .threshold-controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .threshold-slider-label {
+    .threshold-badge {
       font-family: var(--font-mono);
       font-size: 11px;
+      font-weight: 600;
       color: var(--text-secondary);
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       gap: 6px;
-    }
-
-    .threshold-range {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 130px;
-      height: 5px;
-      background: #1F2633;
-      border-radius: 4px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .threshold-range::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--emerald-accent);
-      box-shadow: 0 0 6px var(--emerald-accent);
-      cursor: pointer;
-      border: 1px solid #FFFFFF;
-      transition: transform 0.1s ease;
-    }
-
-    .threshold-range::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
     }
 
     .monitor-body {
@@ -623,12 +595,9 @@
           <span class="vad-status-badge" id="vadStatusBadge">IDLE / NOISE FLOOR</span>
         </div>
 
-        <div class="threshold-controls">
-          <label class="threshold-slider-label">
-            <span>VAD THRESHOLD:</span>
-            <b id="thresholdDisplay" style="color:var(--emerald-accent);">-26 dB</b>
-          </label>
-          <input type="range" id="thresholdSlider" min="-42" max="-12" value="-26" step="1" class="threshold-range" oninput="updateThresholdFromSlider(this.value)">
+        <div class="threshold-badge">
+          <span>CALIBRATED SPEECH GATE:</span>
+          <b style="color:var(--emerald-accent);">-26 dBFS (SILERO VAD)</b>
         </div>
       </div>
 
@@ -808,24 +777,10 @@
     const scopeCanvas = document.getElementById('vadScopeCanvas');
     const sCtx = scopeCanvas.getContext('2d');
 
-    let currentThresholdDb = -26;
+    const currentThresholdDb = -26;
     let liveLevel = 0.0;
     let targetLevel = 0.0;
     let wavePhase = 0;
-
-    function updateThresholdFromSlider(val) {
-      currentThresholdDb = parseInt(val, 10);
-      document.getElementById('thresholdDisplay').innerText = currentThresholdDb + ' dB';
-      document.getElementById('thresholdTagVal').innerText = currentThresholdDb + ' dB';
-
-      // Position marker on the meter bar (scale: -48dB to 0dB)
-      const pct = Math.max(0, Math.min(100, ((currentThresholdDb + 48) / 48) * 100));
-      document.getElementById('thresholdMarkerLine').style.left = pct + '%';
-
-      // Position threshold line on canvas (height 100px, 0dB at top, -48dB at center line)
-      const topPct = Math.max(10, Math.min(90, 100 - (pct * 0.85 + 5)));
-      document.getElementById('thresholdTag').style.top = topPct + '%';
-    }
 
     // High performance 60fps canvas renderer
     function drawVadScope() {
@@ -995,9 +950,6 @@
         text: text
       });
     }
-
-    // Initial threshold position calibration
-    updateThresholdFromSlider(-26);
   </script>
 </body>
 </html>
