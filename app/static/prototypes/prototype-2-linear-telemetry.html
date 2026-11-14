@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Linear Precision Cockpit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08090C;
+      --card-bg: #0E1117;
+      --card-inner: #07090D;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.16);
+      --indigo-accent: #6366F1;
+      --indigo-subtle: rgba(99, 102, 241, 0.15);
+      --emerald: #10B981;
+      --emerald-subtle: rgba(16, 185, 129, 0.15);
+      --amber: #F59E0B;
+      --amber-subtle: rgba(245, 158, 11, 0.15);
+      --rose: #F43F5E;
+      --text-main: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Universal Prototype Navigation Bar */
+    .proto-nav {
+      background: rgba(8, 9, 12, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .proto-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .proto-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--indigo-subtle);
+      color: #A5B4FC;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .proto-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0E1117;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .proto-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .proto-link:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .proto-link.active {
+      background: #1E232E;
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .ws-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 6px var(--emerald);
+    }
+
+    .ws-status-dot.offline {
+      background: var(--rose);
+      box-shadow: 0 0 6px var(--rose);
+    }
+
+    /* Command Center Layout */
+    .cockpit-layout {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+      flex: 1;
+    }
+
+    @media (max-width: 1024px) {
+      .cockpit-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards & Containers */
+    .linear-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    /* Mode Pill Toggle */
+    .mode-tab-pills {
+      display: inline-flex;
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .mode-pill-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mode-pill-btn.active {
+      background: #1E232E;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* Turn State Flow Stepper */
+    .turn-state-flow {
+      display: flex;
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 12px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .flow-step.active {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .flow-step.active .step-dot {
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #334155;
+    }
+
+    /* Live Dialogue Card Feed */
+    .linear-feed {
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 220px;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .feed-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .feed-card.user {
+      background: #11141D;
+      border-left: 3px solid var(--indigo-accent);
+      align-self: flex-start;
+      max-width: 90%;
+    }
+
+    .feed-card.bot {
+      background: rgba(16, 185, 129, 0.05);
+      border-left: 3px solid var(--emerald);
+      align-self: flex-start;
+      max-width: 90%;
+    }
+
+    .feed-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .feed-card.user .feed-card-header span:first-child { color: #A5B4FC; }
+    .feed-card.bot .feed-card-header span:first-child { color: #6EE7B7; }
+
+    /* Action Controls & Input Dock */
+    .dock-actions {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-mic-linear {
+      appearance: none;
+      background: var(--indigo-accent);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-mic-linear:hover {
+      background: #4F46E5;
+      transform: translateY(-1px);
+    }
+
+    .btn-mic-linear.active {
+      background: var(--rose);
+      box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
+    }
+
+    .input-linear-wrap {
+      display: flex;
+      gap: 8px;
+    }
+
+    .text-input-linear {
+      flex: 1;
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      outline: none;
+      transition: border 0.15s ease;
+    }
+
+    .text-input-linear:focus {
+      border-color: var(--indigo-accent);
+    }
+
+    .btn-send-linear {
+      appearance: none;
+      background: #1E232E;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-send-linear:hover {
+      background: #28303E;
+    }
+
+    /* Right Telemetry Rack */
+    .metric-table {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border-subtle);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--card-bg);
+      font-size: 12.5px;
+    }
+
+    .metric-key {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .metric-val-mono {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-main);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Dynamic ETS Meter */
+    .ets-progress-wrap {
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ets-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .ets-track {
+      height: 8px;
+      background: #181C24;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ets-fill {
+      height: 100%;
+      width: 42%;
+      background: linear-gradient(90deg, #6366F1 0%, #10B981 100%);
+      transition: width 0.1s ease-out;
+    }
+
+    /* Authentic Scenario Cards */
+    .query-chips {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .query-chip {
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.12s ease;
+    }
+
+    .query-chip:hover {
+      background: #141722;
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateX(2px);
+    }
+
+    .chip-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .chip-domain {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--indigo-accent);
+      text-transform: uppercase;
+    }
+
+    .chip-text {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Prototype Switcher Nav -->
+  <header class="proto-nav">
+    <div class="proto-nav-brand">
+      <span>VARTALAAP</span>
+      <span class="proto-badge">LINEAR COCKPIT</span>
+    </div>
+
+    <nav class="proto-selector">
+      <a href="prototype-1-precision-audio.html" class="proto-link">1. Precision Studio</a>
+      <a href="prototype-2-linear-telemetry.html" class="proto-link active">2. Linear Cockpit</a>
+      <a href="prototype-3-indic-minimalist.html" class="proto-link">3. Indic Minimalist</a>
+      <a href="prototype-4-comparative-lab.html" class="proto-link">4. Comparative Lab</a>
+      <a href="prototype-5-bento-voice-hub.html" class="proto-link">5. Bento Voice Hub</a>
+    </nav>
+
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="ws-status-dot" id="wsDot" title="WebSocket Online"></span>
+      <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);" id="wsLabel">CONNECTED</span>
+    </div>
+  </header>
+
+  <main class="cockpit-layout">
+    <!-- Left Main Deck -->
+    <section class="linear-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span>REAL-TIME VOICE ARBITRATION DECK</span>
+          <span style="font-family:var(--font-mono); font-size:11px; color:var(--emerald);">16kHz STREAMING</span>
+        </div>
+        <div class="mode-tab-pills">
+          <button class="mode-pill-btn active" id="btnModeVar" onclick="setArbitrationMode('VARTALAAP')">Smart-Turn Hybrid</button>
+          <button class="mode-pill-btn" id="btnModeStd" onclick="setArbitrationMode('STANDARD')">Fixed 500ms VAD</button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Flow Stepper -->
+        <div class="turn-state-flow">
+          <div class="flow-step active" id="stepListening">
+            <span class="step-dot"></span>
+            <span>LISTENING</span>
+          </div>
+          <span style="color:var(--text-muted);">&rarr;</span>
+          <div class="flow-step" id="stepSpeaking">
+            <span class="step-dot"></span>
+            <span>USER SPEAKING</span>
+          </div>
+          <span style="color:var(--text-muted);">&rarr;</span>
+          <div class="flow-step" id="stepPause">
+            <span class="step-dot"></span>
+            <span>COGNITIVE PAUSE</span>
+          </div>
+          <span style="color:var(--text-muted);">&rarr;</span>
+          <div class="flow-step" id="stepGranted">
+            <span class="step-dot"></span>
+            <span>TURN GRANTED</span>
+          </div>
+          <span style="color:var(--text-muted);">&rarr;</span>
+          <div class="flow-step" id="stepBot">
+            <span class="step-dot"></span>
+            <span>BOT SPEAKING</span>
+          </div>
+        </div>
+
+        <!-- Dialogue Feed -->
+        <div class="linear-feed" id="linearFeed">
+          <div class="feed-card bot">
+            <div class="feed-card-header">
+              <span>Vartalaap Sovereign Assistant</span>
+              <span>16:00:00</span>
+            </div>
+            <div>Namaste! Main Vartalaap voice turn engine hoon. Train, flight, bill ya banking ke sawaal puchiye.</div>
+          </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="dock-actions">
+          <button class="btn-mic-linear" id="btnMicLinear" onclick="toggleMicSession()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+            <span id="btnMicText">Start Live Mic</span>
+          </button>
+
+          <form class="input-linear-wrap" onsubmit="handleSendText(event)">
+            <input type="text" class="text-input-linear" id="textPromptInput" placeholder="Send prompt in Hindi or Hinglish (e.g. चंडीगढ़ से लखनऊ की फ्लाइट कब है)...">
+            <button type="submit" class="btn-send-linear">Send</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Telemetry Deck -->
+    <aside class="linear-card">
+      <div class="card-header">
+        <span>ARBITRATION METRICS</span>
+        <span style="font-family:var(--font-mono); font-size:11px; color:var(--indigo-accent);">RTX 5060</span>
+      </div>
+
+      <div class="card-body">
+        <!-- Dynamic ETS Bar -->
+        <div class="ets-progress-wrap">
+          <div class="ets-label-row">
+            <span>DYNAMIC SILENCE TOLERANCE</span>
+            <span><b id="etsVal" style="color:var(--indigo-accent);">850</b> ms</span>
+          </div>
+          <div class="ets-track">
+            <div class="ets-fill" id="etsFill"></div>
+          </div>
+          <div class="ets-label-row" style="font-size:10px;">
+            <span>Min: 850ms</span>
+            <span>Max: 2000ms</span>
+          </div>
+        </div>
+
+        <!-- Metric Table -->
+        <div class="metric-table">
+          <div class="metric-row">
+            <span class="metric-key">Elapsed Silence</span>
+            <span class="metric-val-mono" id="mSilence">0 ms</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-key">P(Turn Complete)</span>
+            <span class="metric-val-mono" id="mPComp">0.00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-key">Backchannel Ducking</span>
+            <span class="metric-val-mono" style="color:var(--emerald);" id="mDuckGain">0.0 dB</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-key">Audio Pipeline</span>
+            <span class="metric-val-mono" style="color:var(--indigo-accent);">Silero + Smart-Turn</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-key">Speech Service</span>
+            <span class="metric-val-mono">Gnani Prisma + Timbre</span>
+          </div>
+        </div>
+
+        <!-- Authentic Scenario Prompts -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">
+            Authentic Indic Test Cases
+          </div>
+
+          <div class="query-chips">
+            <div class="query-chip" onclick="injectPrompt('Chandigarh se Lucknow ki direct flight kab hai?')">
+              <div class="chip-left">
+                <span class="chip-domain">Flight Booking</span>
+                <span class="chip-text">Chandigarh se Lucknow ki direct flight...</span>
+              </div>
+              <span style="color:var(--text-muted); font-size:12px;">&rarr;</span>
+            </div>
+
+            <div class="query-chip" onclick="injectPrompt('Mera bijli ka bill kitna banta hai?')">
+              <div class="chip-left">
+                <span class="chip-domain">Bill Payments</span>
+                <span class="chip-text">Mera bijli ka bill kitna banta hai?</span>
+              </div>
+              <span style="color:var(--text-muted); font-size:12px;">&rarr;</span>
+            </div>
+
+            <div class="query-chip" onclick="injectPrompt('Mere savings account mein kul kitna balance bacha hai?')">
+              <div class="chip-left">
+                <span class="chip-domain">Banking Balance</span>
+                <span class="chip-text">Mere savings account mein kul kitna...</span>
+              </div>
+              <span style="color:var(--text-muted); font-size:12px;">&rarr;</span>
+            </div>
+
+            <div class="query-chip" onclick="injectPrompt('Vartalaap project kya hai aur kaise kaam karta hai?')">
+              <div class="chip-left">
+                <span class="chip-domain">Architecture</span>
+                <span class="chip-text">Vartalaap project kya hai aur kaise...</span>
+              </div>
+              <span style="color:var(--text-muted); font-size:12px;">&rarr;</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </main>
+
+  <script src="../shared-engine.js"></script>
+  <script>
+    // Telemetry updates
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('mSilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('etsVal').innerText = Math.round(t.dynamic_ets_ms);
+      document.getElementById('mPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('mDuckGain').innerText = Number(t.ducking_gain_db).toFixed(1) + ' dB';
+
+      // Update ETS Track fill percentage (min 850, max 2000)
+      const pct = Math.min(100, Math.max(10, ((t.dynamic_ets_ms - 850) / (2000 - 850)) * 100));
+      document.getElementById('etsFill').style.width = pct + '%';
+
+      // Update flow stepper
+      document.querySelectorAll('.flow-step').forEach(s => s.classList.remove('active'));
+      if (t.state === 'LISTENING') document.getElementById('stepListening').classList.add('active');
+      else if (t.state === 'USER_SPEAKING') document.getElementById('stepSpeaking').classList.add('active');
+      else if (t.state === 'USER_PAUSE') document.getElementById('stepPause').classList.add('active');
+      else if (t.state === 'TURN_GRANTED') document.getElementById('stepGranted').classList.add('active');
+      else if (t.state === 'BOT_SPEAKING' || t.state.includes('DUCK')) document.getElementById('stepBot').classList.add('active');
+    });
+
+    // Transcript update
+    VartalaapEngine.on('transcript', msg => {
+      addOrUpdateFeed('user', msg.text, msg.is_final);
+    });
+
+    VartalaapEngine.on('stateChange', st => {
+      if (st === 'BOT_SPEAKING' && VartalaapEngine.botResponse) {
+        addOrUpdateFeed('bot', VartalaapEngine.botResponse, true);
+      }
+    });
+
+    function addOrUpdateFeed(speaker, text, isFinal) {
+      const feed = document.getElementById('linearFeed');
+      let lastCard = feed.lastElementChild;
+
+      if (lastCard && lastCard.dataset.speaker === speaker && !lastCard.dataset.final) {
+        lastCard.querySelector('div:nth-child(2)').innerText = text;
+        if (isFinal) lastCard.dataset.final = "true";
+      } else {
+        const card = document.createElement('div');
+        card.className = `feed-card ${speaker}`;
+        card.dataset.speaker = speaker;
+        if (isFinal) card.dataset.final = "true";
+
+        const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false });
+        card.innerHTML = `
+          <div class="feed-card-header">
+            <span>${speaker === 'user' ? 'User' : 'Vartalaap Assistant'}</span>
+            <span>${timeStr}</span>
+          </div>
+          <div>${text}</div>
+        `;
+        feed.appendChild(card);
+        feed.scrollTop = feed.scrollHeight;
+      }
+    }
+
+    function setArbitrationMode(mode) {
+      VartalaapEngine.setMode(mode);
+      document.getElementById('btnModeVar').classList.toggle('active', mode === 'VARTALAAP');
+      document.getElementById('btnModeStd').classList.toggle('active', mode === 'STANDARD');
+    }
+
+    async function toggleMicSession() {
+      const active = await VartalaapEngine.toggleMic();
+      const btn = document.getElementById('btnMicLinear');
+      const text = document.getElementById('btnMicText');
+      if (active) {
+        btn.classList.add('active');
+        text.innerText = 'Stop Live Mic';
+      } else {
+        btn.classList.remove('active');
+        text.innerText = 'Start Live Mic';
+      }
+    }
+
+    function injectPrompt(txt) {
+      document.getElementById('textPromptInput').value = txt;
+      sendPrompt(txt);
+    }
+
+    function handleSendText(e) {
+      e.preventDefault();
+      const input = document.getElementById('textPromptInput');
+      const val = input.value.trim();
+      if (!val) return;
+      sendPrompt(val);
+      input.value = '';
+    }
+
+    function sendPrompt(text) {
+      addOrUpdateFeed('user', text, true);
+      VartalaapEngine.sendJson({
+        type: 'INJECT_TRANSCRIPT',
+        text: text
+      });
+    }
+
+    // Keyboard shortcut for mic
+    window.addEventListener('keydown', e => {
+      if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+        e.preventDefault();
+        toggleMicSession();
+      }
+    });
+
+    // WebSocket indicator
+    setInterval(() => {
+      const dot = document.getElementById('wsDot');
+      const label = document.getElementById('wsLabel');
+      if (VartalaapEngine.isConnected) {
+        dot.classList.remove('offline');
+        label.innerText = 'CONNECTED';
+      } else {
+        dot.classList.add('offline');
+        label.innerText = 'SIMULATION';
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

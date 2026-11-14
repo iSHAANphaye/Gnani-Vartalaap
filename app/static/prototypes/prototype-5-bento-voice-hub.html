@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Bento Voice Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0B0D11;
+      --card-bg: #12161E;
+      --card-inner: #0A0C10;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.16);
+      --violet-accent: #8B5CF6;
+      --violet-glow: rgba(139, 92, 246, 0.25);
+      --cyan-accent: #06B6D4;
+      --emerald-accent: #10B981;
+      --amber-accent: #F59E0B;
+      --text: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Universal Prototype Navigation Bar */
+    .proto-nav {
+      background: rgba(11, 13, 17, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .proto-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .proto-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(139, 92, 246, 0.15);
+      color: #C4B5FD;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .proto-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .proto-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .proto-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .proto-link.active {
+      background: #1E2433;
+      color: #A5B4FC;
+      font-weight: 600;
+    }
+
+    /* Bento Grid Layout */
+    .bento-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      flex: 1;
+    }
+
+    .bento-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.15s ease;
+    }
+
+    .bento-card:hover {
+      border-color: var(--border-hover);
+    }
+
+    .card-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Col Spans */
+    .col-8 { grid-column: span 8; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-12 { grid-column: span 12; }
+
+    @media (max-width: 1024px) {
+      .col-8, .col-4, .col-6 { grid-column: span 12; }
+    }
+
+    /* Hero Voice Card */
+    .waveform-wrap {
+      height: 120px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #bentoCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .dialogue-box {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      min-height: 120px;
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 13.5px;
+    }
+
+    .chat-row-author {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .chat-row.user .chat-row-author { color: var(--cyan-accent); }
+    .chat-row.bot .chat-row-author { color: var(--emerald-accent); }
+
+    .voice-action-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-bento-mic {
+      appearance: none;
+      background: linear-gradient(135deg, var(--violet-accent) 0%, #6366F1 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px var(--violet-glow);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-bento-mic:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-bento-mic.active {
+      background: #EF4444;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+    }
+
+    .input-bento-wrap {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-bento-field {
+      flex: 1;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .input-bento-field:focus {
+      border-color: var(--violet-accent);
+    }
+
+    .btn-bento-send {
+      appearance: none;
+      background: #1C2230;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 0 16px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-bento-send:hover {
+      background: #252D40;
+    }
+
+    /* Metric Big Stats */
+    .stat-huge {
+      font-family: var(--font-mono);
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-caption {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Indic Tag Badges */
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .tag-pill.active {
+      background: rgba(6, 182, 212, 0.15);
+      color: #67E8F9;
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+
+    /* Query Action Chips */
+    .bento-query-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bento-query-item {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.12s ease;
+    }
+
+    .bento-query-item:hover {
+      background: #181E2C;
+      color: var(--text);
+      border-color: rgba(139, 92, 246, 0.4);
+      transform: translateX(2px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Prototype Switcher Nav -->
+  <header class="proto-nav">
+    <div class="proto-nav-brand">
+      <span>VARTALAAP</span>
+      <span class="proto-badge">BENTO VOICE HUB</span>
+    </div>
+
+    <nav class="proto-selector">
+      <a href="prototype-1-precision-audio.html" class="proto-link">1. Precision Studio</a>
+      <a href="prototype-2-linear-telemetry.html" class="proto-link">2. Linear Cockpit</a>
+      <a href="prototype-3-indic-minimalist.html" class="proto-link">3. Indic Minimalist</a>
+      <a href="prototype-4-comparative-lab.html" class="proto-link">4. Comparative Lab</a>
+      <a href="prototype-5-bento-voice-hub.html" class="proto-link active">5. Bento Voice Hub</a>
+    </nav>
+
+    <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">
+      MODULAR DASHBOARD
+    </div>
+  </header>
+
+  <main class="bento-container">
+    <!-- Card 1: Main Conversational Stage (8 Cols) -->
+    <div class="bento-card col-8">
+      <div class="card-label-row">
+        <span>Live Voice Stage & Dynamic Dialogue</span>
+        <span style="color:var(--cyan-accent); font-family:var(--font-mono); font-size:11px;" id="bentoStateBadge">LISTENING</span>
+      </div>
+
+      <!-- Waveform Visualizer -->
+      <div class="waveform-wrap">
+        <canvas id="bentoCanvas" width="800" height="120"></canvas>
+      </div>
+
+      <!-- Dialogue Feed -->
+      <div class="dialogue-box" id="bentoDialogue">
+        <div class="chat-row bot">
+          <span class="chat-row-author">Vartalaap Assistant</span>
+          <span>Namaste! Main Vartalaap voice assistant hoon. Aap mujhse flights, trains, bijli bill ya banking ke baare mein sawaal puch sakte hain.</span>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="voice-action-bar">
+        <button class="btn-bento-mic" id="btnBentoMic" onclick="toggleMicSession()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          <span id="btnMicText">Start Live Mic</span>
+        </button>
+
+        <form class="input-bento-wrap" onsubmit="handleSendText(event)">
+          <input type="text" class="input-bento-field" id="bentoPromptInput" placeholder="Ask in Hindi or Hinglish (e.g. चंडीगढ़ से लखनऊ की फ्लाइट कब है)...">
+          <button type="submit" class="btn-bento-send">Send</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Card 2: Dynamic ETS Silence Gauge (4 Cols) -->
+    <div class="bento-card col-4">
+      <div class="card-label-row">
+        <span>Dynamic ETS Silence</span>
+        <span style="color:var(--violet-accent); font-family:var(--font-mono);">850 - 2000 ms</span>
+      </div>
+
+      <div>
+        <div class="stat-huge" style="color:var(--violet-accent);" id="bentoEts">850<span style="font-size:20px; font-weight:500; color:var(--text-muted); margin-left:4px;">ms</span></div>
+        <div class="stat-caption">Adaptive threshold holding turns during mid-sentence thinking pauses.</div>
+      </div>
+
+      <div style="background:var(--card-inner); border:1px solid var(--border); border-radius:8px; padding:12px; display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:12px;">
+        <span>ELAPSED SILENCE:</span>
+        <span style="color:var(--text); font-weight:700;" id="bentoSilence">0 ms</span>
+      </div>
+
+      <div style="background:var(--card-inner); border:1px solid var(--border); border-radius:8px; padding:12px; display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:12px;">
+        <span>P(TURN COMPLETE):</span>
+        <span style="color:var(--cyan-accent); font-weight:700;" id="bentoPComp">0.00</span>
+      </div>
+    </div>
+
+    <!-- Card 3: Indic Lexical Analyzer (4 Cols) -->
+    <div class="bento-card col-4">
+      <div class="card-label-row">
+        <span>Indic Lexical Parser</span>
+        <span style="color:var(--cyan-accent); font-family:var(--font-mono);">ACTIVE</span>
+      </div>
+
+      <div class="stat-caption">Detects non-terminal clause boundaries, hesitation markers, and cultural backchannels:</div>
+
+      <div class="tag-cloud">
+        <span class="tag-pill active">के (Postposition)</span>
+        <span class="tag-pill active">और (Conjunction)</span>
+        <span class="tag-pill active">मतलब (Hesitation)</span>
+        <span class="tag-pill active">हाँजी (Backchannel -18dB)</span>
+        <span class="tag-pill active">अच्छा (Backchannel)</span>
+        <span class="tag-pill active">दिया है (Terminal)</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Authentic Indic Test Bank (4 Cols) -->
+    <div class="bento-card col-4">
+      <div class="card-label-row">
+        <span>Authentic Test Prompts</span>
+        <span style="color:var(--emerald-accent); font-family:var(--font-mono);">1-CLICK</span>
+      </div>
+
+      <div class="bento-query-list">
+        <div class="bento-query-item" onclick="injectPrompt('Chandigarh se Lucknow ki direct flight kab hai?')">
+          <span>✈️ Chandigarh to Lucknow Flight</span>
+          <span>&rarr;</span>
+        </div>
+        <div class="bento-query-item" onclick="injectPrompt('Mera bijli ka bill kitna banta hai?')">
+          <span>⚡ Electricity Bill Check</span>
+          <span>&rarr;</span>
+        </div>
+        <div class="bento-query-item" onclick="injectPrompt('Mere savings account mein kul kitna balance bacha hai?')">
+          <span>🏦 Savings Account Balance</span>
+          <span>&rarr;</span>
+        </div>
+        <div class="bento-query-item" onclick="injectPrompt('Vartalaap project kya hai aur kaise kaam karta hai?')">
+          <span>🏛️ Vartalaap Project Overview</span>
+          <span>&rarr;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: Pipeline & Hardware Telemetry (4 Cols) -->
+    <div class="bento-card col-4">
+      <div class="card-label-row">
+        <span>Hardware & Model Telemetry</span>
+        <span style="color:var(--emerald-accent); font-family:var(--font-mono);">RTX 5060</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+          <span style="color:var(--text-muted);">Acoustic VAD</span>
+          <span style="font-family:var(--font-mono); font-weight:600;">Silero ONNX (<1ms)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+          <span style="color:var(--text-muted);">Prosodic Classifier</span>
+          <span style="font-family:var(--font-mono); font-weight:600; color:var(--violet-accent);">Smart-Turn v3.2 (<8ms)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+          <span style="color:var(--text-muted);">Streaming STT</span>
+          <span style="font-family:var(--font-mono); font-weight:600;">Gnani Prisma (200ms)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <span style="color:var(--text-muted);">Streaming TTS</span>
+          <span style="font-family:var(--font-mono); font-weight:600;">Gnani Timbre (Shivani)</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../shared-engine.js"></script>
+  <script>
+    // Bento Canvas Multi-Band Visualizer
+    const canvas = document.getElementById('bentoCanvas');
+    const ctx = canvas.getContext('2d');
+    let bentoPhase = 0;
+    let bentoEnergy = 0.0;
+
+    function renderBento() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width;
+      const h = canvas.height;
+      const cy = h / 2;
+
+      ctx.beginPath();
+      ctx.strokeStyle = bentoEnergy > 0.05 ? '#8B5CF6' : '#06B6D4';
+      ctx.lineWidth = 2.5;
+
+      const amp = 5 + (bentoEnergy * 35);
+      for (let x = 0; x < w; x++) {
+        const y = cy + Math.sin(x * 0.02 + bentoPhase) * amp * Math.cos(x * 0.005);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      bentoPhase += 0.06 + (bentoEnergy * 0.12);
+      requestAnimationFrame(renderBento);
+    }
+    requestAnimationFrame(renderBento);
+
+    VartalaapEngine.on('audioLevel', lvl => {
+      bentoEnergy = lvl;
+    });
+
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('bentoEts').innerHTML = Math.round(t.dynamic_ets_ms) + '<span style="font-size:20px; font-weight:500; color:var(--text-muted); margin-left:4px;">ms</span>';
+      document.getElementById('bentoSilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('bentoPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('bentoStateBadge').innerText = t.state;
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      addOrUpdateBentoChat('user', msg.text, msg.is_final);
+    });
+
+    VartalaapEngine.on('stateChange', st => {
+      if (st === 'BOT_SPEAKING' && VartalaapEngine.botResponse) {
+        addOrUpdateBentoChat('bot', VartalaapEngine.botResponse, true);
+      }
+    });
+
+    function addOrUpdateBentoChat(speaker, text, isFinal) {
+      const dialogue = document.getElementById('bentoDialogue');
+      let lastRow = dialogue.lastElementChild;
+
+      if (lastRow && lastRow.dataset.speaker === speaker && !lastRow.dataset.final) {
+        lastRow.querySelector('span:nth-child(2)').innerText = text;
+        if (isFinal) lastRow.dataset.final = "true";
+      } else {
+        const row = document.createElement('div');
+        row.className = `chat-row ${speaker}`;
+        row.dataset.speaker = speaker;
+        if (isFinal) row.dataset.final = "true";
+
+        const author = document.createElement('span');
+        author.className = 'chat-row-author';
+        author.innerText = speaker === 'user' ? 'User' : 'Vartalaap Assistant';
+
+        const content = document.createElement('span');
+        content.innerText = text;
+
+        row.appendChild(author);
+        row.appendChild(content);
+        dialogue.appendChild(row);
+        dialogue.scrollTop = dialogue.scrollHeight;
+      }
+    }
+
+    async function toggleMicSession() {
+      const active = await VartalaapEngine.toggleMic();
+      const btn = document.getElementById('btnBentoMic');
+      const text = document.getElementById('btnMicText');
+      if (active) {
+        btn.classList.add('active');
+        text.innerText = 'Stop Live Mic';
+      } else {
+        btn.classList.remove('active');
+        text.innerText = 'Start Live Mic';
+      }
+    }
+
+    function injectPrompt(txt) {
+      document.getElementById('bentoPromptInput').value = txt;
+      sendPrompt(txt);
+    }
+
+    function handleSendText(e) {
+      e.preventDefault();
+      const input = document.getElementById('bentoPromptInput');
+      const val = input.value.trim();
+      if (!val) return;
+      sendPrompt(val);
+      input.value = '';
+    }
+
+    function sendPrompt(text) {
+      addOrUpdateBentoChat('user', text, true);
+      VartalaapEngine.sendJson({
+        type: 'INJECT_TRANSCRIPT',
+        text: text
+      });
+    }
+  </script>
+</body>
+</html>

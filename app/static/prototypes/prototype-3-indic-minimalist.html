@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Sovereign Indic Minimalist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050608;
+      --surface: #0E1015;
+      --surface-raised: #161A22;
+      --border: rgba(255, 255, 255, 0.08);
+      --saffron: #E06A3B;
+      --saffron-glow: rgba(224, 106, 59, 0.35);
+      --indigo: #6366F1;
+      --emerald: #10B981;
+      --text: #F8FAFC;
+      --text-muted: #64748B;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Universal Prototype Navigation Bar */
+    .proto-nav {
+      background: rgba(5, 6, 8, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .proto-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .proto-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(224, 106, 59, 0.15);
+      color: var(--saffron);
+      border: 1px solid rgba(224, 106, 59, 0.3);
+    }
+
+    .proto-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .proto-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .proto-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .proto-link.active {
+      background: var(--surface-raised);
+      color: var(--saffron);
+      font-weight: 600;
+    }
+
+    /* Fluid Voice Stage (Hero Center) */
+    .voice-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+
+    .status-capsule {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: 0.02em;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .status-orb-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+    }
+
+    .orb-canvas-wrap {
+      width: 280px;
+      height: 280px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    #orbCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .orb-mic-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(14, 16, 21, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    .orb-canvas-wrap:hover .orb-mic-icon {
+      background: rgba(224, 106, 59, 0.2);
+      border-color: var(--saffron);
+    }
+
+    /* Conversational Subtitle Float */
+    .subtitle-dock {
+      max-width: 680px;
+      width: 100%;
+      text-align: center;
+      margin-top: 32px;
+      min-height: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .live-transcript-text {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      text-wrap: balance;
+    }
+
+    .live-transcript-text.bot {
+      color: #A7F3D0;
+    }
+
+    .live-transcript-author {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    /* Floating Interaction Drawer */
+    .minimal-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .quick-chip {
+      appearance: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #94A3B8;
+      border-radius: 100px;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .quick-chip:hover {
+      background: var(--surface-raised);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Bottom Expandable Diagnostics Drawer */
+    .telemetry-tray {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .tray-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tray-key {
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .tray-val {
+      color: var(--text);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Prototype Switcher Nav -->
+  <header class="proto-nav">
+    <div class="proto-nav-brand">
+      <span>VARTALAAP</span>
+      <span class="proto-badge">MINIMALIST ORB</span>
+    </div>
+
+    <nav class="proto-selector">
+      <a href="prototype-1-precision-audio.html" class="proto-link">1. Precision Studio</a>
+      <a href="prototype-2-linear-telemetry.html" class="proto-link">2. Linear Cockpit</a>
+      <a href="prototype-3-indic-minimalist.html" class="proto-link active">3. Indic Minimalist</a>
+      <a href="prototype-4-comparative-lab.html" class="proto-link">4. Comparative Lab</a>
+      <a href="prototype-5-bento-voice-hub.html" class="proto-link">5. Bento Voice Hub</a>
+    </nav>
+
+    <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">
+      <span style="color:var(--saffron); font-weight:600;">SPACEBAR</span> TO SPEAK
+    </div>
+  </header>
+
+  <!-- Central Ambient Voice Stage -->
+  <main class="voice-stage">
+    <div class="status-capsule" id="statusCapsule">
+      <span class="status-orb-dot" id="statusOrbDot"></span>
+      <span id="statusLabel">Vartalaap Listening</span>
+    </div>
+
+    <!-- Fluid Audio Orb -->
+    <div class="orb-canvas-wrap" onclick="toggleMicSession()" title="Click to Toggle Microphone">
+      <canvas id="orbCanvas" width="320" height="320"></canvas>
+      <div class="orb-mic-icon" id="orbMicIcon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+      </div>
+    </div>
+
+    <!-- Subtitle Dialogue Display -->
+    <div class="subtitle-dock">
+      <span class="live-transcript-author" id="speakerAuthor">VARTALAAP SOVEREIGN AI</span>
+      <div class="live-transcript-text" id="liveText">
+        "Namaste! Batayein main aapki kya sahayata kar sakta hoon?"
+      </div>
+    </div>
+
+    <!-- Minimalist Prompt Station -->
+    <div class="minimal-controls">
+      <button class="quick-chip" onclick="sendPrompt('Chandigarh se Lucknow ki direct flight kab hai?')">Flight to Lucknow</button>
+      <button class="quick-chip" onclick="sendPrompt('Mera bijli ka bill kitna banta hai?')">Electricity Bill</button>
+      <button class="quick-chip" onclick="sendPrompt('Mere savings account mein kul kitna balance bacha hai?')">Bank Balance</button>
+      <button class="quick-chip" onclick="sendPrompt('Vartalaap project kya hai aur kaise kaam karta hai?')">Engine Overview</button>
+    </div>
+  </main>
+
+  <!-- Bottom Diagnostics Ribbon -->
+  <footer class="telemetry-tray">
+    <div class="tray-item">
+      <span class="tray-key">Mode:</span>
+      <span class="tray-val" style="color:var(--saffron);" id="trayMode">DYNAMIC INDIC</span>
+    </div>
+    <div class="tray-item">
+      <span class="tray-key">Dynamic ETS:</span>
+      <span class="tray-val"><b id="trayEts">850</b> ms</span>
+    </div>
+    <div class="tray-item">
+      <span class="tray-key">Silence:</span>
+      <span class="tray-val" id="traySilence">0 ms</span>
+    </div>
+    <div class="tray-item">
+      <span class="tray-key">P(Complete):</span>
+      <span class="tray-val" id="trayPComp">0.00</span>
+    </div>
+    <div class="tray-item">
+      <span class="tray-key">Duck Gain:</span>
+      <span class="tray-val" style="color:var(--emerald);" id="trayDuck">0.0 dB</span>
+    </div>
+  </footer>
+
+  <script src="../shared-engine.js"></script>
+  <script>
+    // Fluid Breathing Particle Orb on HTML5 Canvas
+    const canvas = document.getElementById('orbCanvas');
+    const ctx = canvas.getContext('2d');
+    let orbTime = 0;
+    let audioEnergy = 0.0;
+    let targetEnergy = 0.0;
+
+    function renderOrb() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      audioEnergy += (targetEnergy - audioEnergy) * 0.1;
+      const baseRadius = 70 + (audioEnergy * 40);
+
+      // Layer 1: Soft Outer Glow
+      const glowGrad = ctx.createRadialGradient(cx, cy, baseRadius * 0.5, cx, cy, baseRadius * 1.6);
+      glowGrad.addColorStop(0, 'rgba(224, 106, 59, 0.35)');
+      glowGrad.addColorStop(0.5, 'rgba(99, 102, 241, 0.15)');
+      glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, baseRadius * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Layer 2: Deformed Harmonic Rings
+      for (let ring = 0; ring < 3; ring++) {
+        ctx.beginPath();
+        const rOffset = ring * 12;
+        const pts = 64;
+        for (let i = 0; i <= pts; i++) {
+          const theta = (i / pts) * Math.PI * 2;
+          const noise = Math.sin(theta * 5 + orbTime + ring) * (4 + audioEnergy * 16) +
+                        Math.cos(theta * 3 - orbTime * 1.5) * (3 + audioEnergy * 10);
+          const r = baseRadius + rOffset + noise;
+          const x = cx + Math.cos(theta) * r;
+          const y = cy + Math.sin(theta) * r;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = ring === 0 ? 'rgba(224, 106, 59, 0.8)' : (ring === 1 ? 'rgba(99, 102, 241, 0.6)' : 'rgba(16, 185, 129, 0.4)');
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      orbTime += 0.03 + (audioEnergy * 0.08);
+      requestAnimationFrame(renderOrb);
+    }
+    requestAnimationFrame(renderOrb);
+
+    VartalaapEngine.on('audioLevel', lvl => {
+      targetEnergy = lvl;
+    });
+
+    // Telemetry updates
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('trayEts').innerText = Math.round(t.dynamic_ets_ms);
+      document.getElementById('traySilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('trayPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('trayDuck').innerText = Number(t.ducking_gain_db).toFixed(1) + ' dB';
+
+      const label = document.getElementById('statusLabel');
+      const dot = document.getElementById('statusOrbDot');
+
+      if (t.state === 'LISTENING') {
+        label.innerText = 'Vartalaap Listening';
+        dot.style.background = '#10B981';
+      } else if (t.state === 'USER_SPEAKING') {
+        label.innerText = 'User Speaking';
+        dot.style.background = '#F59E0B';
+      } else if (t.state === 'USER_PAUSE') {
+        label.innerText = `Holding Pause (ETS ${Math.round(t.dynamic_ets_ms)}ms)`;
+        dot.style.background = '#E06A3B';
+      } else if (t.state === 'BOT_SPEAKING') {
+        label.innerText = 'Vartalaap Responding';
+        dot.style.background = '#6366F1';
+      }
+    });
+
+    VartalaapEngine.on('transcript', msg => {
+      document.getElementById('speakerAuthor').innerText = 'USER';
+      const textEl = document.getElementById('liveText');
+      textEl.innerText = `"${msg.text}"`;
+      textEl.classList.remove('bot');
+    });
+
+    VartalaapEngine.on('stateChange', st => {
+      if (st === 'BOT_SPEAKING' && VartalaapEngine.botResponse) {
+        document.getElementById('speakerAuthor').innerText = 'VARTALAAP SOVEREIGN AI';
+        const textEl = document.getElementById('liveText');
+        textEl.innerText = `"${VartalaapEngine.botResponse}"`;
+        textEl.classList.add('bot');
+      }
+    });
+
+    async function toggleMicSession() {
+      const active = await VartalaapEngine.toggleMic();
+      const orbIcon = document.getElementById('orbMicIcon');
+      if (active) {
+        orbIcon.style.background = 'rgba(239, 68, 68, 0.4)';
+        orbIcon.style.borderColor = '#EF4444';
+      } else {
+        orbIcon.style.background = 'rgba(14, 16, 21, 0.8)';
+        orbIcon.style.borderColor = 'var(--border)';
+      }
+    }
+
+    function sendPrompt(text) {
+      document.getElementById('speakerAuthor').innerText = 'USER';
+      const textEl = document.getElementById('liveText');
+      textEl.innerText = `"${text}"`;
+      textEl.classList.remove('bot');
+
+      VartalaapEngine.sendJson({
+        type: 'INJECT_TRANSCRIPT',
+        text: text
+      });
+    }
+
+    window.addEventListener('keydown', e => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleMicSession();
+      }
+    });
+  </script>
+</body>
+</html>

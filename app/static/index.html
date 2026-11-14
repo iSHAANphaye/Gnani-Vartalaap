@@ -3,879 +3,785 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vartalaap (वार्तालाप) — Sovereign Indic-Aware Voice Engine</title>
+  <title>Vartalaap (वार्तालाप) — Sovereign Indic Voice Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700;800;900&family=Share+Tech+Mono&family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --aluminum-light: #E0E3E1;
-      --aluminum-mid: #C6CAC8;
-      --aluminum-dark: #A8ACA9;
-      --walnut: #3A2012;
-      --walnut-dark: #221208;
-      --incandescent: #FFE8A3;
-      --incandescent-glow: rgba(255, 232, 163, 0.45);
-      --oxblood: #990000;
-      --oxblood-bright: #FF1A1A;
-      --iron: #222222;
-      --stamped-ink: #181818;
-      --status-green: #10B981;
+      --bg: #08090C;
+      --card-bg: #0E1117;
+      --card-inner: #07090D;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.16);
+      --indigo-accent: #6366F1;
+      --indigo-subtle: rgba(99, 102, 241, 0.15);
+      --emerald: #10B981;
+      --emerald-subtle: rgba(16, 185, 129, 0.15);
+      --amber: #F59E0B;
+      --amber-subtle: rgba(245, 158, 11, 0.15);
+      --rose: #F43F5E;
+      --text-main: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: radial-gradient(circle at 50% 30%, #2A2521 0%, #14110F 100%);
-      color: #1A1A1A;
-      font-family: 'Cabinet Grotesk', -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 30px 20px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-      width: 100%;
-      max-width: 1220px;
-      margin: 0 auto;
-    }
-
-    /* Wooden Studio Console Cabinet */
-    .tape-console {
-      background: linear-gradient(180deg, var(--walnut) 0%, var(--walnut-dark) 100%);
-      border-radius: 14px;
-      padding: 16px 20px;
-      box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.8),
-        0 2px 4px rgba(255, 255, 255, 0.1) inset;
-      border: 1px solid #1C0F06;
-    }
-
-    /* Brushed Aluminum Faceplate */
-    .faceplate {
-      background: linear-gradient(180deg, var(--aluminum-light) 0%, var(--aluminum-mid) 50%, var(--aluminum-dark) 100%);
-      border-radius: 8px;
-      padding: 24px;
-      box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.8),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.3),
-        0 4px 12px rgba(0, 0, 0, 0.5);
-      border: 2px solid #7D807E;
-      position: relative;
-    }
-
-    /* Corner Machined Screws */
-    .screw {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #FFFFFF 0%, #999 50%, #444 100%);
-      border: 1px solid #333;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-    }
-    .screw::after {
-      content: '';
-      position: absolute;
-      top: 5px;
-      left: 1px;
-      width: 8px;
-      height: 1px;
-      background: #222;
-      transform: rotate(35deg);
-    }
-    .screw-tl { top: 10px; left: 10px; }
-    .screw-tr { top: 10px; right: 10px; }
-    .screw-bl { bottom: 10px; left: 10px; }
-    .screw-br { bottom: 10px; right: 10px; }
-
-    /* Top Console Brand Strip */
-    .console-header {
+    /* Top Universal Prototype Navigation Bar */
+    .proto-nav {
+      background: rgba(8, 9, 12, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid #8E9290;
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .brand-group {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .brand-title {
-      font-size: 30px;
-      font-weight: 900;
-      letter-spacing: 0.10em;
-      color: #1A1A1A;
+    .proto-nav-brand {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .brand-badge {
+      gap: 10px;
+      font-weight: 700;
       font-size: 14px;
-      font-weight: 700;
-      background: #222;
-      color: #FFE8A3;
-      padding: 2px 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .proto-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
       border-radius: 4px;
-      letter-spacing: 0.05em;
+      background: var(--indigo-subtle);
+      color: #A5B4FC;
+      border: 1px solid rgba(99, 102, 241, 0.3);
     }
 
-    .brand-sub {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12px;
-      font-weight: 700;
-      color: #4A4E4C;
-      letter-spacing: 0.08em;
-    }
-
-    .counter-block {
+    .proto-selector {
       display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    /* Red Record Lamp */
-    .rec-lamp {
-      display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      color: #333;
+      background: #0E1117;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 3px;
     }
 
-    .rec-bulb {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #500;
-      border: 1px solid #200;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
+    .proto-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 5px;
       transition: all 0.15s ease;
     }
-    .rec-bulb.active {
-      background: var(--oxblood-bright);
-      box-shadow: 0 0 12px var(--oxblood-bright), inset 0 1px 2px rgba(255,255,255,0.8);
+
+    .proto-link:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    /* Mechanical 4-Digit Tape Counter */
-    .tape-counter {
-      background: #111111;
-      border: 2px solid #555;
-      border-radius: 4px;
-      padding: 4px 10px;
-      display: flex;
-      gap: 4px;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
-    }
-
-    .counter-wheel {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 16px;
-      font-weight: 700;
+    .proto-link.active {
+      background: #1E232E;
       color: #FFFFFF;
-      background: #222;
-      padding: 2px 4px;
-      border-radius: 2px;
-      border-top: 1px solid #444;
-      border-bottom: 1px solid #111;
+      font-weight: 600;
     }
 
-    /* Sub-Header Toolbar: A/B Mode Toggle & Hardware Pill */
-    .console-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(0, 0, 0, 0.18);
-      border-radius: 6px;
-      padding: 8px 14px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .mode-switch-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .mode-switch-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      color: #333;
-      letter-spacing: 0.05em;
-    }
-
-    .rocker-toggle {
-      display: inline-flex;
-      background: #222;
-      border: 2px solid #111;
-      border-radius: 4px;
-      padding: 2px;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
-    }
-
-    .rocker-btn {
-      appearance: none;
-      background: transparent;
-      border: none;
-      color: #777;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 5px 12px;
-      border-radius: 3px;
-      cursor: pointer;
-      transition: all 0.12s ease;
-      letter-spacing: 0.04em;
-    }
-
-    .rocker-btn.active {
-      background: linear-gradient(180deg, #4A4D4B 0%, #2E302F 100%);
-      color: #FFE8A3;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
-    }
-
-    .hw-status-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: #2E302F;
-      background: rgba(255, 255, 255, 0.4);
-      padding: 4px 10px;
-      border-radius: 4px;
-      border: 1px solid rgba(0, 0, 0, 0.15);
-    }
-
-    .status-dot {
+    .ws-status-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: var(--status-green);
-      box-shadow: 0 0 6px var(--status-green);
+      background: var(--emerald);
+      box-shadow: 0 0 6px var(--emerald);
     }
 
-    /* Deck Viewport: Reels & VU Meter side by side */
-    .deck-viewport {
+    .ws-status-dot.offline {
+      background: var(--rose);
+      box-shadow: 0 0 6px var(--rose);
+    }
+
+    /* Command Center Layout */
+    .cockpit-layout {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+      width: 100%;
       display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 16px;
-      margin-bottom: 18px;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+      flex: 1;
     }
 
-    @media (max-width: 960px) {
-      .deck-viewport {
+    @media (max-width: 1024px) {
+      .cockpit-layout {
         grid-template-columns: 1fr;
       }
     }
 
-    .tape-deck-canvas-wrap {
-      background: #111111;
-      border: 3px solid #333;
-      border-radius: 6px;
-      box-shadow: inset 0 4px 16px rgba(0,0,0,0.9);
+    /* Cards & Containers */
+    .linear-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    #reelsCanvas {
-      width: 100%;
-      height: auto;
-      max-height: 270px;
-      display: block;
-    }
-
-    /* Analog Backlit Galvanometer VU Meter */
-    .analog-meter-box {
-      background: #1E1C1A;
-      border: 3px solid #3A3632;
-      border-radius: 6px;
-      padding: 14px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      box-shadow: inset 0 4px 16px rgba(0,0,0,0.8);
-      position: relative;
     }
 
-    .meter-label {
-      width: 100%;
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-between;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      font-weight: 700;
-      color: #8C8880;
-      letter-spacing: 0.05em;
-      margin-bottom: 8px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
     }
 
-    .nagra-vu-frame {
-      background: var(--incandescent);
-      border: 3px solid #111;
-      border-radius: 6px;
-      box-shadow: 
-        inset 0 0 30px rgba(180, 130, 40, 0.45),
-        0 0 18px var(--incandescent-glow);
-      overflow: hidden;
-      position: relative;
-      width: 100%;
-    }
-
-    #nagraVuCanvas {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    /* Stamped Paper Tape Transcript Bar */
-    .tape-transcript-bar {
-      background: #F4EEDC;
-      border: 1px solid #D5CBB2;
-      border-left: 6px solid var(--walnut);
-      border-radius: 4px;
-      padding: 12px 18px;
-      font-family: 'Special Elite', cursive, monospace;
-      font-size: 15px;
-      color: var(--stamped-ink);
-      min-height: 48px;
+    .card-title-group {
       display: flex;
       align-items: center;
-      margin-bottom: 18px;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-      line-height: 1.4;
-      word-break: break-word;
+      gap: 10px;
     }
 
-    /* Tape Transport Mechanical Controls */
-    .transport-controls {
+    .card-body {
+      padding: 20px;
       display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
     }
 
-    .transport-btn {
-      appearance: none;
-      background: linear-gradient(180deg, #525654 0%, #2A2C2B 100%);
-      border: 2px solid #151615;
+    /* Mode Pill Toggle */
+    .mode-tab-pills {
+      display: inline-flex;
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
       border-radius: 6px;
-      padding: 13px 20px;
-      color: #E0E3E1;
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 800;
+      padding: 2px;
+    }
+
+    .mode-pill-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mode-pill-btn.active {
+      background: #1E232E;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* Turn State Flow Stepper */
+    .turn-state-flow {
+      display: flex;
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 12px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .flow-step.active {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .flow-step.active .step-dot {
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #334155;
+    }
+
+    /* Live Dialogue Card Feed */
+    .linear-feed {
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 220px;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .feed-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .feed-card.user {
+      background: #11141D;
+      border-left: 3px solid var(--indigo-accent);
+      align-self: flex-start;
+      max-width: 90%;
+    }
+
+    .feed-card.bot {
+      background: rgba(16, 185, 129, 0.05);
+      border-left: 3px solid var(--emerald);
+      align-self: flex-start;
+      max-width: 90%;
+    }
+
+    .feed-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .feed-card.user .feed-card-header span:first-child { color: #A5B4FC; }
+    .feed-card.bot .feed-card-header span:first-child { color: #6EE7B7; }
+
+    /* Action Controls & Input Dock */
+    .dock-actions {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-mic-linear {
+      appearance: none;
+      background: var(--indigo-accent);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-weight: 600;
+      font-size: 13px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 
-        0 5px 0 #151615,
-        0 8px 16px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      transition: all 0.08s ease;
-      user-select: none;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+      transition: all 0.15s ease;
+      white-space: nowrap;
     }
 
-    .transport-btn:active {
-      transform: translateY(4px);
-      box-shadow: 
-        0 1px 0 #151615,
-        0 2px 4px rgba(0, 0, 0, 0.4);
+    .btn-mic-linear:hover {
+      background: #4F46E5;
+      transform: translateY(-1px);
     }
 
-    .transport-btn.btn-rec {
-      background: linear-gradient(180deg, #B91C1C 0%, #7F1D1D 100%);
-      box-shadow: 
-        0 5px 0 #450A0A,
-        0 8px 16px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    .transport-btn.btn-rec:active {
-      transform: translateY(4px);
-      box-shadow: 0 1px 0 #450A0A;
+    .btn-mic-linear.active {
+      background: var(--rose);
+      box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
     }
 
-    .transport-btn.btn-mic-active {
-      background: linear-gradient(180deg, #047857 0%, #064E3B 100%);
-      box-shadow: 
-        0 5px 0 #022C22,
-        0 8px 16px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    .input-linear-wrap {
+      display: flex;
+      gap: 8px;
     }
 
-    /* Status Readout Plaque */
-    .plaque {
-      margin-top: 18px;
+    .text-input-linear {
+      flex: 1;
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      outline: none;
+      transition: border 0.15s ease;
+    }
+
+    .text-input-linear:focus {
+      border-color: var(--indigo-accent);
+    }
+
+    .btn-send-linear {
+      appearance: none;
+      background: #1E232E;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-send-linear:hover {
+      background: #28303E;
+    }
+
+    /* Right Telemetry Rack */
+    .metric-table {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border-subtle);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .metric-row {
       display: flex;
       justify-content: space-between;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: #4C504E;
-      border-top: 1px solid #9DA19F;
-      padding-top: 10px;
-      flex-wrap: wrap;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--card-bg);
+      font-size: 12.5px;
+    }
+
+    .metric-key {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .metric-val-mono {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-main);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Dynamic ETS Meter */
+    .ets-progress-wrap {
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
       gap: 8px;
+    }
+
+    .ets-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .ets-track {
+      height: 8px;
+      background: #181C24;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ets-fill {
+      height: 100%;
+      width: 42%;
+      background: linear-gradient(90deg, #6366F1 0%, #10B981 100%);
+      transition: width 0.1s ease-out;
+    }
+
+    /* Authentic Scenario Cards */
+    .query-chips {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .query-chip {
+      background: var(--card-inner);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.12s ease;
+    }
+
+    .query-chip:hover {
+      background: #141722;
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateX(2px);
+    }
+
+    .chip-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .chip-domain {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--indigo-accent);
+      text-transform: uppercase;
+    }
+
+    .chip-text {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="tape-console">
-      <div class="faceplate">
-        <span class="screw screw-tl"></span>
-        <span class="screw screw-tr"></span>
-        <span class="screw screw-bl"></span>
-        <span class="screw screw-br"></span>
+  <!-- Top Universal Prototype Navigation Bar -->
+  <header class="proto-nav">
+    <div class="proto-nav-brand">
+      <span>VARTALAAP</span>
+      <span class="proto-badge">FLAGSHIP CONSOLE</span>
+    </div>
 
-        <!-- Header -->
-        <header class="console-header">
-          <div class="brand-group">
-            <h1 class="brand-title">
-              NAGRA IV-S
-              <span class="brand-badge">वार्तालाप</span>
-            </h1>
-            <span class="brand-sub">INDIC TURN ARBITRATION CONSOLE &bull; 15 IPS MASTER RECORDER</span>
+    <nav class="proto-selector">
+      <a href="prototypes/index.html" class="proto-link" style="color:var(--amber);">◧ All 5 Prototypes</a>
+      <a href="prototypes/prototype-1-precision-audio.html" class="proto-link">1. Precision Studio</a>
+      <a href="index.html" class="proto-link active">2. Linear Cockpit</a>
+      <a href="prototypes/prototype-3-indic-minimalist.html" class="proto-link">3. Indic Minimalist</a>
+      <a href="prototypes/prototype-4-comparative-lab.html" class="proto-link">4. Comparative Lab</a>
+      <a href="prototypes/prototype-5-bento-voice-hub.html" class="proto-link">5. Bento Voice Hub</a>
+    </nav>
+
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="ws-status-dot" id="wsDot" title="WebSocket Online"></span>
+      <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);" id="wsLabel">CONNECTED</span>
+    </div>
+  </header>
+
+  <main class="cockpit-layout">
+    <!-- Left Main Deck -->
+    <section class="linear-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span>REAL-TIME VOICE ARBITRATION DECK</span>
+          <span style="font-family:var(--font-mono); font-size:11px; color:var(--emerald);">16kHz FULL-DUPLEX</span>
+        </div>
+        <div class="mode-tab-pills">
+          <button class="mode-pill-btn active" id="btnModeVar" onclick="setArbitrationMode('VARTALAAP')">Smart-Turn Hybrid</button>
+          <button class="mode-pill-btn" id="btnModeStd" onclick="setArbitrationMode('STANDARD')">Fixed 500ms VAD</button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Flow Stepper -->
+        <div class="turn-state-flow">
+          <div class="flow-step active" id="stepListening">
+            <span class="step-dot"></span>
+            <span>LISTENING</span>
           </div>
-
-          <div class="counter-block">
-            <div class="rec-lamp">
-              <span class="rec-bulb" id="recBulb"></span>
-              <span>RECORD</span>
-            </div>
-
-            <div class="tape-counter">
-              <span class="counter-wheel" id="cnt1">0</span>
-              <span class="counter-wheel" id="cnt2">1</span>
-              <span class="counter-wheel" id="cnt3">4</span>
-              <span class="counter-wheel" id="cnt4">8</span>
-            </div>
+          <span style="color:var(--text-muted);">&rarr;</span>
+          <div class="flow-step" id="stepSpeaking">
+            <span class="step-dot"></span>
+            <span>USER SPEAKING</span>
           </div>
-        </header>
-
-        <!-- Sub-Header Toolbar: A/B Mode Toggle & Hardware Health -->
-        <div class="console-toolbar">
-          <div class="mode-switch-group">
-            <span class="mode-switch-label">ARBITRATION MODE:</span>
-            <div class="rocker-toggle" role="group" aria-label="Mode Selector">
-              <button type="button" class="rocker-btn active" id="btnModeVartalaap" onclick="setArbitrationMode('VARTALAAP')">
-                ● Vartalaap v2.0 Dynamic
-              </button>
-              <button type="button" class="rocker-btn" id="btnModeStandard" onclick="setArbitrationMode('STANDARD')">
-                Standard 500ms Fixed
-              </button>
-            </div>
+          <span style="color:var(--text-muted);">&rarr;</span>
+          <div class="flow-step" id="stepPause">
+            <span class="step-dot"></span>
+            <span>COGNITIVE PAUSE</span>
           </div>
-
-          <div class="hw-status-badge">
-            <span class="status-dot" id="serverStatusDot"></span>
-            <span id="serverStatusText">RTX 5060 CUDA ONLINE</span>
+          <span style="color:var(--text-muted);">&rarr;</span>
+          <div class="flow-step" id="stepGranted">
+            <span class="step-dot"></span>
+            <span>TURN GRANTED</span>
+          </div>
+          <span style="color:var(--text-muted);">&rarr;</span>
+          <div class="flow-step" id="stepBot">
+            <span class="step-dot"></span>
+            <span>BOT SPEAKING</span>
           </div>
         </div>
 
-        <!-- Deck Viewport -->
-        <div class="deck-viewport">
-          <!-- Animated Tape Reels Canvas -->
-          <div class="tape-deck-canvas-wrap">
-            <canvas id="reelsCanvas" width="700" height="260"></canvas>
-          </div>
-
-          <!-- Analog VU Meter -->
-          <div class="analog-meter-box">
-            <div class="meter-label">
-              <span>PEAK LEVEL DAMPED</span>
-              <span id="nagraDbText">-20 dB</span>
+        <!-- Dialogue Feed -->
+        <div class="linear-feed" id="linearFeed">
+          <div class="feed-card bot">
+            <div class="feed-card-header">
+              <span>Vartalaap Sovereign Assistant</span>
+              <span>16:00:00</span>
             </div>
-            <div class="nagra-vu-frame">
-              <canvas id="nagraVuCanvas" width="290" height="170"></canvas>
-            </div>
-            <div style="font-family:'Share Tech Mono'; font-size:10px; color:#A0A5A2; margin-top:10px; width:100%; display:flex; justify-content:space-between;">
-              <span>CAL: +4dBu / 0VU</span>
-              <span id="nagraState">STATE: IDLE</span>
-            </div>
+            <div>Namaste! Main Vartalaap voice turn engine hoon. Train, flight, bill ya banking ke baare mein baat kar sakte hain.</div>
           </div>
         </div>
 
-        <!-- Stamped Paper Transcript Bar -->
-        <div class="tape-transcript-bar" id="nagraTranscript">
-          [TAPE HEAD ACTIVE] Ready for conversational arbitration...
+        <!-- Action Controls -->
+        <div class="dock-actions">
+          <button class="btn-mic-linear" id="btnMicLinear" onclick="toggleMicSession()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+            <span id="btnMicText">Start Live Mic</span>
+          </button>
+
+          <form class="input-linear-wrap" onsubmit="handleSendText(event)">
+            <input type="text" class="text-input-linear" id="textPromptInput" placeholder="Send prompt in Hindi or Hinglish (e.g. चंडीगढ़ से लखनऊ की फ्लाइट कब है)...">
+            <button type="submit" class="btn-send-linear">Send</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Telemetry Deck -->
+    <aside class="linear-card">
+      <div class="card-header">
+        <span>ARBITRATION METRICS</span>
+        <span style="font-family:var(--font-mono); font-size:11px; color:var(--indigo-accent);">RTX 5060</span>
+      </div>
+
+      <div class="card-body">
+        <!-- Dynamic ETS Bar -->
+        <div class="ets-progress-wrap">
+          <div class="ets-label-row">
+            <span>DYNAMIC SILENCE TOLERANCE</span>
+            <span><b id="etsVal" style="color:var(--indigo-accent);">850</b> ms</span>
+          </div>
+          <div class="ets-track">
+            <div class="ets-fill" id="etsFill"></div>
+          </div>
+          <div class="ets-label-row" style="font-size:10px;">
+            <span>Min: 850ms</span>
+            <span>Max: 2000ms</span>
+          </div>
         </div>
 
-        <!-- Heavy Mechanical Transport Buttons -->
-        <div class="transport-controls">
-          <button class="transport-btn" onclick="VartalaapEngine.simulateHinglishPause()">
-            <span>&bull; Hinglish Pause</span>
-            <small style="font-size: 10px; opacity: 0.8;">(ETS 1250ms)</small>
-          </button>
-
-          <button class="transport-btn" onclick="VartalaapEngine.simulateHaanjiBackchannel()">
-            <span>&bull; Haanji Duck</span>
-            <small style="font-size: 10px; opacity: 0.8;">(-18 dB)</small>
-          </button>
-
-          <button class="transport-btn btn-rec" onclick="VartalaapEngine.simulateRukoInterrupt()">
-            <span>&#9632; Ruko Hard Cut</span>
-            <small style="font-size: 10px; opacity: 0.8;">(&lt;50ms Flush)</small>
-          </button>
-
-          <button class="transport-btn" id="btnNagraMic" onclick="handleNagraMic()">
-            <span id="nagraMicLabel">&#9654; Live Mic</span>
-            <small style="font-size: 10px; opacity: 0.8;">16kHz WebRTC</small>
-          </button>
+        <!-- Metric Table -->
+        <div class="metric-table">
+          <div class="metric-row">
+            <span class="metric-key">Elapsed Silence</span>
+            <span class="metric-val-mono" id="mSilence">0 ms</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-key">P(Turn Complete)</span>
+            <span class="metric-val-mono" id="mPComp">0.00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-key">Backchannel Ducking</span>
+            <span class="metric-val-mono" style="color:var(--emerald);" id="mDuckGain">0.0 dB</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-key">Audio Pipeline</span>
+            <span class="metric-val-mono" style="color:var(--indigo-accent);">Silero + Smart-Turn</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-key">Speech Service</span>
+            <span class="metric-val-mono">Gnani Prisma + Timbre</span>
+          </div>
         </div>
 
-        <!-- Serial Plaque -->
-        <div class="plaque">
-          <span>KUDELSKI SA &bull; CH-1033 CHESEAUX / SWITZERLAND &bull; GNANI.AI SOVEREIGN AI</span>
-          <span>MODE: <b id="plaqueMode">VARTALAAP</b> | ETS: <span id="nagraEts">600</span>ms | SILENCE: <span id="nagraSilence">0</span>ms | P(C): <span id="nagraPComp">0.00</span></span>
+        <!-- Authentic Scenario Prompts -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">
+            Authentic Indic Test Cases
+          </div>
+
+          <div class="query-chips">
+            <div class="query-chip" onclick="injectPrompt('Chandigarh se Lucknow ki direct flight kab hai?')">
+              <div class="chip-left">
+                <span class="chip-domain">Flight Booking</span>
+                <span class="chip-text">Chandigarh se Lucknow ki direct flight...</span>
+              </div>
+              <span style="color:var(--text-muted); font-size:12px;">&rarr;</span>
+            </div>
+
+            <div class="query-chip" onclick="injectPrompt('Mera bijli ka bill kitna banta hai?')">
+              <div class="chip-left">
+                <span class="chip-domain">Bill Payments</span>
+                <span class="chip-text">Mera bijli ka bill kitna banta hai?</span>
+              </div>
+              <span style="color:var(--text-muted); font-size:12px;">&rarr;</span>
+            </div>
+
+            <div class="query-chip" onclick="injectPrompt('Mere savings account mein kul kitna balance bacha hai?')">
+              <div class="chip-left">
+                <span class="chip-domain">Banking Balance</span>
+                <span class="chip-text">Mere savings account mein kul kitna...</span>
+              </div>
+              <span style="color:var(--text-muted); font-size:12px;">&rarr;</span>
+            </div>
+
+            <div class="query-chip" onclick="injectPrompt('Vartalaap project kya hai aur kaise kaam karta hai?')">
+              <div class="chip-left">
+                <span class="chip-domain">Architecture</span>
+                <span class="chip-text">Vartalaap project kya hai aur kaise...</span>
+              </div>
+              <span style="color:var(--text-muted); font-size:12px;">&rarr;</span>
+            </div>
+          </div>
         </div>
 
       </div>
-    </div>
-  </div>
+    </aside>
+  </main>
 
   <script src="shared-engine.js"></script>
   <script>
-    // Dual Animated Spinning Reel-to-Reel Tape Spools on Canvas
-    const reelsCanvas = document.getElementById('reelsCanvas');
-    const rCtx = reelsCanvas.getContext('2d');
-
-    let reelAngleLeft = 0;
-    let reelAngleRight = 0;
-    let reelSpeed = 0.02;
-    let targetReelSpeed = 0.02;
-    let tapeCounterNum = 148;
-    let tapeCounterTimer = 0;
-
-    function drawSpool(ctx, cx, cy, rad, angle, isLeft) {
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(angle);
-
-      // Flange Rim
-      ctx.beginPath();
-      ctx.arc(0, 0, rad, 0, Math.PI * 2);
-      ctx.fillStyle = '#262827';
-      ctx.fill();
-      ctx.strokeStyle = '#555856';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Tape Pack under Flange
-      ctx.beginPath();
-      const tapeRad = isLeft ? rad * 0.78 : rad * 0.52;
-      ctx.arc(0, 0, tapeRad, 0, Math.PI * 2);
-      ctx.fillStyle = '#3A2012';
-      ctx.fill();
-
-      // Aluminum 3-Spoke Cutout Plate
-      ctx.beginPath();
-      ctx.arc(0, 0, rad * 0.90, 0, Math.PI * 2);
-      ctx.strokeStyle = '#999C9A';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      for (let i = 0; i < 3; i++) {
-        const a = (i * Math.PI * 2) / 3;
-        ctx.save();
-        ctx.rotate(a);
-        ctx.beginPath();
-        ctx.moveTo(rad * 0.22, -rad * 0.12);
-        ctx.lineTo(rad * 0.82, -rad * 0.22);
-        ctx.arc(0, 0, rad * 0.84, -0.26, 0.26);
-        ctx.lineTo(rad * 0.22, rad * 0.12);
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(15, 15, 15, 0.85)';
-        ctx.fill();
-        ctx.strokeStyle = '#C2C5C3';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // Center Spindle Hub
-      ctx.beginPath();
-      ctx.arc(0, 0, rad * 0.24, 0, Math.PI * 2);
-      ctx.fillStyle = '#8B8E8C';
-      ctx.fill();
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Three Trident Slot Prongs
-      for (let j = 0; j < 3; j++) {
-        const ja = (j * Math.PI * 2) / 3;
-        ctx.save();
-        ctx.rotate(ja);
-        ctx.fillStyle = '#111';
-        ctx.fillRect(-3, -rad * 0.20, 6, rad * 0.10);
-        ctx.restore();
-      }
-
-      ctx.restore();
-    }
-
-    function renderTapeRibbon(ctx, x1, y1, x2, y2) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(x1, y1 + 75);
-      ctx.bezierCurveTo(x1 + 100, y1 + 140, x2 - 100, y2 + 140, x2, y2 + 75);
-      ctx.strokeStyle = '#2B170B';
-      ctx.lineWidth = 5;
-      ctx.stroke();
-
-      // Tape head guides
-      ctx.fillStyle = '#C2C5C3';
-      ctx.fillRect(330, 205, 12, 24);
-      ctx.fillRect(360, 205, 12, 24);
-      ctx.beginPath();
-      ctx.arc(348, 208, 9, 0, Math.PI * 2);
-      ctx.fillStyle = '#888';
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function animateReels() {
-      // Smooth deceleration/acceleration
-      reelSpeed += (targetReelSpeed - reelSpeed) * 0.08;
-      reelAngleLeft += reelSpeed;
-      reelAngleRight += reelSpeed;
-
-      rCtx.clearRect(0, 0, reelsCanvas.width, reelsCanvas.height);
-
-      // Deck Bed
-      rCtx.fillStyle = '#181A19';
-      rCtx.fillRect(0, 0, reelsCanvas.width, reelsCanvas.height);
-
-      // Tape Ribbon between spools
-      renderTapeRibbon(rCtx, 190, 125, 510, 125);
-
-      // Dual Reels
-      drawSpool(rCtx, 190, 125, 96, reelAngleLeft, true);
-      drawSpool(rCtx, 510, 125, 96, reelAngleRight, false);
-
-      // Tape counter increment
-      if (reelSpeed > 0.04) {
-        tapeCounterTimer++;
-        if (tapeCounterTimer % 22 === 0) {
-          tapeCounterNum++;
-          updateCounterDisplay(tapeCounterNum);
-        }
-      }
-
-      requestAnimationFrame(animateReels);
-    }
-    requestAnimationFrame(animateReels);
-
-    function updateCounterDisplay(num) {
-      const s = String(num).padStart(4, '0');
-      document.getElementById('cnt1').innerText = s[0];
-      document.getElementById('cnt2').innerText = s[1];
-      document.getElementById('cnt3').innerText = s[2];
-      document.getElementById('cnt4').innerText = s[3];
-    }
-
-    // Realistic Analog VU Meter Physics
-    const vuCanvas = document.getElementById('nagraVuCanvas');
-    const vCtx = vuCanvas.getContext('2d');
-
-    let vuAngle = -0.65;
-    let targetVuAngle = -0.65;
-    let vuVelocity = 0;
-
-    function drawNagraVU() {
-      vCtx.clearRect(0, 0, vuCanvas.width, vuCanvas.height);
-
-      const cx = vuCanvas.width / 2;
-      const cy = vuCanvas.height + 15;
-      const rad = 135;
-
-      vCtx.save();
-      vCtx.translate(cx, cy);
-
-      // Meter Scale Arc
-      vCtx.beginPath();
-      vCtx.arc(0, 0, rad, -Math.PI * 0.72, -Math.PI * 0.28);
-      vCtx.strokeStyle = '#222';
-      vCtx.lineWidth = 2.5;
-      vCtx.stroke();
-
-      // Red Overload Zone Arc (+0 to +3 dB)
-      vCtx.beginPath();
-      vCtx.arc(0, 0, rad, -Math.PI * 0.42, -Math.PI * 0.28);
-      vCtx.strokeStyle = '#B91C1C';
-      vCtx.lineWidth = 4;
-      vCtx.stroke();
-
-      // Tick Marks & Numbers
-      const ticks = [
-        { angle: -0.65, val: '-20' },
-        { angle: -0.48, val: '-10' },
-        { angle: -0.36, val: '-7' },
-        { angle: -0.24, val: '-5' },
-        { angle: -0.12, val: '-3' },
-        { angle: 0.00,  val: '0' },
-        { angle: 0.12,  val: '+1' },
-        { angle: 0.24,  val: '+2' },
-        { angle: 0.36,  val: '+3' }
-      ];
-
-      ticks.forEach(t => {
-        const ang = -Math.PI / 2 + t.angle;
-        const x1 = Math.cos(ang) * (rad - 1);
-        const y1 = Math.sin(ang) * (rad - 1);
-        const isRed = t.angle >= 0;
-        const len = (t.val === '0' || t.val === '-20' || t.val === '+3') ? 12 : 7;
-        const x2 = Math.cos(ang) * (rad - len);
-        const y2 = Math.sin(ang) * (rad - len);
-
-        vCtx.beginPath();
-        vCtx.moveTo(x1, y1);
-        vCtx.lineTo(x2, y2);
-        vCtx.strokeStyle = isRed ? '#B91C1C' : '#222';
-        vCtx.lineWidth = isRed ? 2.5 : 1.5;
-        vCtx.stroke();
-
-        const tx = Math.cos(ang) * (rad - 22);
-        const ty = Math.sin(ang) * (rad - 22);
-        vCtx.fillStyle = isRed ? '#990000' : '#1A1A1A';
-        vCtx.font = "bold 9px 'Share Tech Mono', monospace";
-        vCtx.textAlign = 'center';
-        vCtx.textBaseline = 'middle';
-        vCtx.fillText(t.val, tx, ty);
-      });
-
-      // Spring Needle Physics
-      const spring = 0.16;
-      const damp = 0.74;
-      vuVelocity = (vuVelocity + (targetVuAngle - vuAngle) * spring) * damp;
-      vuAngle += vuVelocity;
-
-      // Needle
-      const nRad = -Math.PI / 2 + vuAngle;
-      const nx = Math.cos(nRad) * (rad - 6);
-      const ny = Math.sin(nRad) * (rad - 6);
-
-      vCtx.beginPath();
-      vCtx.moveTo(0, 0);
-      vCtx.lineTo(nx, ny);
-      vCtx.strokeStyle = '#1A1A1A';
-      vCtx.lineWidth = 1.8;
-      vCtx.stroke();
-
-      // Pivot
-      vCtx.beginPath();
-      vCtx.arc(0, 0, 10, 0, Math.PI * 2);
-      vCtx.fillStyle = '#222';
-      vCtx.fill();
-
-      vCtx.restore();
-
-      requestAnimationFrame(drawNagraVU);
-    }
-    requestAnimationFrame(drawNagraVU);
-
-    // Audio level listener
-    VartalaapEngine.on('audioLevel', lvl => {
-      targetVuAngle = -0.65 + (lvl * 1.10);
-      const db = Math.round((lvl * 23) - 20);
-      document.getElementById('nagraDbText').innerText = (db > 0 ? '+' : '') + db + ' dB';
-
-      // Spin tape reels when audio is active
-      if (lvl > 0.10) {
-        targetReelSpeed = 0.08 + lvl * 0.12;
-      } else {
-        targetReelSpeed = 0.02; // Idle tension drift
-      }
-    });
-
     // Telemetry updates
     VartalaapEngine.on('telemetry', t => {
-      document.getElementById('nagraState').innerText = 'STATE: ' + t.state;
-      document.getElementById('nagraSilence').innerText = Math.round(t.elapsed_silence_ms);
-      document.getElementById('nagraEts').innerText = Math.round(t.dynamic_ets_ms);
-      document.getElementById('nagraPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('mSilence').innerText = Math.round(t.elapsed_silence_ms) + ' ms';
+      document.getElementById('etsVal').innerText = Math.round(t.dynamic_ets_ms);
+      document.getElementById('mPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('mDuckGain').innerText = Number(t.ducking_gain_db).toFixed(1) + ' dB';
 
-      const recBulb = document.getElementById('recBulb');
-      if (t.state === 'LISTENING' || t.state === 'BOT_SPEAKING') {
-        recBulb.classList.add('active');
-      } else {
-        recBulb.classList.remove('active');
-      }
+      const pct = Math.min(100, Math.max(10, ((t.dynamic_ets_ms - 850) / (2000 - 850)) * 100));
+      document.getElementById('etsFill').style.width = pct + '%';
+
+      document.querySelectorAll('.flow-step').forEach(s => s.classList.remove('active'));
+      if (t.state === 'LISTENING') document.getElementById('stepListening').classList.add('active');
+      else if (t.state === 'USER_SPEAKING') document.getElementById('stepSpeaking').classList.add('active');
+      else if (t.state === 'USER_PAUSE') document.getElementById('stepPause').classList.add('active');
+      else if (t.state === 'TURN_GRANTED') document.getElementById('stepGranted').classList.add('active');
+      else if (t.state === 'BOT_SPEAKING' || t.state.includes('DUCK')) document.getElementById('stepBot').classList.add('active');
     });
 
     VartalaapEngine.on('transcript', msg => {
-      document.getElementById('nagraTranscript').innerText = `[TAPE HEAD] "${msg.text}"`;
+      addOrUpdateFeed('user', msg.text, msg.is_final);
     });
 
-    VartalaapEngine.on('control', msg => {
-      if (msg.action === 'HARD_FLUSH') {
-        // Immediate brake halt on reels
-        targetReelSpeed = 0.0;
-        reelSpeed = 0.0;
+    VartalaapEngine.on('stateChange', st => {
+      if (st === 'BOT_SPEAKING' && VartalaapEngine.botResponse) {
+        addOrUpdateFeed('bot', VartalaapEngine.botResponse, true);
       }
     });
 
-    // Arbitration mode switching
-    let currentMode = 'VARTALAAP';
+    function addOrUpdateFeed(speaker, text, isFinal) {
+      const feed = document.getElementById('linearFeed');
+      let lastCard = feed.lastElementChild;
+
+      if (lastCard && lastCard.dataset.speaker === speaker && !lastCard.dataset.final) {
+        lastCard.querySelector('div:nth-child(2)').innerText = text;
+        if (isFinal) lastCard.dataset.final = "true";
+      } else {
+        const card = document.createElement('div');
+        card.className = `feed-card ${speaker}`;
+        card.dataset.speaker = speaker;
+        if (isFinal) card.dataset.final = "true";
+
+        const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false });
+        card.innerHTML = `
+          <div class="feed-card-header">
+            <span>${speaker === 'user' ? 'User' : 'Vartalaap Assistant'}</span>
+            <span>${timeStr}</span>
+          </div>
+          <div>${text}</div>
+        `;
+        feed.appendChild(card);
+        feed.scrollTop = feed.scrollHeight;
+      }
+    }
+
     function setArbitrationMode(mode) {
-      currentMode = mode;
-      const btnVar = document.getElementById('btnModeVartalaap');
-      const btnStd = document.getElementById('btnModeStandard');
-      const plaqueMode = document.getElementById('plaqueMode');
-
-      if (mode === 'VARTALAAP') {
-        btnVar.classList.add('active');
-        btnStd.classList.remove('active');
-        plaqueMode.innerText = 'VARTALAAP v2.0';
-      } else {
-        btnStd.classList.add('active');
-        btnVar.classList.remove('active');
-        plaqueMode.innerText = 'STANDARD 500ms';
-      }
-
       VartalaapEngine.setMode(mode);
+      document.getElementById('btnModeVar').classList.toggle('active', mode === 'VARTALAAP');
+      document.getElementById('btnModeStd').classList.toggle('active', mode === 'STANDARD');
     }
 
-    async function handleNagraMic() {
+    async function toggleMicSession() {
       const active = await VartalaapEngine.toggleMic();
-      const btn = document.getElementById('btnNagraMic');
-      const label = document.getElementById('nagraMicLabel');
+      const btn = document.getElementById('btnMicLinear');
+      const text = document.getElementById('btnMicText');
       if (active) {
-        btn.classList.add('btn-mic-active');
-        label.innerHTML = '&#9632; Stop Mic';
+        btn.classList.add('active');
+        text.innerText = 'Stop Live Mic';
       } else {
-        btn.classList.remove('btn-mic-active');
-        label.innerHTML = '&#9654; Live Mic';
+        btn.classList.remove('active');
+        text.innerText = 'Start Live Mic';
       }
     }
+
+    function injectPrompt(txt) {
+      document.getElementById('textPromptInput').value = txt;
+      sendPrompt(txt);
+    }
+
+    function handleSendText(e) {
+      e.preventDefault();
+      const input = document.getElementById('textPromptInput');
+      const val = input.value.trim();
+      if (!val) return;
+      sendPrompt(val);
+      input.value = '';
+    }
+
+    function sendPrompt(text) {
+      addOrUpdateFeed('user', text, true);
+      VartalaapEngine.sendJson({
+        type: 'INJECT_TRANSCRIPT',
+        text: text
+      });
+    }
+
+    window.addEventListener('keydown', e => {
+      if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+        e.preventDefault();
+        toggleMicSession();
+      }
+    });
+
+    setInterval(() => {
+      const dot = document.getElementById('wsDot');
+      const label = document.getElementById('wsLabel');
+      if (VartalaapEngine.isConnected) {
+        dot.classList.remove('offline');
+        label.innerText = 'CONNECTED';
+      } else {
+        dot.classList.add('offline');
+        label.innerText = 'SIMULATION';
+      }
+    }, 1000);
   </script>
 </body>
 </html>

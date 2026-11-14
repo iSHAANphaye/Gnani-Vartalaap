@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vartalaap // Acoustic Precision Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-studio: #0A0C0E;
+      --surface-1: #121519;
+      --surface-2: #1A1F26;
+      --surface-3: #222933;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(245, 158, 11, 0.4);
+      --amber-accent: #F59E0B;
+      --amber-glow: rgba(245, 158, 11, 0.2);
+      --green-signal: #10B981;
+      --green-glow: rgba(16, 185, 129, 0.25);
+      --red-alert: #EF4444;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --font-display: 'Cabinet Grotesk', -apple-system, sans-serif;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-studio);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Universal Prototype Navigation Bar */
+    .proto-nav {
+      background: rgba(10, 12, 14, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .proto-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+
+    .proto-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber-accent);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .proto-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .proto-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .proto-link:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .proto-link.active {
+      background: var(--surface-3);
+      color: var(--amber-accent);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .ws-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green-signal);
+      box-shadow: 0 0 8px var(--green-signal);
+    }
+
+    .ws-status-dot.offline {
+      background: var(--red-alert);
+      box-shadow: 0 0 8px var(--red-alert);
+    }
+
+    /* Main Console Workspace */
+    .console-layout {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+      flex: 1;
+    }
+
+    @media (max-width: 1080px) {
+      .console-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Panel Card Styles */
+    .studio-panel {
+      background: var(--surface-1);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    /* Oscilloscope Screen */
+    .scope-frame {
+      background: #060709;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      height: 180px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
+
+    #scopeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .scope-overlay {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      display: flex;
+      gap: 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .scope-stat {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Turn State & Live Indicators */
+    .turn-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 12px 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .state-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .state-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green-signal);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .state-pill.speaking {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber-accent);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .state-pill.ducked {
+      background: rgba(99, 102, 241, 0.15);
+      color: #818CF8;
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    /* Mode Switcher Tabs */
+    .mode-toggle {
+      display: inline-flex;
+      background: var(--surface-3);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .mode-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mode-btn.active {
+      background: var(--surface-1);
+      color: var(--text-primary);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Live Dialogue Card Stream */
+    .dialogue-stream {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 190px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .turn-bubble {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    .turn-bubble.user {
+      background: var(--surface-3);
+      border-left: 3px solid var(--amber-accent);
+      align-self: flex-start;
+      max-width: 90%;
+    }
+
+    .turn-bubble.bot {
+      background: rgba(16, 185, 129, 0.08);
+      border-left: 3px solid var(--green-signal);
+      align-self: flex-start;
+      max-width: 90%;
+    }
+
+    .turn-bubble-author {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .turn-bubble.user .turn-bubble-author { color: var(--amber-accent); }
+    .turn-bubble.bot .turn-bubble-author { color: var(--green-signal); }
+
+    /* Action Controls & Input Deck */
+    .action-deck {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .mic-record-btn {
+      appearance: none;
+      background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
+      color: #0A0C0E;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px var(--amber-glow);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .mic-record-btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .mic-record-btn.active {
+      background: linear-gradient(180deg, #EF4444 0%, #DC2626 100%);
+      color: #FFFFFF;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+      animation: pulseAlert 1.5s infinite;
+    }
+
+    @keyframes pulseAlert {
+      0%, 100% { box-shadow: 0 0 12px rgba(239, 68, 68, 0.3); }
+      50% { box-shadow: 0 0 24px rgba(239, 68, 68, 0.6); }
+    }
+
+    .input-inject-wrap {
+      display: flex;
+      gap: 8px;
+    }
+
+    .text-input-field {
+      flex: 1;
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      outline: none;
+      transition: border 0.15s ease;
+    }
+
+    .text-input-field:focus {
+      border-color: var(--amber-accent);
+    }
+
+    .send-btn {
+      appearance: none;
+      background: var(--surface-3);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      border-radius: 8px;
+      padding: 0 16px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .send-btn:hover {
+      background: var(--surface-2);
+      border-color: var(--text-secondary);
+    }
+
+    /* Right Diagnostics Rack: Metering & Gauges */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .metric-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .metric-val {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-val.highlight {
+      color: var(--amber-accent);
+    }
+
+    /* Calibrated Peak Level Meter */
+    .vu-rack {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .vu-bar-wrap {
+      height: 12px;
+      background: #090B0D;
+      border: 1px solid var(--border-subtle);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .vu-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10B981 0%, #10B981 65%, #F59E0B 85%, #EF4444 100%);
+      transition: width 0.08s ease-out;
+    }
+
+    .vu-scale {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-muted);
+    }
+
+    /* Authentic Indic Test Prompts */
+    .scenario-rack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .scenario-chip {
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: all 0.12s ease;
+    }
+
+    .scenario-chip:hover {
+      background: var(--surface-3);
+      border-color: var(--border-focus);
+      transform: translateX(2px);
+    }
+
+    .scenario-domain {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--amber-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .scenario-text {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Prototype Switcher Nav -->
+  <header class="proto-nav">
+    <div class="proto-nav-brand">
+      <span>VARTALAAP</span>
+      <span class="proto-badge">SOVEREIGN INDIC</span>
+    </div>
+
+    <nav class="proto-selector">
+      <a href="prototype-1-precision-audio.html" class="proto-link active">1. Precision Studio</a>
+      <a href="prototype-2-linear-telemetry.html" class="proto-link">2. Linear Cockpit</a>
+      <a href="prototype-3-indic-minimalist.html" class="proto-link">3. Indic Minimalist</a>
+      <a href="prototype-4-comparative-lab.html" class="proto-link">4. Comparative Lab</a>
+      <a href="prototype-5-bento-voice-hub.html" class="proto-link">5. Bento Voice Hub</a>
+    </nav>
+
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="ws-status-dot" id="wsDot" title="WebSocket Online"></span>
+      <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);" id="wsLabel">CONNECTED</span>
+    </div>
+  </header>
+
+  <main class="console-layout">
+    <!-- Left Master Console -->
+    <section class="studio-panel">
+      <div class="panel-header">
+        <span class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5v14M7 9v6M22 10v4M2 11v2"/></svg>
+          Dual-Stream Acoustic Oscilloscope
+        </span>
+        <div class="mode-toggle">
+          <button class="mode-btn active" id="btnModeVar" onclick="setArbitrationMode('VARTALAAP')">Vartalaap Dynamic</button>
+          <button class="mode-btn" id="btnModeStd" onclick="setArbitrationMode('STANDARD')">Fixed 500ms VAD</button>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <!-- Scope Canvas -->
+        <div class="scope-frame">
+          <canvas id="scopeCanvas" width="800" height="180"></canvas>
+          <div class="scope-overlay">
+            <span>SAMPLE: <span class="scope-stat">16.0 kHz PCM</span></span>
+            <span>CHUNKS: <span class="scope-stat">200ms Partials</span></span>
+            <span>LATENCY: <span class="scope-stat" id="scopeLatency">0.0 ms</span></span>
+          </div>
+        </div>
+
+        <!-- Live Turn Status Bar -->
+        <div class="turn-bar">
+          <div class="state-indicator">
+            <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">CURRENT STATE:</span>
+            <span class="state-pill" id="turnStatePill">LISTENING</span>
+          </div>
+
+          <div style="display:flex; gap:16px; font-family:var(--font-mono); font-size:11px;">
+            <span>ETS: <b style="color:var(--amber-accent);" id="tbEts">850</b>ms</span>
+            <span>SILENCE: <b id="tbSilence">0</b>ms</span>
+            <span>P(COMPLETE): <b id="tbPComp">0.00</b></span>
+          </div>
+        </div>
+
+        <!-- Conversational Dialogue Stream -->
+        <div class="dialogue-stream" id="dialogueStream">
+          <div class="turn-bubble bot">
+            <span class="turn-bubble-author">Vartalaap Assistant</span>
+            <span>Namaste! Main Vartalaap sovereign Indic voice assistant hoon. Aap mujhse trains, flights, bijli bill, ya banking ke baare mein baat kar sakte hain.</span>
+          </div>
+        </div>
+
+        <!-- Controls Dock -->
+        <div class="action-deck">
+          <button class="mic-record-btn" id="btnMic" onclick="toggleMicSession()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+            <span id="btnMicText">Start Live Mic</span>
+          </button>
+
+          <form class="input-inject-wrap" onsubmit="handleSendText(event)">
+            <input type="text" class="text-input-field" id="textPromptInput" placeholder="Type a prompt in Hindi, Hinglish, or English (e.g. चंडीगढ़ से लखनऊ की फ्लाइट कब है)...">
+            <button type="submit" class="send-btn">Send Turn</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Telemetry & Benchmark Rack -->
+    <aside class="studio-panel">
+      <div class="panel-header">
+        <span class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Telemetry & Diagnostics
+        </span>
+        <span style="font-family:var(--font-mono); font-size:10.5px; color:var(--amber-accent);">ONLINE</span>
+      </div>
+
+      <div class="panel-body">
+        <!-- 4 Grid Gauges -->
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Dynamic ETS</span>
+              <span>ms</span>
+            </div>
+            <div class="metric-val highlight" id="mEts">850</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Silence</span>
+              <span>ms</span>
+            </div>
+            <div class="metric-val" id="mSilence">0</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Turn Complete</span>
+              <span>prob</span>
+            </div>
+            <div class="metric-val" id="mPComp">0.00</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Duck Gain</span>
+              <span>dB</span>
+            </div>
+            <div class="metric-val" style="color:var(--green-signal);" id="mDuckGain">0.0</div>
+          </div>
+        </div>
+
+        <!-- Calibrated Level Meter -->
+        <div class="vu-rack">
+          <div class="metric-label">
+            <span>Acoustic Energy</span>
+            <span id="vuDbText">-48 dB</span>
+          </div>
+          <div class="vu-bar-wrap">
+            <div class="vu-bar-fill" id="vuFill"></div>
+          </div>
+          <div class="vu-scale">
+            <span>-48</span>
+            <span>-30</span>
+            <span>-18</span>
+            <span>-6</span>
+            <span>0 dB</span>
+          </div>
+        </div>
+
+        <!-- Authentic Indic Scenario Trigger Station -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="metric-label">
+            <span>Authentic Test Prompts</span>
+            <span>1-Click Run</span>
+          </div>
+
+          <div class="scenario-rack">
+            <div class="scenario-chip" onclick="injectPrompt('Chandigarh se Lucknow ki direct flight kab hai?')">
+              <span class="scenario-domain">Travel / Flights</span>
+              <span class="scenario-text">Chandigarh se Lucknow ki direct flight kab hai?</span>
+            </div>
+
+            <div class="scenario-chip" onclick="injectPrompt('Mera bijli ka bill kitna banta hai?')">
+              <span class="scenario-domain">Utilities / Electricity</span>
+              <span class="scenario-text">Mera bijli ka bill kitna banta hai?</span>
+            </div>
+
+            <div class="scenario-chip" onclick="injectPrompt('Mere savings account mein kul kitna balance bacha hai?')">
+              <span class="scenario-domain">Banking / Balance</span>
+              <span class="scenario-text">Mere savings account mein kul kitna balance bacha hai?</span>
+            </div>
+
+            <div class="scenario-chip" onclick="injectPrompt('Vartalaap project kya hai aur kaise kaam karta hai?')">
+              <span class="scenario-domain">Engine / Architecture</span>
+              <span class="scenario-text">Vartalaap project kya hai aur kaise kaam karta hai?</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </main>
+
+  <script src="../shared-engine.js"></script>
+  <script>
+    // Universal Scope Animation
+    const scopeCanvas = document.getElementById('scopeCanvas');
+    const sCtx = scopeCanvas.getContext('2d');
+    let scopePhase = 0;
+    let audioActivityLevel = 0.0;
+
+    function renderScope() {
+      sCtx.clearRect(0, 0, scopeCanvas.width, scopeCanvas.height);
+
+      const w = scopeCanvas.width;
+      const h = scopeCanvas.height;
+      const cy = h / 2;
+
+      // Draw Grid Lines
+      sCtx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      sCtx.lineWidth = 1;
+      for (let x = 0; x < w; x += 40) {
+        sCtx.beginPath(); sCtx.moveTo(x, 0); sCtx.lineTo(x, h); sCtx.stroke();
+      }
+      for (let y = 0; y < h; y += 30) {
+        sCtx.beginPath(); sCtx.moveTo(0, y); sCtx.lineTo(w, y); sCtx.stroke();
+      }
+
+      // Draw Waveform
+      sCtx.beginPath();
+      sCtx.strokeStyle = audioActivityLevel > 0.05 ? '#F59E0B' : '#10B981';
+      sCtx.lineWidth = 2;
+      sCtx.shadowBlur = 8;
+      sCtx.shadowColor = audioActivityLevel > 0.05 ? 'rgba(245, 158, 11, 0.5)' : 'rgba(16, 185, 129, 0.4)';
+
+      const amp = 6 + (audioActivityLevel * 50);
+      for (let x = 0; x < w; x++) {
+        const freq1 = 0.015;
+        const freq2 = 0.035;
+        const y = cy + Math.sin(x * freq1 + scopePhase) * amp * 0.7 + Math.sin(x * freq2 - scopePhase * 1.5) * amp * 0.3;
+        if (x === 0) sCtx.moveTo(x, y);
+        else sCtx.lineTo(x, y);
+      }
+      sCtx.stroke();
+      sCtx.shadowBlur = 0;
+
+      scopePhase += 0.05 + (audioActivityLevel * 0.15);
+      requestAnimationFrame(renderScope);
+    }
+    requestAnimationFrame(renderScope);
+
+    // Audio level listener
+    VartalaapEngine.on('audioLevel', lvl => {
+      audioActivityLevel = lvl;
+      const pct = Math.min(100, Math.round(lvl * 120));
+      document.getElementById('vuFill').style.width = pct + '%';
+      const db = Math.round((lvl * 48) - 48);
+      document.getElementById('vuDbText').innerText = (db > 0 ? '+' : '') + db + ' dB';
+    });
+
+    // Telemetry updates
+    VartalaapEngine.on('telemetry', t => {
+      document.getElementById('mSilence').innerText = Math.round(t.elapsed_silence_ms);
+      document.getElementById('tbSilence').innerText = Math.round(t.elapsed_silence_ms);
+      document.getElementById('mEts').innerText = Math.round(t.dynamic_ets_ms);
+      document.getElementById('tbEts').innerText = Math.round(t.dynamic_ets_ms);
+      document.getElementById('mPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('tbPComp').innerText = Number(t.p_complete).toFixed(2);
+      document.getElementById('mDuckGain').innerText = Number(t.ducking_gain_db).toFixed(1);
+
+      const pill = document.getElementById('turnStatePill');
+      pill.innerText = t.state;
+      pill.className = 'state-pill';
+      if (t.state === 'BOT_SPEAKING') pill.classList.add('speaking');
+      else if (t.state.includes('DUCK')) pill.classList.add('ducked');
+    });
+
+    // Real-time transcript listener
+    VartalaapEngine.on('transcript', msg => {
+      addOrUpdateTranscript('user', msg.text, msg.is_final);
+    });
+
+    VartalaapEngine.on('stateChange', st => {
+      if (st === 'BOT_SPEAKING' && VartalaapEngine.botResponse) {
+        addOrUpdateTranscript('bot', VartalaapEngine.botResponse, true);
+      }
+    });
+
+    function addOrUpdateTranscript(speaker, text, isFinal) {
+      const stream = document.getElementById('dialogueStream');
+      let lastBubble = stream.lastElementChild;
+
+      if (lastBubble && lastBubble.dataset.speaker === speaker && !lastBubble.dataset.final) {
+        lastBubble.querySelector('span:nth-child(2)').innerText = text;
+        if (isFinal) lastBubble.dataset.final = "true";
+      } else {
+        const bubble = document.createElement('div');
+        bubble.className = `turn-bubble ${speaker}`;
+        bubble.dataset.speaker = speaker;
+        if (isFinal) bubble.dataset.final = "true";
+
+        const author = document.createElement('span');
+        author.className = 'turn-bubble-author';
+        author.innerText = speaker === 'user' ? 'User' : 'Vartalaap Assistant';
+
+        const content = document.createElement('span');
+        content.innerText = text;
+
+        bubble.appendChild(author);
+        bubble.appendChild(content);
+        stream.appendChild(bubble);
+        stream.scrollTop = stream.scrollHeight;
+      }
+    }
+
+    function setArbitrationMode(mode) {
+      VartalaapEngine.setMode(mode);
+      document.getElementById('btnModeVar').classList.toggle('active', mode === 'VARTALAAP');
+      document.getElementById('btnModeStd').classList.toggle('active', mode === 'STANDARD');
+    }
+
+    async function toggleMicSession() {
+      const active = await VartalaapEngine.toggleMic();
+      const btn = document.getElementById('btnMic');
+      const text = document.getElementById('btnMicText');
+      if (active) {
+        btn.classList.add('active');
+        text.innerText = 'Stop Live Mic';
+      } else {
+        btn.classList.remove('active');
+        text.innerText = 'Start Live Mic';
+      }
+    }
+
+    function injectPrompt(txt) {
+      document.getElementById('textPromptInput').value = txt;
+      sendPrompt(txt);
+    }
+
+    function handleSendText(e) {
+      e.preventDefault();
+      const input = document.getElementById('textPromptInput');
+      const val = input.value.trim();
+      if (!val) return;
+      sendPrompt(val);
+      input.value = '';
+    }
+
+    function sendPrompt(text) {
+      addOrUpdateTranscript('user', text, true);
+      VartalaapEngine.sendJson({
+        type: 'INJECT_TRANSCRIPT',
+        text: text
+      });
+    }
+
+    // WebSocket indicator binding
+    setInterval(() => {
+      const dot = document.getElementById('wsDot');
+      const label = document.getElementById('wsLabel');
+      if (VartalaapEngine.isConnected) {
+        dot.classList.remove('offline');
+        label.innerText = 'CONNECTED';
+      } else {
+        dot.classList.add('offline');
+        label.innerText = 'SIMULATION';
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
