@@ -92,23 +92,29 @@ with gr.Blocks(title="Vartalaap (वार्तालाप) — Sovereign Indi
     )
 
     with gr.Tabs():
-        with gr.TabItem("📻 Vintage Nagra Hardware Console"):
+        with gr.TabItem("🎛️ Vartalaap Precision Console"):
             gr.HTML(
                 """
-                <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 14px; color: #aaa;">
-                        Hardware Simulation: Kudelski Nagra IV-S 15 IPS Studio Tape Deck • Web Audio API & Full-Duplex WebSockets
+                <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <span style="font-size: 14px; color: #888;">
+                        Sovereign Indic Voice Console • Web Audio API & Full-Duplex WebSockets • Switchable Prototypes & Comparative Lab
                     </span>
-                    <a href="/console/index.html" target="_blank" 
-                       style="padding: 6px 14px; background: #C43B2B; color: #fff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold;">
-                        Open Direct Fullscreen Console ↗
-                    </a>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="/console/prototypes/prototype-4-comparative-lab.html" target="_blank" 
+                           style="padding: 6px 14px; background: #10B981; color: #04100c; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold;">
+                            Comparative Lab ↗
+                        </a>
+                        <a href="/console/index.html" target="_blank" 
+                           style="padding: 6px 14px; background: #3B82F6; color: #fff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold;">
+                            Fullscreen Console ↗
+                        </a>
+                    </div>
                 </div>
-                <div style="width: 100%; height: 900px; background: #14110F; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+                <div style="width: 100%; height: 900px; background: #0A0D12; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.08);">
                     <iframe src="/console/index.html" 
                             style="width: 100%; height: 100%; border: none; display: block;" 
                             allow="microphone; autoplay"
-                            title="Vartalaap Vintage Nagra Console">
+                            title="Vartalaap Precision Voice Console">
                     </iframe>
                 </div>
                 """
