@@ -595,9 +595,12 @@
           <span class="vad-status-badge" id="vadStatusBadge">IDLE / NOISE FLOOR</span>
         </div>
 
-        <div class="threshold-badge">
-          <span>CALIBRATED SPEECH GATE:</span>
-          <b style="color:var(--emerald-accent);">-26 dBFS (SILERO VAD)</b>
+        <div class="threshold-badge" id="adaptiveGateBadge">
+          <span style="color:var(--text-muted);">AMBIENT NOISE:</span>
+          <b id="lblNoiseFloor" style="color:var(--text-secondary);">-42.0 dB</b>
+          <span style="color:var(--border-hover); margin:0 4px;">|</span>
+          <span style="color:var(--text-muted);">ADAPTIVE GATE:</span>
+          <b id="lblAdaptiveGate" style="color:var(--emerald-accent);">-34.0 dB (+8dB SNR)</b>
         </div>
       </div>
 
@@ -636,16 +639,16 @@
             <span class="tel-val" id="telMicDb">-48.0 dB</span>
           </div>
           <div class="tel-card">
+            <span class="tel-key">NOISE FLOOR:</span>
+            <span class="tel-val" id="telNoiseFloor">-42.0 dB</span>
+          </div>
+          <div class="tel-card">
+            <span class="tel-key">DYNAMIC SNR GATE:</span>
+            <span class="tel-val" id="telSnrGate" style="color:var(--emerald-accent);">-34.0 dB</span>
+          </div>
+          <div class="tel-card">
             <span class="tel-key">VAD GATE:</span>
             <span class="tel-val" id="telGate" style="color:var(--text-muted);">CLOSED</span>
-          </div>
-          <div class="tel-card">
-            <span class="tel-key">SPEECH ENERGY (RMS):</span>
-            <span class="tel-val" id="telRms">0.000</span>
-          </div>
-          <div class="tel-card">
-            <span class="tel-key">SPEECH CONFIDENCE:</span>
-            <span class="tel-val" id="telConfidence" style="color:var(--emerald-accent);">0.00</span>
           </div>
         </div>
       </div>
@@ -772,12 +775,15 @@
   <script src="../shared-engine.js"></script>
   <script>
     // =========================================================================
-    // VAD Threshold & Audio Waveform Engine
+    // Gnani-Grade Adaptive Noise Floor & Dynamic SNR Gate Engine
     // =========================================================================
     const scopeCanvas = document.getElementById('vadScopeCanvas');
     const sCtx = scopeCanvas.getContext('2d');
 
-    const currentThresholdDb = -26;
+    let ambientNoiseDb = -42.0;       // Continuous ambient room noise floor (dBFS)
+    const snrOffsetDb = 8.0;          // Calibrated Indian conversational SNR offset (+8 dB)
+    let dynamicThresholdDb = ambientNoiseDb + snrOffsetDb; // Currently -34.0 dB
+
     let liveLevel = 0.0;
     let targetLevel = 0.0;
     let wavePhase = 0;
@@ -799,18 +805,18 @@
         sCtx.beginPath(); sCtx.moveTo(0, y); sCtx.lineTo(w, y); sCtx.stroke();
       }
 
-      // Calculate current dB and threshold status
-      liveLevel += (targetLevel - liveLevel) * 0.15;
+      // Smooth interpolation of acoustic level
+      liveLevel += (targetLevel - liveLevel) * 0.18;
       const currentDb = Math.round((liveLevel * 48) - 48);
-      const isSpeechActive = currentDb >= currentThresholdDb && liveLevel > 0.03;
+      const isSpeechActive = currentDb >= dynamicThresholdDb && liveLevel > 0.03;
 
-      // Draw Horizontal Threshold Dashed Reference Line
-      const threshPct = ((currentThresholdDb + 48) / 48);
+      // Draw Dynamic Symmetrical Threshold Lines
+      const threshPct = Math.max(0.12, Math.min(0.88, (dynamicThresholdDb + 48) / 48));
       const threshY = cy - (threshPct * (cy - 12));
 
       sCtx.save();
       sCtx.setLineDash([6, 6]);
-      sCtx.strokeStyle = isSpeechActive ? 'rgba(16, 185, 129, 0.7)' : 'rgba(148, 163, 184, 0.35)';
+      sCtx.strokeStyle = isSpeechActive ? 'rgba(16, 185, 129, 0.75)' : 'rgba(148, 163, 184, 0.35)';
       sCtx.lineWidth = 1.5;
       sCtx.beginPath();
       sCtx.moveTo(0, threshY);
@@ -824,6 +830,14 @@
       sCtx.lineTo(w, mirrorY);
       sCtx.stroke();
       sCtx.restore();
+
+      // Position floating threshold tag on canvas
+      const tagPct = Math.max(10, Math.min(88, 100 - (threshPct * 82 + 8)));
+      const tagEl = document.getElementById('thresholdTag');
+      if (tagEl) {
+        tagEl.style.top = tagPct + '%';
+        document.getElementById('thresholdTagVal').innerText = dynamicThresholdDb.toFixed(1) + ' dB (NOISE + ' + snrOffsetDb + 'dB)';
+      }
 
       // Draw Center Baseline
       sCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
@@ -858,24 +872,44 @@
     }
     requestAnimationFrame(drawVadScope);
 
-    // Audio level callback from Vartalaap engine
+    // Audio level callback with real-time adaptive noise floor estimation
     VartalaapEngine.on('audioLevel', lvl => {
       targetLevel = lvl;
       const currentDb = Math.round((lvl * 48) - 48);
-      const isAboveThreshold = currentDb >= currentThresholdDb && lvl > 0.03;
+
+      // Adaptive Noise Floor Tracking (Pillar 3)
+      if (currentDb < dynamicThresholdDb) {
+        // Below gate: classify as ambient room noise, adapt baseline smoothly
+        ambientNoiseDb = (ambientNoiseDb * 0.94) + (currentDb * 0.06);
+        ambientNoiseDb = Math.max(-46.0, Math.min(-24.0, ambientNoiseDb));
+      } else {
+        // Active speech: slow upward leak to prevent loud speech from dragging floor up
+        ambientNoiseDb = (ambientNoiseDb * 0.997) + (currentDb * 0.003);
+      }
+
+      // Recompute dynamic speech gate (+8 dB above room noise floor)
+      dynamicThresholdDb = Math.min(-14.0, Math.max(-38.0, ambientNoiseDb + snrOffsetDb));
+
+      const isAboveThreshold = currentDb >= dynamicThresholdDb && lvl > 0.03;
 
       // Update Meter Bar Fill
       const pct = Math.min(100, Math.max(0, ((currentDb + 48) / 48) * 100));
       document.getElementById('meterFillBar').style.width = pct + '%';
 
-      // Update Telemetry Badges
+      // Move sliding marker line on meter bar
+      const gatePct = Math.min(100, Math.max(0, ((dynamicThresholdDb + 48) / 48) * 100));
+      document.getElementById('thresholdMarkerLine').style.left = gatePct + '%';
+
+      // Update Real-Time Readouts
       document.getElementById('telMicDb').innerText = (currentDb > 0 ? '+' : '') + currentDb + ' dB';
-      document.getElementById('telRms').innerText = (lvl * 0.25).toFixed(3);
+      document.getElementById('telNoiseFloor').innerText = ambientNoiseDb.toFixed(1) + ' dB';
+      document.getElementById('telSnrGate').innerText = dynamicThresholdDb.toFixed(1) + ' dB';
+      document.getElementById('lblNoiseFloor').innerText = ambientNoiseDb.toFixed(1) + ' dB';
+      document.getElementById('lblAdaptiveGate').innerText = dynamicThresholdDb.toFixed(1) + ' dB (+' + snrOffsetDb + 'dB SNR)';
 
       const statusBadge = document.getElementById('vadStatusBadge');
       const pulseDot = document.getElementById('vadPulseDot');
       const gateVal = document.getElementById('telGate');
-      const confVal = document.getElementById('telConfidence');
 
       if (isAboveThreshold) {
         statusBadge.innerText = 'SPEECH DETECTED (GATE OPEN)';
@@ -883,14 +917,12 @@
         pulseDot.classList.add('active');
         gateVal.innerText = 'OPEN';
         gateVal.style.color = '#34D399';
-        confVal.innerText = (0.85 + lvl * 0.14).toFixed(2);
       } else {
         statusBadge.innerText = 'IDLE / NOISE FLOOR';
         statusBadge.className = 'vad-status-badge';
         pulseDot.classList.remove('active');
         gateVal.innerText = 'CLOSED';
         gateVal.style.color = 'var(--text-muted)';
-        confVal.innerText = '0.00';
       }
     });
 
